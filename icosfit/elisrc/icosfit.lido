@@ -1,0 +1,330 @@
+ATTR FVal : double;
+ATTR Key : DefTableKey;
+ATTR String : int;
+
+SYMBOL Path COMPUTE
+  SYNT.String = TERM;
+END;
+RULE: FloatVal ::= Float COMPUTE
+  FloatVal.FVal = atof(StringTable(Float));
+END;
+RULE: FloatVal ::= Integer COMPUTE
+  FloatVal.FVal = CAST(double,Integer);
+END;
+RULE: FloatVal ::= '-' FloatVal COMPUTE
+  FloatVal[1].FVal = SUB(ZERO(),FloatVal[2].FVal);
+END;
+
+ATTR Low, High : int;
+RULE: IntegerPair ::= '[' Integer ',' Integer ']' COMPUTE
+  IntegerPair.Low = Integer[1];
+  IntegerPair.High = Integer[2];
+END;
+RULE: ConfigCmd ::= 'MirrorLoss' '=' FloatVal opt_ppm COMPUTE
+  SetGlobal(MirrorLoss, MUL( FloatVal.FVal, opt_ppm.FVal ) );
+END;
+
+RULE: ConfigCmd ::= 'BackgroundRegion' '=' IntegerPair COMPUTE
+  SetGlobalPair(BackgroundRegion, IntegerPair.Low, IntegerPair.High );
+END;
+
+RULE: ConfigCmd ::= 'SignalRegion' '=' IntegerPair COMPUTE
+  SetGlobalPair(SignalRegion, IntegerPair.Low, IntegerPair.High );
+END;
+
+RULE: ConfigCmd ::= ScanNumRangeName '=' IntegerPair COMPUTE
+  SetGlobalPair(ScanNumRange, IntegerPair.Low, IntegerPair.High );
+END;
+
+RULE: ConfigCmd ::= 'Restart' 'at' Integer opt_preserve COMPUTE
+  SetGlobal( RestartAt, Integer );
+END;
+RULE: opt_preserve ::= 'PreserveOutput' COMPUTE
+  SetGlobal( PreserveOutput, 1 );
+END;
+
+RULE: ConfigCmd ::= 'DSFRLimits' '=' '[' FloatVal ',' FloatVal ']' COMPUTE
+  message(ERROR, "DSFRLimits is no longer supported",0,COORDREF);
+END;
+RULE: ConfigCmd ::= 'EtalonFSR' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(EtalonFSR, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'EtalonFeedback' '=' FloatVal COMPUTE
+  SetGlobal(EtalonFeedback, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'MinimumFringeSpacing' '=' FloatVal COMPUTE
+  message(ERROR, "MinimumFringeSpacing is no longer supported",0,COORDREF);
+END;
+RULE: ConfigCmd ::= 'TolerableDrift' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(TolerableDrift, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'LineMargin' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(LeftLineMargin, FloatVal.FVal);
+  SetGlobal(RightLineMargin, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'LineMarginMultiplier' '=' FloatVal COMPUTE
+  SetGlobal(LeftLineMarginMultiplier, FloatVal.FVal);
+  SetGlobal(RightLineMarginMultiplier, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'LeftLineMargin' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(LeftLineMargin, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'LeftLineMarginMultiplier' '=' FloatVal COMPUTE
+  SetGlobal(LeftLineMarginMultiplier, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'RightLineMargin' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(RightLineMargin, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'RightLineMarginMultiplier' '=' FloatVal COMPUTE
+  SetGlobal(RightLineMarginMultiplier, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'CavityLength' '=' FloatVal opt_cm COMPUTE
+  SetGlobal(CavityLength, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'CavityFixedLength' '=' FloatVal opt_cm COMPUTE
+  SetGlobal(CavityFixedLength, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'Sigma' '=' FloatVal COMPUTE
+  SetGlobal(Sigma, FloatVal.FVal );
+END;
+RULE: ConfigCmd ::= 'TuningRate' '=' FloatVal opt_tunerate COMPUTE
+  message(ERROR, "TuningRate is no longer supported",0,COORDREF);
+END;
+RULE: ConfigCmd ::= 'SampleRate' '=' FloatVal Frequency COMPUTE
+  SetGlobal(SampleRate, MUL( FloatVal.FVal, Frequency.FVal ) );
+END;
+RULE: ConfigCmd ::= 'SkewTolerance' '=' FloatVal opt_ppm COMPUTE
+  SetGlobal(SkewTolerance, MUL( FloatVal.FVal, opt_ppm.FVal));
+END;
+RULE: ConfigCmd ::= 'ConvergenceStep' '=' FloatVal COMPUTE
+  SetGlobal(ConvergenceStep, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'ConvergenceCount' '=' Integer COMPUTE
+  SetGlobal(ConvergenceCount, Integer);
+END;
+RULE: ConfigCmd ::= 'MaxIterations' '=' Integer COMPUTE
+  SetGlobal(MaxIterations, Integer);
+END;
+
+RULE: ConfigCmd ::= 'nu0' '=' Integer COMPUTE
+  IF(Nu0IsSet,
+    message(ERROR, "Cannot redefine nu0",0,COORDREF),
+    SetNu0(Integer));
+END;
+
+RULE: ConfigCmd ::= 'Binary' COMPUTE
+  SetGlobal(binary, 1 );
+END;
+RULE: ConfigCmd ::= 'ASCII' COMPUTE
+  SetGlobal(binary, 0 );
+END;
+
+RULE: ConfigCmd ::= 'FitFunction' '=' Ident COMPUTE
+  message(ERROR, "FitFunction keyword is currently non-functional",0,COORDREF);
+  SetGlobal(FitFunction, StringTable(Ident));
+END;
+RULE: ConfigCmd ::= 'ICOSdir' '=' Path COMPUTE
+  SetGlobal(ICOSdir, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'PandTFile' '=' Path COMPUTE
+  SetGlobal(PTFile, StringTable(Path.String));
+  message(ERROR, "PandTFile format is obsolete",0,COORDREF);
+  SetGlobal(PTformat, 0);
+END;
+RULE: ConfigCmd ::= 'PTFile' '=' Path COMPUTE
+  SetGlobal(PTFile, StringTable(Path.String));
+  message(ERROR, "PTFile format is obsolete",0,COORDREF);
+  SetGlobal(PTformat, 1);
+END;
+RULE: ConfigCmd ::= 'PTEFile' '=' Path PTE_options COMPUTE
+  SetGlobal(PTFile, StringTable(Path.String));
+  SetGlobal(PTformat, 2);
+END;
+RULE: PTE_options ::= PTE_opts END;
+
+CHAIN PTE_column : int;
+ATTR PTE_ncols : int;
+SYMBOL PTE_options COMPUTE
+  CHAINSTART HEAD.PTE_column = 0;
+END;
+SYMBOL PTE_opt COMPUTE
+  THIS.PTE_column = ADD(THIS.PTE_column,THIS.PTE_ncols);
+END;
+RULE: PTE_opt ::= '+' 'nu_F0' COMPUTE
+  PTE_opt.PTE_ncols = 1;
+  IF(SetGlobalOnce(PTE_nu_F0_col, ADD(PTE_opt.PTE_column,1)),
+    message(ERROR, "Cannot specify '+ nu_F0' more than once",0,COORDREF));
+END;
+RULE: PTE_opt ::= '+' 'MirrorLoss' COMPUTE
+  PTE_opt.PTE_ncols = 1;
+  IF(SetGlobalOnce(PTE_MirrorLoss_col, ADD(PTE_opt.PTE_column,1)),
+    message(ERROR, "Cannot specify '+ MirrorLoss' more than once",0,COORDREF));
+END;
+RULE: PTE_opt ::= '+' 'PowerParams' COMPUTE
+  PTE_opt.PTE_ncols = 7; /* includes finesse, iteration and fit quality */
+  IF(SetGlobalOnce(PTE_PowerParams_col, ADD(PTE_opt.PTE_column,1)),
+    message(ERROR, "Cannot specify '+ PowerParams' more than once",0,COORDREF));
+END;
+RULE: PTE_opt ::= '+' 'Feedback' COMPUTE
+  PTE_opt.PTE_ncols = 1;
+  IF(SetGlobalOnce(PTE_Feedback_col, ADD(PTE_opt.PTE_column,1)),
+    message(ERROR, "Cannot specify '+ Feedback' more than once",0,COORDREF));
+END;
+RULE: PTE_opt ::= '+' 'Placeholder' COMPUTE
+  PTE_opt.PTE_ncols = 1;
+END;
+
+RULE: ConfigCmd ::= 'BaselineFile' '=' Path opt_BaselineInput COMPUTE
+  SetGlobal(BaselineFile, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'OutputDir' '=' Path COMPUTE
+  SetGlobal(OutputDir, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'OutputFile' '=' Path COMPUTE
+  SetGlobal(OutputFile, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'LogFile' '=' Path COMPUTE
+  SetGlobal(LogFile, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'MFile' '=' Path COMPUTE
+  SetGlobal(MFile, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'QTdir' '=' Path COMPUTE
+  SetGlobal(QTdir, StringTable(Path.String));
+END;
+RULE: ConfigCmd ::= 'Verbosity' '=' Integer COMPUTE
+  SetGlobal(Verbosity, Integer);
+END;
+RULE: ConfigCmd ::= 'QCLI_Wave' '=' Integer COMPUTE
+  SetGlobal(QCLI_Wave, Integer);
+END;
+RULE: ConfigCmd ::= 'N_Passes' '=' Integer COMPUTE
+  SetGlobal(N_Passes, Integer);
+END;
+
+ATTR mol, iso, ierr, ipos, fixdoppler, fixlorentz : int;
+ATTR nu, S, Gair, E, n, delta, threshold : double;
+SYMBOL ConfigFile COMPUTE
+  SYNT.Key = NewKey();
+  SYNT.optsset = CONSTITUENTS ( Threshold.threshset, LineParam.optsset );
+END;
+
+RULE: Threshold ::= 'Threshold' '=' FloatVal COMPUTE
+  Threshold.threshold = FloatVal.FVal;
+  Threshold.Key = INCLUDING (Line.Key, ConfigFile.Key);
+  Threshold.threshset = IF ( HasThreshold( Threshold.Key ),
+    message(ERROR, "Multiple threshold definitions",0,COORDREF),
+	SetThreshold( Threshold.Key, Threshold.threshold, 0. ));
+END;
+RULE: Position ::= 'Position' '=' Integer COMPUTE
+  Position.Key = INCLUDING Line.Key;
+  Position.ipos = Integer;
+  Position.positionset = IF ( HasPosition( Position.Key ),
+    message(ERROR, "Multiple Position definitions",0,COORDREF),
+    SetPosition( Position.Key, Position.ipos, 0 ) );
+END;
+
+ATTR fixfloat : int;
+RULE: FixLineParam ::= FixFloat LineParam COMPUTE
+  FixLineParam.fixfloat = FixFloat.fixfloat;
+END;
+RULE: FixFloat ::= 'Fix' COMPUTE
+  FixFloat.fixfloat = 1;
+END;
+RULE: FixFloat ::= 'Float' COMPUTE
+  FixFloat.fixfloat = 0;
+END;
+RULE: LineParam ::= 'Doppler' COMPUTE
+  LineParam.Key = INCLUDING (Line.Key, ConfigFile.Key);
+  LineParam.optsset = IF ( HasFixDoppler( LineParam.Key ),
+    message(ERROR, "Multiple Fix/Float Doppler definitions",0,COORDREF),
+	SetFixDoppler( LineParam.Key, INCLUDING FixLineParam.fixfloat, 0 ));
+END;
+RULE: LineParam ::= 'Lorentz' COMPUTE
+  LineParam.Key = INCLUDING (Line.Key, ConfigFile.Key);
+  LineParam.optsset = IF ( HasFixLorentz( LineParam.Key ),
+    message(ERROR, "Multiple Fix/Float Lorentz definitions",0,COORDREF),
+	SetFixLorentz( LineParam.Key, INCLUDING FixLineParam.fixfloat, 0 ));
+END;
+RULE: LineParam ::= 'FinePosition' COMPUTE
+  LineParam.Key = INCLUDING (Line.Key, ConfigFile.Key);
+  LineParam.optsset = IF ( HasFixFinePosition( LineParam.Key ),
+    message(ERROR, "Multiple Fix/Float FinePosition definitions",0,COORDREF),
+	SetFixFinePosition( LineParam.Key, INCLUDING FixLineParam.fixfloat, 0 ));
+END;
+
+ATTR fixdoppler, fixlorentz, fixfinepos : int;
+RULE: Line ::= Integer Integer FloatVal FloatVal FloatVal FloatVal
+               FloatVal FloatVal Integer LineOpts ';' COMPUTE
+  Line.Key = NewKey();
+  Line.mol   = Integer[1];
+  Line.iso   = Integer[2];
+  Line.nu    = FloatVal[1].FVal;
+  Line.S     = FloatVal[2].FVal;
+  Line.Gair  = FloatVal[3].FVal;
+  Line.E     = FloatVal[4].FVal;
+  Line.n     = FloatVal[5].FVal;
+  Line.delta = FloatVal[6].FVal;
+  Line.ierr  = Integer[3];
+  Line.ipos = GetPosition(Line.Key, 0 ) <- CONSTITUENTS Position.positionset;
+  Line.threshold = GetThreshold(Line.Key,
+                    GetThreshold( INCLUDING ConfigFile.Key, 0.0001 )) <-
+                      INCLUDING ConfigFile.optsset;
+  Line.fixdoppler = GetFixDoppler(Line.Key,
+                     GetFixDoppler( INCLUDING ConfigFile.Key, 0)) <-
+                      INCLUDING ConfigFile.optsset;
+  Line.fixlorentz = GetFixLorentz(Line.Key,
+                     GetFixLorentz( INCLUDING ConfigFile.Key, 0)) <-
+                      INCLUDING ConfigFile.optsset;
+  Line.fixfinepos = GetFixFinePosition(Line.Key,
+                     GetFixFinePosition( INCLUDING ConfigFile.Key, 1)) <-
+                      INCLUDING ConfigFile.optsset;
+END;
+
+CHAIN Absorb : func_abs_p;
+SYMBOL ConfigFile COMPUTE
+  CHAINSTART HEAD.Absorb = new_func_abs();
+  SetGlobal( absorb, TAIL.Absorb );
+END;
+SYMBOL Line COMPUTE
+  THIS.Absorb = abs_append( THIS.Absorb,
+    new_voigt(THIS.mol, THIS.iso, THIS.nu, THIS.S, THIS.Gair, THIS.E,
+				THIS.n, THIS.delta, THIS.ipos, THIS.threshold,
+				THIS.fixdoppler, THIS.fixlorentz, THIS.fixfinepos,
+        GetNparameter(THIS.Key,0)))
+        <- THIS.NpSet;
+END;
+
+RULE: opt_ppm ::=       COMPUTE opt_ppm.FVal = 1.; END;
+RULE: opt_ppm ::= '%'   COMPUTE opt_ppm.FVal = .01; END;
+RULE: opt_ppm ::= 'ppm' COMPUTE opt_ppm.FVal = .000001; END;
+RULE: Frequency ::=       COMPUTE Frequency.FVal = 1; END;
+RULE: Frequency ::= 'Hz'  COMPUTE Frequency.FVal = 1; END;
+RULE: Frequency ::= 'kHz' COMPUTE Frequency.FVal = 1000.; END;
+RULE: Frequency ::= 'MHz' COMPUTE Frequency.FVal = 100000.; END;
+RULE: opt_BaselineInput ::= '+' 'Input' COMPUTE SetGlobal( BaselineInput, 1 ); END;
+
+SYMBOL Lines INHERITS RootScope END;
+
+RULE: GroupName ::= Ident COMPUTE
+  GroupName.Sym = Ident;
+END;
+RULE: GroupSpec ::= 'Group' GroupName END;
+
+ATTR LineKey : DefTableKey;
+ATTR NpSet : VOID;
+SYMBOL GroupName INHERITS IdDefUse, GroupRefUnique COMPUTE
+  INH.LineKey = INCLUDING Line.Key;
+  IF (NOT (THIS.GroupRefUnique),
+    message (ERROR, "Group name is multiply defined",
+             0, COORDREF));
+  SYNT.NpSet = ORDER(
+    IF (THIS.DefCond,
+        SetNparameter(THIS.Key, Nparameter(StringTable(THIS.Sym)),0)),
+    SetNparameter(THIS.LineKey,GetNparameter(THIS.Key,0),0)
+  );
+END;
+
+SYMBOL Line COMPUTE
+  SYNT.NpSet = CONSTITUENTS GroupName.NpSet;
+END;

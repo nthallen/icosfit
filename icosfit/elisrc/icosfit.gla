@@ -1,0 +1,6 @@
+Integer : C_INTEGER
+Float : C_FLOAT
+Ident : $[a-zA-Z][a-zA-Z0-9_]* [mkidn]
+PathStr : $[a-zA-Z0-9/.][-a-zA-Z0-9/._]+ [mkidn]
+        C_COMMENT
+        AWK_COMMENT

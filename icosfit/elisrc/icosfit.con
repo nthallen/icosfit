@@ -1,0 +1,72 @@
+ConfigFile : ConfigLine+ .
+ConfigLine : ConfigCmd ';' .
+ConfigCmd :
+  Linedef /
+  'BackgroundRegion' '=' IntegerPair /
+  ScanNumRangeName '=' IntegerPair /
+  'Restart' 'at' Integer opt_preserve /
+  'nu0' '=' Integer /
+  'FitFunction' '=' Ident /
+  'MirrorLoss' '=' FloatVal opt_ppm /
+  'EtalonFSR' '=' FloatVal opt_wn /
+  'EtalonFeedback' '=' FloatVal /
+  'MinimumFringeSpacing' '=' FloatVal /
+  'DSFRLimits' '=' '[' FloatVal ',' FloatVal ']' /
+  'TolerableDrift' '=' FloatVal opt_wn /
+  'LineMargin' '=' FloatVal opt_wn /
+  'LeftLineMargin' '=' FloatVal opt_wn /
+  'RightLineMargin' '=' FloatVal opt_wn /
+  'LineMarginMultiplier' '=' FloatVal /
+  'LeftLineMarginMultiplier' '=' FloatVal /
+  'RightLineMarginMultiplier' '=' FloatVal /
+  'CavityLength' '=' FloatVal opt_cm /
+  'CavityFixedLength' '=' FloatVal opt_cm /
+  'Sigma' '=' FloatVal /
+  'QCLI_Wave' '=' Integer /
+  'TuningRate' '=' FloatVal opt_tunerate /
+  'SampleRate' '=' FloatVal Frequency /
+  'SkewTolerance' '=' FloatVal opt_ppm /
+  'ConvergenceStep' '=' FloatVal /
+  'ConvergenceCount' '=' Integer /
+  'MaxIterations' '=' Integer /
+  Threshold /
+  FixLineParam /
+  'Binary' / 'ASCII' /
+  'ICOSdir' '=' Path /
+  'PandTFile' '=' Path /
+  'PTFile' '=' Path /
+  'PTEFile' '=' Path PTE_opts /
+  'BaselineFile' '=' Path opt_BaselineInput /
+  'OutputDir' '=' Path /
+  'OutputFile' '=' Path /
+  'LogFile' '=' Path /
+  'MFile' '=' Path /
+  'QTdir' '=' Path /
+  'Verbosity' '=' Integer /
+  'N_Passes' '=' Integer .
+ScanNumRangeName : 'CPCI14Range' / 'ScanNumRange' .
+Path : PathStr / Ident .
+IntegerPair : '[' Integer ',' Integer ']' .
+opt_BaselineInput : / '+' 'Input' .
+opt_ppm : / '%' / 'ppm' .
+opt_wn : / 'cm-1' .
+opt_cm : / 'cm' .
+opt_preserve : / 'PreserveOutput' .
+opt_tunerate : / 'cm-1' '/' 'sample' .
+Frequency : / 'Hz' / 'kHz' / 'MHz' .
+Threshold : 'Threshold' '=' FloatVal .
+Position : 'Position' '=' Integer .
+Linedef : 'Lines' '=' '{' Lines '}' .
+Lines : / Lines Line .
+Line : Integer Integer FloatVal FloatVal FloatVal FloatVal
+                      FloatVal FloatVal Integer LineOpts ';' .
+LineOpts : / LineOpts ',' LineOpt .
+LineOpt : Threshold / Position / FixLineParam / GroupSpec .
+FixLineParam : FixFloat LineParam .
+FixFloat : 'Fix' / 'Float' .
+LineParam : 'Lorentz' / 'Doppler' / 'FinePosition' .
+FloatVal : Float / Integer / '-' FloatVal .
+GroupSpec : 'Group' Ident .
+PTE_opts : / PTE_opts PTE_opt .
+PTE_opt : '+' 'nu_F0' / '+' 'MirrorLoss' / '+' 'PowerParams' /
+  '+' 'Feedback' / '+' 'Placeholder' .

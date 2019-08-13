@@ -1,0 +1,739 @@
+Front end issues {
+  Allow specifying ringdown time instead of mirror loss
+}
+Float Mirror Loss {
+  Derivatives are calculated. Now need to work it
+  into the calculation.
+
+  May need mirror loss to be a function of position.
+}
+Basic Features of this program {
+  Non-linear least-squares fit using Marquardt-Levenberg method.
+  Partial derivatives calculated analytically via chain rules to
+    minimize computation. This is huge in the case that you have
+    a summation of functions of independent parameters, since you
+    do not need to recalculate terms for independent variables.
+  Ability to fix and float parameters programatically based on
+    threshold values.
+  Ability to constrain values
+    Current implementation of the constraint system is naive,
+    since it represents a perturbation of the gradient.
+    At each step, we move in the direction of the gradient.
+    If we clamp one component, it means we are moving not
+    along the gradient. Instead, we should move along the
+    gradient to the clamp point, then re-evaluate. If the
+    new gradient still points beyond the clamp point, the
+    parameter should be fixed at the clamp point, and the
+    function re-evaluated.
+}
+Super-cool total fitting solution {
+  A total fitting solution might call for several independent fits {
+    Rough Fit to etalon peaks
+    Full fit to full etalon
+    Full fit to lines
+  }
+  Fit Requires {
+    Fit Function (weighted sum of squares or differences between data and model)
+    Definition of free/fixed/constant parameters
+    Definition of raw data
+    Fit options, constraints, etc.
+  }
+  
+  In theory, the advantage of this program over what Matlab has to
+  offer is that it will derive and calculate the partial derivatives
+  much more efficiently.
+  
+  ICOSfit is a non-linear least-squares minimization program for
+  fitting experimental data to model functions. Matlab provides
+  routines for non-linear least-squares fitting, and there are no
+  doubt numerous other programs around that can be used for this
+  purpose, but ICOSfit was conceived from the start as a program
+  for fitting large quantities of experimental data with the goal
+  of performing the fits nearly as fast as the data can be taken.
+  
+  ICOSfit uses the Levenberg-Marquardt method as described in
+  Numerical Recipes. This method takes advantage of the fact that we
+  know the functional form of the model, so we can calculate partial
+  derivatives for each of the free parameters at each step. ICOSfit
+  takes this one step further by using chain rule computations with
+  implicit common-subexpression folding to optimize the calculation
+  of the partial derivatives for complex model functions.
+  
+  Fit Function {
+    Want to think of this as just a model equation for which we
+    provide appropriate inputs, but that may be naive.
+  }
+
+  Define functions LHS f(a,b,c) = expr;
+  Idents are defined to be parameters, inputs or constants {
+    parameters must have derivatives calculated, though they may or
+    may not be free.
+
+    Inputs may vary with each new fit, but are set and constant
+    within the fit.
+
+    Constants are fixed for all time, and hence can be folded.
+  }
+  Idents can be defined to be arrays as well. Implicit
+  independent parameters create implicit arrays.
+  
+  [ It makes sense to automatically fold together inputs and
+    constants before each fit where possible. ]
+
+  Parameters can be {
+    floating {
+      initialization expression to be evaluated {
+        before first fit
+        whenever the parameter is fixed
+        before each fit
+      }
+    }
+    fixed {
+      initialization expression to be evaluated {
+        once (constant)
+        before each fit (input)
+      }
+    }
+    reported or not reported
+  }
+
+  f(param a, input b, constant c) = g(a,b,c);
+  Idents appearing in the RHS are typed by:
+    Their declared type in the LHS (if present)
+    Their implicit type, based on nested declarations
+
+  If an ident appears on the RHS that is not declared in the LHS,
+  it is considered 'unknown'. It cannot be a constant, since
+  there is no way for it to be bound to an actual constant, so it
+  must be either an input or a param, hence the expression within
+  which it appears must be either an input or a param. If the
+  expression is passed as an input to a function, then the
+  unknown must be an input. The only ambiguity arises if the
+  unknown is passed as a param to a function, since it could
+  still be either an input or a param. I think the right choice
+  in this case is to assume the unknown is a param. A warning
+  could be issued, but I think it probably isn't warranted. If
+  the unknown should really be an input, it can be declared on
+  the LHS as such.
+  
+  Implicitly declared params are assumed to be independent unless
+  the invocation is identical, in which case they are assumed to
+  be identical:
+    param g = a + b;
+    f(param x, param y) = (x/g) * ( y/g + 5 );
+    
+  Here the definition of g implicitly defines two parameters a
+  and b. The fact that g is invoked twice identically means that
+  f's implied parameter list is f(x,y,g_a,g_b);
+    param g(const c) = a + b + c;
+    f = (x/g(1)) * (y/g(2) + 5);
+  Here the invocations of g are not identical, so the a's and b's
+  are assumed to be independent, and f's implied parameter list
+  is: f(f_x,f_y,g1_a,g1_b,g2_a,g2_b). To make them dependent, they
+  need to be explicitly promoted:
+    param g(param a, param b, const c) = a + b + c;
+    f = (x/g(a,b,1)) * (y/g(a,b,2) + 5);
+  yielding f( f_x, f_y, f_a, f_b);
+  
+  Here I've used the notation f_x to indicate that the parameter
+  is implicit and appeared in the RHS of the definition of f. In
+  practice, this needs to be a little more explicit in that the
+  parameter must be tied not only to the function definition but
+  to a specific invocation of that function (or the class of all
+  identical invocations). These could easily be globbed as
+    <func>:<invocation#>_<ident>
+  or perhaps <func><invocation#>:<ident> would be better, since
+  it is clear that you can't explicitly reference such a param.
+  An expression is an implicit function definition.
+  
+  f = a*b*c might be implemented as f = mul(mul(a,b),c) where
+  mul(x,y) is internally defined. mul(a,b) is designated mul:1.
+  and mul(mul(a,b),c) is designated mul:2.
+  
+  mul:1:x === f:1:a
+  mul:1:y === f:1:b
+  mul:2:x === mul:1
+  mul:2:y === f:1:c
+  f:1 === mul:2
+
+  df:1/df:1:a = dmul:2/df:1:a
+              = dmul:2/dmul:2:x * dmul:2:x/df:1:a +
+                dmul:2/dmul:2:y * dmul:2:y/df:1:a
+              = dmul:2/dmul:2:x * dmul:1/df:1:a +
+                dmul:2/dmul:2:y * df:1:c/df:1:a
+              = dmul:2/dmul:2:x *
+                (dmul:1/dmul:1:x*dmul:1:x/df:1:a +
+                 dmul:1/dmul:1:y*dmul:1:y/df:1:a)
+              = mul:2:y *
+                (mul:1:y * df:1:a/df:1:a +
+                 mul:1:x * df:1:b/df:1:a)
+              = f:1:c * (f:1:b * 1 + f:1:a * 0)
+              = f:1:c * f:1:b
+  df:1/dmul:1 * dmul:1/df:1:a + df:1/dc * dc/da = c*dg/da = c*b
+    
+  
+  The type of an expression is determined by its inputs.
+  If any input is a param, the expression is a param,
+  else if any input is an 'input', the expression is an input,
+  else if any input is 'unknown', the expression is unknown,
+  else it is a constant.
+  An input expression may be passed as a param argument.
+  A constant expression may be passed as an input or param
+  argument. An unknown may be passed as either an input or a
+  param.
+
+  As defined, a param may in fact be a function of several
+  params. We can identify all the params that a function depends
+  on.
+  
+  example:
+  ivoigt(param dnu, N, Ged, Gl, input nu, T, P, const nu0, s0, ...);
+  voigt(const nu0, S0, ... ) =
+    ivoigt( nu, N, Ged, Gl, T, P, nu0, s0, ... );
+  L1 = voigt( 1332.4325, 1e-25, ...);
+  L2 = voigt( 1332.4012, 1.3e-24, ...);
+  abs = L1 + L2;
+  base = basesvd('baseline.dat');
+  fit = skew(base,abs);
+  
+  Life cycle of a fit {
+    Definition of function and parameter conditions
+    while (input remains) {
+      define input values
+      evaluate all input expressions {
+        parameter initializations
+        parameter conditions
+      }
+      mrqcof
+      solve for da
+      evaluate param expressions pertaining to parameter conditions
+      ###
+    }
+  }
+}
+Index of kluges {
+  Input data is handled explicitly {
+    P and T are handed to adjust_params instead of being portably
+    paramatrized.
+  }
+  Reflectivity is being treated as a floating parameter, though
+  it is not.
+  I have taken pains to avoid modifying the Numerical Recipes
+  functions, but they should really be handled as object methods.
+}
+Tuning rate {
+  Shortcomings {
+    Etalon must be normalized to power before peaks are located,
+    or we see significant error at lower amplitude.
+    Also need to apply some sort of smoothing function after the
+    peaks are located.
+    May need a better peak-finding algorithm, since the etalon is
+    sometimes sinusoidal, sometimes more spiky.
+  }
+  ICOSfile::wndata->data(x) gives nu_F cm-1, the "Fringe wavenumber"
+    where nu_F(F0) = 0, where F0 is the sample number of Fringe zero.
+  ICOSfile::nu_F0 cm-1 is the wavenumber of Fringe zero.
+  voigt parameter changes {
+    S becomes N (Number Density, molecules/cm^3)
+    loc becomes dnu (deviation in wavenumber, cm-1)
+    Ged and Gl remain in cm-1
+    Ks = S_Hitran(P,T)*L/sqrt(pi)
+    S_Hitran(P,T) is the full correction for P and T and can be
+    calculated once per fit.
+    value = ((Ks * N)/Ged) * K((nu_F(x)+nu_F0+dnu-nu-delta*P/760)/Ged, Gl/Ged)
+
+    What quantity should be used when deciding whether to fix or free lines?
+    I have used S before, which was probably Ks*N, but perhaps I should
+    be using Ks*N/Ged. That's probably better in penalizing over-broad
+    lines.
+  }
+  line_start() line_end() need to report samples? {
+    Might be faster to do the calculation in wavenumber space
+    and do the final conversion back to samples
+  }
+
+}
+Absorption {
+  Iout = Iin * exp( -sigma * Nmolecules * L )
+  where sigma = S[hitran] * Voigt or something
+}
+Max_drift_per_second should be a configuration parameter? {
+  Make it TolerableDrift in cm-1.
+}
+
+Changes currently required when changing tuning rate {
+  Change minimum fringe spacing
+  Change dsfr range values if/when necessary
+  Change tolerable drift - probably not a tuning rate issue anymore
+}
+Added check for line
+Baseline {
+  Baseline via base_func does not work for warmup. Would be
+  interesting to see what warmup looks like.
+
+  Move the baseline pre-fit into
+  quadratic::adjust_params. Then stop using it.
+  Instead collect cleanest baselines from the
+  hysteresis run. Look at them in Matlab first
+  to verify that they are reasonable reproducible
+  and/or that they map onto each other with two
+  free parameters (scale and offset). Then
+  generate an average baseline scan. We read this
+  in during initialization and give it two free
+  parameters.
+}
+s_wn {
+  When there is no etalon, I'm thinking our best bet
+  is to stick to the sample as X-axis, and map the
+  line position to a tuning rate. Alternately, generate
+  a 2-D lookup table for wavenumber and sample. On
+  any given fit, we know the pairing of wavenumber and sample
+  for a number of lines. This should tie us to a
+  particular wavenumber/sample curve.
+}
+Etalon Results {
+  Next: 
+    rrfit {
+      Use color codes to indicate which lines are fixed or floating
+    }
+}
+Full language {
+  Define parameters as objects, then
+  pass parameter objects to function objects such
+  as voigt. Parameters can be:
+    Input Parameters {
+      Fixed with respect to the fitting algo, but
+      set before each fit and output with the other
+      parameters.
+    }
+    Totally fixed parameters {
+      Essentially constants that are set once.
+      Need not be output on each iteration, could
+      simply go into an output description.
+    }
+    Always fixed, but variable {
+      Never floated with respect to the fitting algo,
+      but set based on other parameters. Needs to be
+      output, but there is no need to output the
+      fixed/floating flag.
+    }
+    Always floating {
+      Needs to be output, but can skip the fixed/floating
+      flag.
+    }
+    Sometimes fixed {
+      Need to output param and flag
+    }
+}
+DBC {
+  Verify in adjust_params that they don't cross {
+    What if they do? Fix the smaller, unless it is already
+    fixed. Probably would need to munge the threshold
+    as well.
+  }
+}
+Implement a vector type {
+  class f_vector {
+    float *data;
+    int n_data;
+    int datasize;
+    int min_size;
+    f_vector( int min );
+    void clear();
+    void check( int size );
+    void append( float f );
+  }
+}
+
+Proper replay implementation {
+  There is still information in the voigt2
+  object that we're not keeping: S_thresh
+  S_thresh should probably be promoted to a fixed parameter and
+  hence included in the output.
+}
+
+Documentation {
+  funceval {
+    Provides basic support for a generalize non-linear
+    fit. A functional form is built up of func_evaluator
+    objects (specifically from objects inheriting from
+    func_evaluator). Primarily, a func_evaluator object
+    is charged with evaluating a multi-variable function
+    and its partial derivatives. Composites may do this
+    by first evaluating sub-expressions implemented as
+    child objects and then combining the results
+    appropriately.
+
+    I have extended this basic architecture with an
+    adjust_params() functionality that allows the objects
+    to have a say in how the free parameters are changed
+    during the fit process. I use this to make sure the
+    fit doesn't get wildly out of control. Currently, this
+    function is domain-specific in that it explicitly
+    passes two of the input parameters (T, P) for use
+    in evaluating the free parameters. This should be
+    changed someday, and would need to if the engine were
+    to be used in another domain.
+
+    The procedure by which the 'a' parameter indices are
+    assigned is fairly archane, somewhat ineligant, and
+    does not easily allow for parameters to be shared
+    by multiple objects. My hope is to rework this approach
+    by promoting the parameters to objects in their own
+    right, instead of binding them tightly to the specific
+    func_evaluator objects. A func_evaluator constructor
+    could take parameter objects as arguments, for example.
+
+    Currently, the subset of the input data that goes into
+    the fit is determined within the fit engine, but this
+    might best be done via a func_evaluator hook, since the
+    current technique is specific to this domain. The
+    pre-evaluation of the baseline fit should also be left
+    as a hook, allowing for changes for other domains.
+  }
+  Etalon {
+    How to best handle the etalon data.
+    The diagnostic etalon provides a measure of laser
+    frequency. As we scan the laser frequency, the
+    signal from the diagnostic etalon produces peaks
+    at a fixed period (~.021 cm-1). By picking the
+    peak locations, we can establish an x coordinate
+    that is linear with wavenumber. (I have not
+    yet committed to actually fitting against that
+    coordinate, since it is faster to assume dx
+    is constant. Instead I apply corrections based
+    on that coordinate after the fit.)
+
+    The question arises how best to locate the
+    fringe peaks. Simply looking for the local maximum gives
+    the peak location to no better than 1 sample, and since
+    we're working in a regime of about 14-20 samples/fringe,
+    1 sample represents >5% error. Samples/fringe enters
+    directly into the computation of mixing ratio, so this
+    is unacceptable. However, we can do better. Instead of
+    picking the maximum value, we can fit each peak to a
+    quadratic, and locate the peak of that fit quadratic.
+    This yields significantly better results, pinpointing
+    the peaks to within about .1 samples.
+
+    There is some concern regarding the error arising from the
+    fact that the power is varying signifcantly and non linearly
+    throughout the scan, and that this could introduce a phase
+    error when locating etalon peaks. Empirical evidence indicates
+    that this is not a concern, as the errors so introduced are
+    on the order of 1ppm. The absolute magnitude of error in
+    fringe location does not exceed .2 samples or 2e-4 cm-1
+    in our operating range. (see /home/CR/fit/ettest.m 020125)
+
+    Fitting to the quadratic involves selecting a window of
+    N=2*n+1 points and optimizing the equation y=a0+a2*(x-a1)^2
+    where a1 determines the peak position. This is equivalent
+    to y=b2*x^2+b1*x+b0 where a2==b2 and a1=-b1/(2*b2). If we
+    fit this equation on a sliding window of N points, we can
+    identify the etalon fringe peaks as locations where b2 is
+    negative and locally minimized. 
+
+    As a simplification, we can assume our x coordinate always
+    runs from -n to n. Then all terms involving only xi can be
+    calculated once (at compile time even). By doing the standard
+    chi-square minimization, setting the partial derivatives with
+    respect to b0, b1 and b2 to zero, we get:
+
+      b2 = (N*syx2 - sy*sx2)/(N*sx4-sx2*sx2)
+      b1 = syx/sx2
+      b0 = sy/N - b2*sx2/N
+      a1 = -b1/(2*b2)
+
+    In practice, we never need to calculate b0, and we only need
+    to calculate b1 after a point has been identified as a peak.
+    sx2, sx4 and N are all determined by the selection of n.
+    Calculation of b2 requires calculation of sy and syx2.
+    Calculation of a1 requires b1 which requires syx. Calculation
+    of syx could be deferred until after an optimal b2 has been
+    selected.
+
+    As each peak location is determined, a further sanity check
+    can be added. Empirical evidence indicates that the spacing
+    of the fringes should not vary from fringe to fringe by a
+    large amount. A conservative figure would be +/- 20%. If we
+    detect a radical change in fringe spacing, it is probably
+    an indication that we have located a double peak (and probably
+    have really noisy data). Since we have no experience yet running
+    this algorithm over large data sets, the prudent response under
+    those circumstances is probably to abort to examine the
+    troublesome data file. Later, we may be able to develop
+    heuristics to deal with the common failure modes. [ Another
+    reasonable response is to abandon this file and advance to
+    the next one, throwing an error into the log.]
+  }
+  Disappearing/Wandering Lines {
+    This non-linear fit is based on the basic Numerical
+    Recipies mrqmin algorithm. We have extended this algorithm
+    in several respects. We have taken advantage of the
+    fact that we are compiling under C++ to use object
+    syntax and thereby avoid passing many parameters to the
+    mrqmin and associated functions. The evaluation function
+    is a method of the fitdata object, for example, and the
+    pertinent parameter vectors are object attributes.
+
+    adjust_params() {
+      More fundamentally, we have introduced an adjust_params()
+      method which is invoked whenever the a vector is updated,
+      most notably within the mrqmin function. This gives the
+      program an opportunity to head off bad search behaviours
+      by recognizing non-sensical parameter values and taking
+      appropriate action to tune the parameters or restart
+      with different conditions.
+
+      adjust_params() is a virtual method of the func_evaluator class.
+      The base method recursively calls adjust_params() for
+      each child. [ Currently this method takes arguments for
+      pressure and temperature, but it would be nice if global
+      fixed parameters like that could be abstracted away.]
+
+      Nominally, each adjust_params() method is charged with
+      examining the parameters for its domain and determining
+      whether they are reasonable or not. How they react to
+      unreasonable parameters depends on the value of alamda.
+      In general, adjust_params can modify the parameters and/or
+      modify the ia vector to fix or float particular parameters.
+      adjust_params returns 0 when things are basically OK,
+      and 1 when more significant action is required.
+
+      If alamda != 0, parameters can be modified to bring them in
+      line. For line width, for example, we turn negative
+      parameters into values that are closer to zero than the
+      previous value. In this way, those parameters can get
+      driven toward zero, but don't yield negative values, which
+      don't make sense in our model.
+
+      When alamda == 0, we cannot allow the parameters to be
+      modified, since that would invalidate the termination
+      condition, which is based on the calculated chi^2.
+
+      adjust_params() can decide to fix or float a parameter.
+      In this case, the fitting process needs to be reinitialized,
+      since the number and identity of the free parameters will
+      have changed. This is when adjust_params must return a
+      non-zero value. If alamda != 0, a non-zero return will
+      trigger a rollback of all the parameters to their initial
+      values (initial for this invocation of fitdata::fit() that
+      is). If alamda == 0, the parameters are not rolled back,
+      but the fitting process is reinitialized and continued for
+      a few more steps at least. Based on this distinction, we
+      generally fix parameters while alamda != 0 as soon as we
+      sense danger, then free selected parameters when alamda==0
+      if the fit converges on a value that indicates that is
+      the appropriate action.
+
+      For example, we fix the line width and location whenever
+      the line strength gets small based on our experience that
+      with a small strength, the fit function is insensitive to
+      very large changes in width and location that are unwarranted
+      by the data. Under those circumstances, it generally makes
+      sense to roll back and restart the fit with those values
+      fixed appropriately, since they may have already begun to
+      wander. After a fit has converged, (and only then) we look
+      to see if any lines are now sufficiently strong to again
+      free their width and location. If so, we free those parameters
+      and continue the fit to allow the newly freed parameters to
+      be fine-tuned. In this case, we clearly do not want to roll
+      back to the previous values, since the previous line strength
+      very likely might cause these parameters to be re-fixed.
+
+      There is a check in the algorithm that prevents a parameter
+      from being freed twice during the same fit. This prevents an
+      endless loop where a parameter is repeatedly fixed and freed.
+      Clearly if the parameter is fixed after being freed, since
+      the parameters are then rolled back, there is no chance of
+      convergence. [ It might make sense to reset the 'initial'
+      values whenever the alamda==0 case is reached. That would at
+      the very least shorten the fit in the freed and re-fixed
+      case, since we would restore the values that were previously
+      accepted as convergent.]
+    }
+    humdev.c {
+      The func_line object has a 'disabled' parameter, which
+      is referenced in funcabs.cc and humdev.cc. Presently
+      a non-zero value indicates that this line is 'fixed',
+      i.e. its position and width are calculated, not fit,
+      but its strength is left free to allow us to detect
+      if and when it comes back on.
+
+      I need an additional case, when the line position is
+      outside the sample region. In this case, the line 
+      must clearly be 'disabled', but the strength must
+      also be fixed at 0, since it will otherwise be allowed
+      to vary significantly with little effect on the fit
+      function.
+
+      The determination of what is and is not in the sample
+      must be made at a higher level ###
+    }
+  }
+}
+
+Features {
+  All input parameters should go into parameter list {
+    In that way, adjust_params need not be passed specific
+    input parameters. Also replay can be simpler.
+    Major problem is that some parameters require different
+    resolution than float. time input is at least a long int,
+    or a double. float won't cut it. On the other hand,
+    it might be easier to fudge that by transforming time
+    into day number and time2d. That could be merged back
+    into unix time (or not)
+    Also need a strategy for communicating the index of
+    input parameters to all funcs. Some sort of global,
+    or can it be an object static (shared among all
+    func_evaluators?)
+  }
+  Generalize baseline implementation {
+    Baseline fitting should go into adjust_param
+    Support arbitrary baseline function {
+      Need to generalize the initialization step
+      That should also occur only once...
+    }
+    Implement cubic spline
+  }
+  Support vanishing/wandering lines {
+    Tune to fit {
+      Without etalon {
+        adjust_params first calls func_evaluator::adjust_params()
+        to process children. Then if alamda < 0, fit
+        location vs nu_prime for enabled lines. If no lines
+        are enabled, we do nothing, and make note of the
+        fact that we have not established a fit. If only
+        one line is enabled, we can update the offset, but
+        not the slope. Once the fit is established, we
+        go through and update the location of each disabled
+        line.
+        This could be done by interpolation instead, but
+        if we do a linear fit, we could probably report a
+        goodness of fit, which might be useful.
+      }
+      With etalon {
+        When the data is read in, note that etalon is present.
+        Smooth the etalon signal
+        locate peaks
+        establish (loc,fringeno) relation
+        store relation with func_abs
+        adjust_params as above, but calculate fit
+        using nu and loc -> fringeno, then update
+        disabled lines by mapping nu->fringeno->loc
+      }
+    }
+    First attempt {
+      Simply disabling small lines didn't work as
+      well as I might have liked, perhaps because I set
+      the threshold too low. In any event, I still got
+      significant wandering before I turned off the lines.
+      I think a better approach will be to lock position
+      and width on small lines but leave the strength as
+      a free parameter. Then if the line comes back, I
+      can release those parameters.
+
+      read in config file
+      fit_to_tune
+      "disable" all lines setting their widths and position based on tunefit
+      run fit
+      After the fit, check to see if any lines should be
+      re-enabled. If so, release their params and rerun
+      the fit
+
+      Maintain separate S_thresh for each line (although we
+      may well be able to use same value for all lines)
+      If S drops below S_thresh at any time, break out and
+      fix location and width. If S goes above S_thresh*2,
+      free those parameters and rollback to re-fit.
+
+      If no data has been loaded for a line, set S_thresh
+      to 0, since we cannot fix anything.
+    }
+    -Modify output to always output all params, not
+     just those being fit.
+    Implement {
+      func_abs::fit_to_tune();
+      func_abs::tune_position();
+      func_abs::tune_wn();
+    }
+    Read line definitions from file {
+      Must store many parameters with each line definition
+      Need:
+        isotope (needed to determine mol wt for doppler width)
+        wavenumber (needed for calculating mixing ratio, doppler width)
+        STdep (needed for calculating lorentz width)
+        Gair (needed for calculating lorentz width)
+        wavenumber' (needed for tracking vanishing lines)
+        starting position
+    }
+    First pass {
+      Initialize and fix location from file
+      Initialize and fix Gl and Ged by calculation
+      Initialize strength arbitrarily and float
+      Run fit
+      float location, Gl and Ged and rerun fit
+
+      This approach might be appropriate for restarting
+      if/when the fit goes sour: Back off to previous
+      successful fit values. Identify lines which have
+      strayed badly and reinitialize them, then refit.
+      If that doesn't work, then turn them off.
+    }
+    Add enable/disable functions to lines {
+      disable {
+        Sets Strength to zero and disables fitting
+        of params.
+      }
+    }
+    Before each fit {
+      Fit line location vs wavenumber for each enabled line {
+        If we have no active lines, keep old values
+        If we have only one active line, keep slope but
+        adjust offset ( or whatever is most reasonable
+        given the fit's complexity )
+      }
+      For each disabled line {
+        adjust position based on fit
+        Reinitialize other params to their init values
+      }
+      If any line's location is outside sample range,
+      disable it
+    }
+    During each fit {
+      If line strength falls below some threshold,
+      disable it.
+    }
+  }
+  
+  Experiment with variations on the functional form {
+    Try ringdown correction
+    Try extra-cavity water absorption
+  }
+  Front End {
+    HITRAN database
+    Start with HITRAN database subset
+    Specify which lines to fit and identify
+    position of at least 2
+    Write out the subset being fit to an output config file
+    Write all params to normal output (including fixed
+    params)
+    Before fitting, use previous fit values to adjust
+    positions of lines which were not fit, then re-enable
+    all the lines.
+    Config {
+      Line_name [position]
+      Starting_CPCI14# Ending_CPCI14#
+    }
+    HITRAN <filename> ;
+    baseline = quadratic;
+    absorption =
+      voigt2( <HITRAN_index> ) +
+      voigt2( <HITRAN_index> );
+    loss = 180e-6;
+    fit = baseline * ringdown( loss, absorption );
+    Last assignment is what gets fit
+    All non-constant parameters get output to the summary
+    Fit files can be specified...
+  }
+}

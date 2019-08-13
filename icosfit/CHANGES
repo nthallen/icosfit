@@ -1,0 +1,127 @@
+3.00: 01/17/2018
+  Rewrite to improve the ability to share parameters and incorporate
+  new functional forms. Created func_paramater class so functions
+  no longer need to know whether their arguments are functions or
+  parameters.
+
+2.25: 07/25/2017
+ Added support for additional isotopologues:
+ NO, NO2, OH, HCHO
+
+2.24: 09/10/2016
+ Added support for HCl
+
+2.23: 02/11/2015
+ Fixed rounding problem in ICOSfile::wn_sample
+ which caused assertion failures.
+ Added explicit failure on non-decreasing tuning rate.
+ Reconfigured handle_restart() to allow skipping problematic scans.
+ 
+2.22: 02/01/2015
+ Fixed bug in 64-bit versions where background was
+ miscalculated and scan data was shifted. Scan data
+ was shifted 5 samples left when scans were loaded.
+ If the BackgroundRegion was within 5 samples of laser
+ turn on, the zero baseline value was miscalculated,
+ resulting in elevated concentrations. The shifting
+ would also match features to the wrong tuning rate,
+ but we expect that difference to be offsetting and
+ much smaller than the zero baseline error.
+ 
+2.21: 12/03/2014
+ Added support for etalon feedback parameters.
+
+2.20: 05/14/2014
+ Added the ability to include scan-by-scan mirror loss in the
+ PTEfile format.
+
+2.19: 09/14/2013
+ Fixed bug introduced in 2.18 causing negative numbers in the
+ config file to be syntax errors. 
+
+2.18: 09/13/2013
+ Added support for additional columns in input PTEfiles.
+ Accept '-' characters in PATH strings.
+
+2.17: 08/22/2013
+ Changed output file format, eliminating unused output columns
+ and adding output columns required to reproduce rrfit-style
+ plots without verbose output. This allows verbosity to be set
+ to zero without losing information. Currently Matlab fit_view
+ can replace rrfit for Herriott cell data, but support for ICOS
+ can't be too far behind.
+ Fixed off-by-one error reading SSP files. Input scans had been
+ shifted right by one sample with a spurious point added as
+ the first sample.
+
+2.16: 07/01/2013
+ Added small hysteresis in line_check to avoid endless loop
+
+2.15: 06/05/2013
+ Table lookup for Q(T) to support molecules other than H2O
+ away from Tref = 296K.
+ Additional configuration parameters for fit convergence testing.
+
+2.14: 05/28/2013
+ Revert pressure shift changes originally introduced in version 2.10.
+
+2.13: 05/13/2013
+ Re-corrected the pressure dependence of line positions. Previous
+ versions had a sign error.
+
+2.12: 12/23/2012
+ Added Left and Right LineMargin options
+
+2.11: 12/21/2012
+ Added support for SSP format files
+
+2.10: 11/30/2012
+ Corrected the pressure shift calculation.
+ 
+2.9: 11/27/2012
+ Added CavityFixedLength and LineMarginMultiplier
+
+2.8: 11/09/2012
+ Removed most references to 'CPCI'
+
+2.7.2: 10/28/2012
+ Moved to arp-icosfit project
+ Added several isotopologues of CO2 needed for the Harvard
+ Carbon Isotopes Instrument.
+ 
+2.7.1: 9/11/2011
+ Fixed minor printf format problems revealed by -Wall
+ Added CFLAGS to generated Makefile to ensure use of -O2
+
+2.7: 6/15/2011
+ Resolved "const char" issues
+
+2.6:
+ Added additional values to get_molwt() for Isotopes of
+ CO2, N2O and CH4.
+
+2.5:
+ Support for BaselineFile = PATH + Input; for HHH
+
+2.4:
+ ptread.c Support for empty zero region
+
+2.3a:
+ funceval.c: get_molwt() Added molecular weights for CO2 and NO2
+
+2.3:
+ Added funcnoskew.c for Herriott cell absorption,
+  triggered by definition of N_Passes > 0
+ Added support for running on big-endian
+  architectures
+ Added annotated parameter dump on failure
+
+2.2 incorporates support for the baseline perturbation input file.
+  2.2a fixes a problem with the icos_getrun script under cygwin
+  2.2b Added retrieval of quickcpci tgz to icos_get*
+  2.2c Added nu0 keyword to configuration file
+  2.2d Fixes a problem when fitting against a fixed nu_F0
+  2.2e Abbreviates stdoutput and adds some useful information
+       to ICOSconfig.m
+  2.2f Add --RestartAt commandline option
+  2.2g Changed baseline file format for non-polynomial fits

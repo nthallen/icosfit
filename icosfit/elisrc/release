@@ -1,0 +1,22 @@
+#! /bin/bash
+function nl_error {
+  echo "release: $*" >&2
+  exit 1
+}
+rev=$1
+[ -n "$rev" ] || nl_error "Please specify version number"
+dir="icosfit-$rev"
+ofile="icosfit_src_$rev.tgz"
+[ -e "$dir" ] && nl_error Directory $dir already exists
+mkdir $dir || nl_error mkdir $dir failed
+eli "front.specs +(%flags) :source > $dir" || nl_error eli failed
+[ -f $dir/Makefile ] || nl_error Could not locate $dir/Makefile
+chmod +w $dir/Makefile
+perl -i.bak -pe 's/front\.exe/icosfit\.exe/; s/^(LIBS\t.*)$/$1\nCFLAGS\t= -Wall -O2/' $dir/Makefile
+cat Makefile.tail >>$dir/Makefile
+rm $dir/Makefile.bak
+mkdir $dir/QT
+cp ../QT/*.dat $dir/QT
+tar -czf $ofile $dir
+rm -rf $dir
+

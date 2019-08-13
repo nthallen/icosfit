@@ -1,0 +1,21 @@
+#! /bin/bash
+function nl_error {
+  echo "release-bin: $*" >&2
+  exit 1
+}
+rev=$1
+[ -z "$rev" ] && nl_error "Usage: release-bin <release-number>"
+ofile="icosfit_$rev.tgz"
+tar -czf $ofile -C / -T - <<EOF
+usr/local/bin/icosfit.exe
+usr/local/share/QT
+EOF
+
+# These files no longer appear to be relevant.
+# The first two are ICOS-specific.
+# nortlib here is a static library, so it is not required in a runtime.
+# /usr/local/bin/cpci_get
+# /usr/local/bin/icos_getrun
+# /usr/local/lib/libnort.a
+# /usr/local/lib/libnort.la
+

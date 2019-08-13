@@ -1,0 +1,40 @@
+fitline todo: {
+  -Support different linesets via different .mat files
+  -Use suffix in mat file name and in default fitline filename
+   and output dir
+  -Region create bug {
+    With changes extant, answer 'no' to save
+    New region was created, but the wrong region was selected
+  }
+}
+fitline callbacks:
+  deletefig - called when fitline window is closed. Closes Regions window if open
+  defineregions,f,Regions,CurRegion - Called from Regions on 'Apply' or 'Save'
+  load - Just return the line_obj. Used by matchline6
+  enable - Enable all lines
+  disable - Disable all lines
+  te - Enable or disable individual line threshold. Add or delete
+     the corresponding Threshold field
+  save - Save line_obj
+  editregions - Create Regions figure
+  reg_select - called when selecting new region in Regions
+  reg_click - ButtonDownFcn for the Regions Axes
+  reg_create - create a new region
+  reg_delete - delete the current region
+  reg_reset - restore old values
+  reg_save - save changes to current region
+  reg_exit - hide Regions window
+
+Regions Object
+
+ro.parent fitline figure
+ro.Regions(i).name string
+ro.Regions(i).cpci 1x2 or []
+ro.CurRegion scalar index into Regions
+ro.data.cpci
+ro.data.P
+ro.data.dT
+ro.ax(3)  Axis Handles
+ro.cpci 1x2 current limits
+ro.lines 3x2 of line object handles
+ro.modified set non-zero if the cursor is changed

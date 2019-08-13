@@ -1,0 +1,11 @@
+Threshold : double [Has];
+Position : int [Has];
+FixDoppler : int [Has];
+FixLorentz : int [Has];
+FixFinePosition : int [Has];
+Nparameter : func_parameter_p; "funceval.h"
+
+int Has (DefTableKey key) {
+  return(PRESENT);
+}
+

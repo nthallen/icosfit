@@ -1,0 +1,2 @@
+if ( ErrorCount[ERROR] == 0 && ErrorCount[DEADLY] == 0 )
+  ICOS_main();

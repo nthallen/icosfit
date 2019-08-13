@@ -1,0 +1,9 @@
+BINDIR=/usr/local/bin
+BINTGT=icosfit.exe
+QTDIR=/usr/local/share/QT
+.PHONY : install
+
+install : icosfit.exe
+	cp -v icosfit.exe $(BINDIR)/$(BINTGT)
+	[ -d $(QTDIR) ] || mkdir $(QTDIR)
+	cp -rnv ../QT/*.dat $(QTDIR)
