@@ -2,7 +2,8 @@
 #                        http://www.insightsoftwareconsortium.org/wiki/index.php/CMake_Tutorial
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(LEVMAR)
+cmake_policy(SET CMP0048 NEW)
+PROJECT(LEVMAR VERSION 2.6)
 
 SET(HAVE_LAPACK 1 CACHE BOOL "Do we have LAPACK/BLAS?")
 # the directory where the lapack/blas/f2c libraries reside
