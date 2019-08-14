@@ -1,0 +1,21 @@
+%flags == <<
++cc='g++'
++lib=m
++cc_flags='-Wall'
++cc_flags='-I@PWD@/../../levmar-2.6'
++lib=levmar +lib_sp=(@LEVMARBUILDDIR@)
++lib=lapack
++lib=blas
+
+%dflags == <<
++cc='g++'
++lib=m
++cc_flags='-g'
++cc_flags='-I@PWD@/../../levmar-2.6'
++lib=levmar +lib_sp=(@LEVMARBUILDDIR@)
++lib=lapack
++lib=blas
+
+%help ! == %target :help
+%target == icosfit.specs +(%flags) :exe
+%dtarget == icosfit.specs +(%dflags) +debug :exe

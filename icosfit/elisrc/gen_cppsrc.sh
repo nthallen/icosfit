@@ -39,6 +39,6 @@ cat <<EOF >>CMakeLists.txt
 add_executable(icosfit \${FITSRCS})
 set_source_files_properties(\${FITSRCS} PROPERTIES LANGUAGE CXX )
 target_link_libraries(icosfit levmar lapack blas)
-target_include_directories(icosfit PRIVATE ${icosfit_SOURCE_DIR}/levmar-2.6)
-install(icosfit RUNTIME DESTINATION bin)
+target_include_directories(icosfit PRIVATE \${icosfit_SOURCE_DIR}/levmar-2.6)
+install(TARGETS icosfit RUNTIME DESTINATION bin)
 EOF
