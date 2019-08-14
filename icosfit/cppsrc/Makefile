@@ -1,9 +1,10 @@
 SHELL   = /bin/sh
 
 CC	= g++
-CFLAGS	= -I/home/nort/SW/le-icosfit/git/levmar-2.6 -g
-LIBS	= -L/home/nort/SW/le-icosfit/build-levmar -lm -llevmar \
-	-llapack -lblas
+CFLAGS	= -g \
+	-I../../levmar-2.6
+LIBS	= -L../../../build-levmar -lm -llevmar -llapack \
+	-lblas
 
 OBJS	= driver.o clpintf.o clp.o csm.o obstack.o obsave.o deftbl.o \
 	err.o source.o coord.o pdl_gen.o VoidPtrList.o clplib.o \
