@@ -133,7 +133,7 @@ int PTfile::readline() {
         RORIS = int(data[6]);
         RateS = 0;
       }
-      if ( T < 249. ) T = 273.15 + GlobalData.DefaultTemp;
+      // if ( T < 249. ) T = 273.15 + GlobalData.DefaultTemp;
       if ( ScanNum != next_ScanNum ) {
         if ( RORIS == GlobalData.QCLI_Wave ) {
           ScanNum = (ScanNum==0) ? next_ScanNum :

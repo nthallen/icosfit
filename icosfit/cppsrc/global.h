@@ -25,7 +25,7 @@ class GlobalData_t {
     ICOS_Float Sigma;
     ICOS_Float SampleRate;
     ICOS_Float SkewTolerance;
-    ICOS_Float DefaultTemp;
+    // ICOS_Float DefaultTemp;
     unsigned short QCLI_Wave;
     int binary;
     const char *ICOSdir;
@@ -36,7 +36,6 @@ class GlobalData_t {
     int PTE_PowerParams_col;
     int PTE_Feedback_col;
     const char *BaselineFile;
-    const char *LineFile;
     const char *OutputDir;
     const char *OutputFile;
     const char *LogFile;

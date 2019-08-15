@@ -24,7 +24,7 @@ GlobalData_t::GlobalData_t() {
   QCLI_Wave = 0;
   SampleRate = 0.;
   SkewTolerance = 1e-5;
-  DefaultTemp = 22.56;
+  // DefaultTemp = 22.56;
   binary = 1;
   ICOSdir = "Scans";
   PTFile = "PTE.txt";
@@ -35,12 +35,11 @@ GlobalData_t::GlobalData_t() {
   PTE_Feedback_col = 0;
   BaselineFile = 0;
   BaselineInput = 0;
-  LineFile = "fitline.dat";
   OutputDir = "ICOSout";
   OutputFile = "ICOSsum.dat";
   LogFile = "ICOSfit.log";
   MFile = "ICOSconfig.m";
-  QTdir = "/usr/local/share/QT";
+  QTdir = QTDIR_DEFAULT_STR;
   Verbosity = 0;
   absorb = 0;
   N_Passes = 0;
