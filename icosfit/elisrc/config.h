@@ -70,4 +70,11 @@ typedef float ICOS_Float;
   #define fread_swap32 fread
 #endif
 
+#ifndef QTDIR_DEFAULT
+#define QTDIR_DEFAULT /usr/local/share/icosfit/QT
+#endif
+
+#define QTSTR(x) #x
+#define QTDIR_DEFAULT_STR QTSTR(QTDIR_DEFAULT)
+
 #endif
