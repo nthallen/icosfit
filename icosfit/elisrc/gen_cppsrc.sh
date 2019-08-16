@@ -36,11 +36,13 @@ for src in *.c; do
 done
 echo "$line)" >>CMakeLists.txt
 
-cat <<EOF >>CMakeLists.txt    
+cat <<EOF >>CMakeLists.txt
 
 add_executable(icosfit \${FITSRCS})
 set_source_files_properties(\${FITSRCS} PROPERTIES LANGUAGE CXX )
 target_link_libraries(icosfit levmar lapack blas)
 target_include_directories(icosfit PRIVATE \${icosfit_SOURCE_DIR}/levmar-2.6)
 install(TARGETS icosfit RUNTIME DESTINATION bin)
+set(QTDIR_DEFAULT ${CMAKE_INSTALL_PREFIX}/share/icosfit/Matlab/ICOSfit/QT CACHE PATH "Path to default QTdir location")
+add_compile_definitions( QTDIR_DEFAULT=${QTDIR_DEFAULT} )
 EOF
