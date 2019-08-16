@@ -71,7 +71,7 @@ typedef float ICOS_Float;
 #endif
 
 #ifndef QTDIR_DEFAULT
-#define QTDIR_DEFAULT /usr/local/share/icosfit/QT
+#define QTDIR_DEFAULT /usr/local/share/icosfit/Matlab/ICOSfit/QT
 #endif
 
 #define QTSTR(x) #x

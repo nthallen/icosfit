@@ -212,12 +212,21 @@ visitmap.o:	visitmap.c visitprocs.h visitmap.h HEAD.h node.h treecon.h \
 CScope.o:	CScope.c CScope.h envmod.h deftbl.h obstack.h BitSet.h \
 		eliproto.h
 
-BINDIR=/usr/local/bin
+PREFIX=/usr/local
+BINDIR=$(PREFIX)/bin
 BINTGT=icosfit.exe
-QTDIR=/usr/local/share/QT
+DATADIR=$(PREFIX)/share/icosfit
+MLSRC=../../Matlab
+MLDEST=$(DATADIR)/Matlab
+QTDIR=$(MLDEST)/ICOSfit/QT
+CFLAGS += -DQTDIR_DEFAULT=$(QTDIR)
 .PHONY : install
 
 install : icosfit.exe
-	cp -v icosfit.exe $(BINDIR)/$(BINTGT)
-	[ -d $(QTDIR) ] || mkdir $(QTDIR)
-	cp -rnv ../QT/*.dat $(QTDIR)
+	[ -d $(DESTDIR)$(BINDIR) ] || mkdir -p $(DESTDIR)$(BINDIR)
+	cp -v icosfit.exe $(DESTDIR)$(BINDIR)/$(BINTGT)
+	[ -d $(DESTDIR)$(MLDEST)/ICOSfit/QT ] || mkdir -p $(DESTDIR)$(MLDEST)/ICOSfit/QT
+	cp $(MLSRC)/ICOSfit/*.m $(MLSRC)/ICOSfit/*.fig $(DESTDIR)$(MLDEST)/ICOSfit
+	cp $(MLSRC)/ICOSfit/QT/*.dat $(DESTDIR)$(QTDIR)
+	[ -d $(DESTDIR)$(MLDEST)/arp-das ] || mkdir $(DESTDIR)$(MLDEST)/arp-das
+	dp $(MLSRC)/arp-das/*.m $(DESTDIR)$(MLDEST)/arp-das
