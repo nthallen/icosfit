@@ -12,6 +12,7 @@
 +lib=m
 +cc_flags='-g'
 +cc_flags='-I@PWD@/../../levmar-2.6'
++cc_flags='-DQTDIR_DEFAULT=@QTDIR@'
 +lib=levmar +lib_sp=(@LEVMARBUILDDIR@)
 +lib=lapack
 +lib=blas

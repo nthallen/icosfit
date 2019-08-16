@@ -3,24 +3,24 @@ project(icosfit_matlab VERSION 4.0.0)
 
 install(FILES
   allan_var_plot.m archiveICOSdata.m average_spectra.m basefile.m 
-  basefilefromresid.m combineICOSout.m combineICOSoutline.m Contents.m 
-  diagnose.m dispfix.m edit_cell_cfg.fig edit_cell_cfg.m 
-  edit_ICOSfit_cfg.fig edit_ICOSfit_cfg.m eng2PT.m etln_evalJ.m 
-  etln_fit.fig etln_fit.m etlnfb_evalJ.m feedback_analysis.m 
-  find_scans_dir.m fit_decay.m fit_view.m fitfringe.m fitlin.m 
-  fitline.m get_line_position.m get_nu.m get_sigma_from_fit.m 
-  get_waveform_params.m getrunaxis.m humcheck.m humdev.m humlik.m 
-  icos_resample.m ICOS_setup.m ICOS_survey.m icosfit_recalculate.m 
-  ICOSsetup.m isovals.m laser_drift.m listscans.m load_cell_cfg.m 
-  load_ICOSfit_cfg.m load_mat_files.m load_QT.m load_waves.m loadbin.m 
-  loadscanhdrs.m loadscans.m logchi.m matchline.m mixlines.m 
-  mixlines_multi.m mlf_index.m mlf_mkdir.m mlf_path.m peakfind.m 
-  PTE_gen.m PTE_hack.m PTEfixskips.m PTEfixtemp.m PTEtrackline.m 
-  readetlnbase.m rewrite_scans.m ringview.m rrcompare.m rrfit.m 
-  rrresid.m save_waveform_params.m scan_viewer.fig scan_viewer.m 
-  scanload.m scantime.m scanview.m skew_matrix.m trackline.m voigt3.m 
+  basefilefromresid.m combineICOSout.m Contents.m diagnose.m dispfix.m 
+  edit_cell_cfg.fig edit_cell_cfg.m edit_ICOSfit_cfg.fig 
+  edit_ICOSfit_cfg.m eng2PT.m etln_evalJ.m etln_fit.fig etln_fit.m 
+  etlnfb_evalJ.m feedback_analysis.m find_scans_dir.m fit_decay.m 
+  fit_view.m fitfringe.m fitlin.m fitline.m get_line_position.m 
+  get_nu.m get_sigma_from_fit.m get_waveform_params.m getrunaxis.m 
+  humcheck.m humdev.m humlik.m icos_resample.m ICOS_setup.m 
+  ICOS_survey.m icosfit_recalculate.m ICOSsetup.m isovals.m 
+  laser_drift.m listscans.m load_cell_cfg.m load_ICOSfit_cfg.m 
+  load_mat_files.m load_QT.m load_waves.m loadbin.m loadscanhdrs.m 
+  loadscans.m logchi.m matchline.m mixlines.m mixlines_multi.m 
+  mlf_index.m mlf_mkdir.m mlf_path.m peakfind.m PTE_gen.m PTE_hack.m 
+  PTEfixskips.m PTEfixtemp.m PTEtrackline.m readetlnbase.m 
+  rewrite_scans.m ringview.m rrcompare.m rrfit.m rrresid.m 
+  save_waveform_params.m scan_viewer.fig scan_viewer.m scanload.m 
+  scantime.m scanview.m skew_matrix.m trackline.m voigt3.m 
   waves_editor.fig waves_editor.m waves_used.m writebase.m writebin.m 
   writeetlnbase.m writeskewbase.m 
   DESTINATION share/icosfit/Matlab/ICOSfit)
 
-add_subdirectory(Matlab/ICOSfit/QT)
+add_subdirectory(QT)

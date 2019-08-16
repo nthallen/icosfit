@@ -7,7 +7,7 @@ LIBLEVMAR = $(LEVMARBUILDDIR)/liblevmar.a
 all : Odinfile $(LIBLEVMAR)
 	eli '%dtarget >icosfit.exe'
 Odinfile : Odinfile.in Makefile
-	perl -pe "s,\@PWD\@,$(PWD),; s,\@LEVMARBUILDDIR\@,$(LEVMARBUILDDIR)," Odinfile.in >Odinfile
+	perl -pe "s,\@PWD\@,$(PWD),; s,\@LEVMARBUILDDIR\@,$(LEVMARBUILDDIR),; s,\@QTDIR\@,$(QTDIR)," Odinfile.in >Odinfile
 test :
 	eli '%dtarget >/usr/local/bin/icosfit_test.exe'
 cppsrc :
@@ -19,7 +19,7 @@ $(LIBLEVMAR) : $(LEVMARBUILDDIR)/Makefile
 $(LEVMARBUILDDIR)/Makefile :
 	@[ -d $(LEVMARBUILDDIR) ] || mkdir $(LEVMARBUILDDIR)
 	cd $(LEVMARBUILDDIR) && \
-	cmake $(PWD)/../../levmar-2.6 -DBUILD_DEMO=FALSE \
+	cmake ~-/../../levmar-2.6 -DBUILD_DEMO=FALSE \
 	-DCMAKE_LEGACY_CYGWIN_WIN32=0
 
 include Makefile.tail

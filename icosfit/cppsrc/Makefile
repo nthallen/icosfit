@@ -2,7 +2,8 @@ SHELL   = /bin/sh
 
 CC	= g++
 CFLAGS	= -g \
-	-I../../levmar-2.6
+	-I../../levmar-2.6 \
+	-DQTDIR_DEFAULT=/usr/share/icosfit/Matlab/ICOSfit/QT
 LIBS	= -L../../../build-levmar -lm -llevmar -llapack \
 	-lblas
 
@@ -224,9 +225,9 @@ CFLAGS += -DQTDIR_DEFAULT=$(QTDIR)
 
 install : icosfit.exe
 	[ -d $(DESTDIR)$(BINDIR) ] || mkdir -p $(DESTDIR)$(BINDIR)
-	cp -v icosfit.exe $(DESTDIR)$(BINDIR)/$(BINTGT)
+	cp -vf icosfit.exe $(DESTDIR)$(BINDIR)/$(BINTGT)
 	[ -d $(DESTDIR)$(MLDEST)/ICOSfit/QT ] || mkdir -p $(DESTDIR)$(MLDEST)/ICOSfit/QT
 	cp $(MLSRC)/ICOSfit/*.m $(MLSRC)/ICOSfit/*.fig $(DESTDIR)$(MLDEST)/ICOSfit
 	cp $(MLSRC)/ICOSfit/QT/*.dat $(DESTDIR)$(QTDIR)
 	[ -d $(DESTDIR)$(MLDEST)/arp-das ] || mkdir $(DESTDIR)$(MLDEST)/arp-das
-	dp $(MLSRC)/arp-das/*.m $(DESTDIR)$(MLDEST)/arp-das
+	cp $(MLSRC)/arp-das/*.m $(DESTDIR)$(MLDEST)/arp-das
