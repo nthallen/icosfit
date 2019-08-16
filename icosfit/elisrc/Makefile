@@ -1,5 +1,6 @@
 CC      = g++
-CFLAGS  = -Wall -O2
+CFLAGS  = -Wall -DQTDIR_DEFAULT=$(QTDIR)
+
 LIBS    = -L/usr/local/lib -lm
 LEVMARBUILDDIR = $(PWD)/../../../build-levmar
 LIBLEVMAR = $(LEVMARBUILDDIR)/liblevmar.a

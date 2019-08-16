@@ -45,7 +45,11 @@ typedef float ICOS_Float;
 #define FMT_G "g"
 #endif
 
-#include <endian.h>
+#if __APPLE__
+  #include <machine/endian.h>
+#else
+  #include <endian.h>
+#endif
 #if BYTE_ORDER == BIG_ENDIAN
   #define USE_BIG_ENDIAN
   #include <stdio.h>

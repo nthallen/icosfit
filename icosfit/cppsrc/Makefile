@@ -3,7 +3,7 @@ SHELL   = /bin/sh
 CC	= g++
 CFLAGS	= -g \
 	-I../../levmar-2.6 \
-	-DQTDIR_DEFAULT=/usr/share/icosfit/Matlab/ICOSfit/QT
+	-DQTDIR_DEFAULT=$(QTDIR)
 LIBS	= -L../../../build-levmar -lm -llevmar -llapack \
 	-lblas
 
@@ -220,7 +220,6 @@ DATADIR=$(PREFIX)/share/icosfit
 MLSRC=../../Matlab
 MLDEST=$(DATADIR)/Matlab
 QTDIR=$(MLDEST)/ICOSfit/QT
-CFLAGS += -DQTDIR_DEFAULT=$(QTDIR)
 .PHONY : install
 
 install : icosfit.exe

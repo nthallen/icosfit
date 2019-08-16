@@ -10,7 +10,7 @@ mkdir $dir || nl_error mkdir $dir failed
 eli "icosfit.specs +(%dflags) :source > $dir" || nl_error eli failed
 [ -f $dir/Makefile ] || nl_error Could not locate $dir/Makefile
 chmod +w $dir/Makefile
-perl -i -pe 's,-I[^\s]*,-I../../levmar-2.6,; s,-L[^\s]*,-L../../../build-levmar,' $dir/Makefile
+perl -i -pe 's,-I[^\s]*,-I../../levmar-2.6,; s,-L[^\s]*,-L../../../build-levmar,; s/-DQTDIR_DEFAULT=[^\s]*/-DQTDIR_DEFAULT=\$(QTDIR)/' $dir/Makefile
 rm -f $dir/Makefile.bak
 cat Makefile.tail >>$dir/Makefile
 cd $dir

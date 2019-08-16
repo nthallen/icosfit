@@ -5,7 +5,6 @@ DATADIR=$(PREFIX)/share/icosfit
 MLSRC=../../Matlab
 MLDEST=$(DATADIR)/Matlab
 QTDIR=$(MLDEST)/ICOSfit/QT
-CFLAGS += -DQTDIR_DEFAULT=$(QTDIR)
 .PHONY : install
 
 install : icosfit.exe
