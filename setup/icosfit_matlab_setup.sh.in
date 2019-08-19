@@ -4,7 +4,7 @@ function nl_error {
   exit 1
 }
 
-ICOSFIT_MATLAB_DIR=@CMAKE_INSTALL_PREFIX@/icosfit/Matlab
+ICOSFIT_MATLAB_DIR=@CMAKE_INSTALL_PREFIX@/share/icosfit/Matlab
 
 echo "Running icosfit_matlab_setup.sh"
 ofile=icosfit_matlab_setup.m
@@ -12,7 +12,7 @@ OS=`uname -s`
 use_cygpath=no
 case "$OS" in
   CYGWIN_NT*) machine=Cygwin;;
-  Linux) machine=Linus;;
+  Linux) machine=Linux;;
   Darwin) machine=Mac;;
   *) nl_error "Unable to identify operating system: uname -s said '$OS'";;
 esac
