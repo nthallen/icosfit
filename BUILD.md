@@ -6,6 +6,7 @@ Building icosfit requires the following:
   * Gnu Make
   * cmake
   * liblapack and libblas
+
 cmake is not a hard requirement, although the author has not actually tried
 to build liblevmar without it. Levmar requires liblapack and libblas, but
 can be configured to build without them at a significant loss of performance.
@@ -13,7 +14,7 @@ can be configured to build without them at a significant loss of performance.
 All of the following options start in the root directory of the source tree.
 
 ## Preferred build method:
-Use cmake to build entire project using icosfit/cppsrc directory
+### Use cmake to build entire project using icosfit/cppsrc directory
   * mkdir ../build-icosfit
   * cd ../build-icosfit
   * cmake ../git  [ -DQTDIR_DEFAULT= \<path\> ] [ -DCMAKE_INSTALL_PREFIX=/usr/local ] &&
@@ -23,10 +24,11 @@ Use cmake to build entire project using icosfit/cppsrc directory
 ## Build using make in cppsrc:
 First need to build the levmar library in ../build-levmar. If levmar is built elsewhere
 (like in the source directory), you must pass LEVMARBUILDDIR=\<path\> to make, where
-LEVMARBUILDDIR is the path relative to cppsrc. All the make options can be given for
-both build and install, but QTDIR is only relevant during build while PREFIX and DESTDIR
-are only relevant during install. Not specifying QTDIR during install is a risk only if
-changes will cause rebuilding before install.
+LEVMARBUILDDIR is the path relative to cppsrc.
+
+All the make options can be given for both build and install, but QTDIR is only relevant
+during build while PREFIX and DESTDIR are only relevant during install. Not specifying
+QTDIR during install is a risk only if changes will cause rebuilding before install.
   * cd icosfit/cppsrc
   * make \<options\>
   * make install \<options\>
