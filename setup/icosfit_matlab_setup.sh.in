@@ -1,0 +1,102 @@
+#! /bin/bash
+function nl_error {
+  echo "icosfit_matlab_setup: $*" >&2
+  exit 1
+}
+
+ICOSFIT_MATLAB_DIR=@CMAKE_INSTALL_PREFIX@/icosfit/Matlab
+
+echo "Running icosfit_matlab_setup.sh"
+ofile=icosfit_matlab_setup.m
+OS=`uname -s`
+use_cygpath=no
+case "$OS" in
+  CYGWIN_NT*) machine=Cygwin;;
+  Linux) machine=Linus;;
+  Darwin) machine=Mac;;
+  *) nl_error "Unable to identify operating system: uname -s said '$OS'";;
+esac
+
+for dir in '' /ICOSfit /arp-das; do
+  [ -d $ICOSFIT_MATLAB_DIR$dir ] ||
+    nl_error "Directory missing from installation: $ICOSFIT_MATLAB_DIR$dir"
+done
+
+touch $ofile
+if [ ! -f $ofile ]; then
+  echo "ERROR: Unable to create Matlab setup script in the current directory."
+  echo "You should cd to a writable directory and then rerun this script"
+  fp=$0
+  case "$fp" in
+    /*) :;;
+    ./*) fp=$PWD/${0#./};;
+    *) fp=$PWD/$0;;
+  esac
+  echo "using the full path: $fp"
+fi
+
+# wrap_path path
+# wrap_path path varname
+# Assigns wrapped path to global variable path_wrapped
+# If varname is provided, also copies the wrapped path to the specified variable
+function wrap_path {
+  path=$1
+  varname=$2
+  case "$machine" in
+    Cygwin) path_wrapped="`cygpath -w $path`";;
+    *) path_wrapped=$path;;
+  esac
+  [ -n "$varname" ] && eval $varname='$path_wrapped'
+}
+
+wrap_path $ICOSFIT_MATLAB_DIR/ICOSfit ICOSfit_wrap_path
+wrap_path $ICOSFIT_MATLAB_DIR/arp-das arp_das_wrap_path
+
+cat >icosfit_matlab_setup.m <<EOF  
+% Matlab Setup Script for ICOSfit
+% Adds an ICOSfit directory and optionally an arp-das directory
+% to the Matlab path.
+fprintf(1, 'Setting Matlab Path for ICOSfit\n');
+icosfit_path = '$ICOSfit_wrap_path';
+fprintf(1, '  Adding %s\n', icosfit_path);
+addpath(icosfit_path);
+
+% Check whether we need arp-das library:
+arp_das_path = '$arp_das_wrap_path';
+files = dir([ arp_das_path filesep '*.m']);
+missing = 0;
+for i = 1:length(files)
+  [~,func,~] = fileparts(files(i).name);
+  S = which(func);
+  if isempty(S)
+    missing = 1;
+  end
+end
+if missing
+  fprintf(1, '  Adding %s\n', arp_das_path);
+  addpath(arp_das_path);
+else
+  fprintf(1, '  arp-das library not required\n');
+end
+savepath
+fprintf(1, 'ICOSfit setup complete\n');
+EOF
+
+# Now locate matlab and run it, specifying this directory and the
+# name of the newly created set script
+S=`which matlab 2>/dev/null`
+if [ -n "$S" ]; then
+  matlab=matlab
+else
+  for path in /Applications/MATLAB*; do
+    [ -e $path/bin/matlab ] && matlab=$path/bin/matlab
+  done
+fi
+
+wrap_path $PWD pwd_wrap
+if [ -n "$matlab" ]; then
+  echo "Starting $matlab to complete setup"
+  eval $matlab -sd '$pwd_wrap' -r icosfit_matlab_setup
+else
+  nl_error "Unable to locate Matlab executable"
+fi
