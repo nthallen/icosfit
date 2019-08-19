@@ -1,6 +1,6 @@
-#ICOSfit Build Options Summary:
+# ICOSfit Build Options Summary:
 
-##Prerequisites
+## Prerequisites
 Building icosfit requires the following:
   * gcc/g++
   * Gnu Make
@@ -12,7 +12,7 @@ can be configured to build without them at a significant loss of performance.
 
 All of the following options start in the root directory of the source tree.
 
-##Preferred build method:
+## Preferred build method:
 Use cmake to build entire project using icosfit/cppsrc directory
   * mkdir ../build-icosfit
   * cd ../build-icosfit
@@ -20,7 +20,7 @@ Use cmake to build entire project using icosfit/cppsrc directory
   * make
   * make install [ DESTDIR=tmp ]
 
-##Build using make in cppsrc:
+## Build using make in cppsrc:
 First need to build the levmar library in ../build-levmar. If levmar is built elsewhere
 (like in the source directory), you must pass LEVMARBUILDDIR=<path> to make, where
 LEVMARBUILDDIR is the path relative to cppsrc. All the make options can be given for
@@ -31,7 +31,7 @@ changes will cause rebuilding before install.
   * make <options>
   * make install <options>
 
-##Build using eli in elisrc:
+## Build using eli in elisrc:
 This option requires that you have the [Eli Compiler Construction suite](http://eli-project.sourceforge.net/)
 installed. The Makefile will run cmake to build the levmar library in ../build-levmar.
 If levmar is manually built elsewhere (like in the source directory), you must
@@ -40,12 +40,12 @@ pass LEVMARBUILDDIR=<path> to make.
   * make <options>
   * make install <options>
 
-###To propagate changes form elisrc to cppsrc:
+### To propagate changes form elisrc to cppsrc:
 Note that this is a crucial step before release!
   * cd icosfit/elisrc
   * make cppsrc
 
-##Make <options> for both elisrc and cppsrc
+## Make <options> for both elisrc and cppsrc
   * QTDIR=/usr/local/share/icosfit/Matlab/ICOSfit/QT
     * Where the QT files willl ultimately be installed
   * LEVMARBUILDDIR=../../../build-levmar
