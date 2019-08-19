@@ -5,6 +5,8 @@ ICOSfit is a non-linear least-squares fit algorithm originally developed for pro
 data from the [Anderson Group](https://www.arp.harvard.edu/)'s ICOS instruments. It has
 since been extended to support other optical configurations, such as Herriott Cells.
 
+The current version of ICOSfit is V4.0.1, released August 19, 2019.
+
 This archive consists of the following:
 - **icosfit:** The core ICOSfit fitting program
 - **Matlab/ICOSfit:** a suite of Matlab support utilities for working with ICOSfit and scan data
@@ -21,6 +23,11 @@ way toward performing many of the routine operations in setting up your data ana
 That said, these programs have a large number of options, tweaks, knobs and buttons,
 and not all of them have been documented. If you would like help getting started,
 please submit an issue.
+
+V4.0.0 represents a significant rewrite from earlier versions in order to take
+advantage of a more sophisticated Levenberg-Marquardt library. This version uses
+the [levmar](http://users.ics.forth.gr/~lourakis/levmar/) library, developed by
+M.I.A. Lourakis ([bibtex entry](http://users.ics.forth.gr/~lourakis/levmar/bibentry.html)).
 
 ## Matlab/ICOSfit
 The Matlab/ICOSfit routines provide tools for interactively viewing scan data,
