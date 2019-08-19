@@ -79,7 +79,6 @@ typedef float ICOS_Float;
 #endif
 
 #define QTSTR(x) #x
-#define QTXSTR(x) QTSTR(x)
-#define QTDIR_DEFAULT_STR QTXSTR(QTDIR_DEFAULT)
+#define QTDIR_DEFAULT_STR QTSTR(QTDIR_DEFAULT)
 
 #endif
