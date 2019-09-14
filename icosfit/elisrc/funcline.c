@@ -180,7 +180,7 @@ int func_line::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
           nl_error( 0, "Floating line %d (strength %" FMT_G ")",
                       line_number, strength );
           line_float();
-          return 1;
+          return 2;
         } else nl_error( 0, "NOT re-floating line %d",
                   line_number );
       }

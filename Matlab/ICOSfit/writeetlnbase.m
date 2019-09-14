@@ -28,7 +28,7 @@ function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
 % suitably large range for nu in the fit.
 lo = fitline('load');
 lines = lo.lines; % depends on fitline update
-nuc = zeros(length(lines));
+nuc = zeros(length(lines),1);
 for i=1:length(lines)
   nuc(i) = lines(i).hitran(1,3);
 end
@@ -58,23 +58,21 @@ N_Passes = cellparams.N_Passes;
 % % This isn't quite right either. For ICOS, we need to take
 % % into account the ICOS gain (see skew_matrix). For a non-
 % % integrating cavity, you don't get that gain.
+k = 1;
 if p_coeffs>0
-  x = (300:2644)'/1000;
-  if N_Passes ~= 0
-    if nargin >= 6
-      wv = waves_used(scannum);
-      x = get_waveform_params(wv.Name,'SignalRegion', 1:wv.NetSamples);
-      rawdata = loadscans([],scannum,x);
-      x = x'/1000;
-    else
-      error('Cannot currently guess suitable raw source for Herriot');
-    end
+  if nargin >= 6
+    wv = waves_used(scannum);
+    x = get_waveform_params(wv.Name,'SignalRegion', 1:wv.NetSamples);
+    rawdata = loadscans([],scannum,x);
+    x = x'/1000;
   else
-    V = [ 7.56393401961969   0.00412919996159   3.5410634E-7  -1.9782E-10];
-    rawdata = polyval(fliplr(V),x);
+    error('Cannot currently guess suitable raw source for Herriot');
+  end
+  if N_Passes == 0
+    [~,k] = skew_matrix(scannum,length(x),1e-6);
   end
   P=polyfit(x,rawdata,p_coeffs-1);
-  V = fliplr(P);
+  V = fliplr(P)/k;
 else
   V =[];
 end
@@ -88,11 +86,11 @@ if fid > 0
   fwrite( fid, ones(1,2*length(periods)+size(c_vector,1)), 'real*4' );
   % Initial parameter values
   fwrite( fid, V, 'real*4' );
-  fwrite( fid, c_vector, 'real*4');
+  fwrite( fid, c_vector/k, 'real*4');
   for i=1:length(periods)
     theta = 2*pi*nu/periods(i);
-    fwrite( fid, sin(theta), 'real*4');
-    fwrite( fid, cos(theta), 'real*4');
+    fwrite( fid, sin(theta)/k, 'real*4');
+    fwrite( fid, cos(theta)/k, 'real*4');
     if nargout > 1
       Vout(:,2*i-1) = sin(theta);
       Vout(:,2*i) = cos(theta);

@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <set>
 #include "funceval.h"
+#include "nl.h"
 
 evaluation_order func_evaluator::global_evaluation_order;
 evaluation_order func_evaluator::pre_evaluation_order;
@@ -83,13 +84,19 @@ void evaluation_order::init(ICOS_Float *a) {
 
 int evaluation_order::adjust_params(adjust_event when, ICOS_Float P,
       ICOS_Float T) {
-  int rv = 0;
+  int rv1 = 0; // Return of 1 means rollback
+  int rv2 = 0; // Return of 2 means repeat, but don't rollback
   std::vector<func_evaluator*>::iterator func;
   for (func = order.begin(); func != order.end(); ++func) {
-    if ((*func)->adjust_params(when, P, T))
-      rv = 1;
+    int rv;
+    switch (rv = (*func)->adjust_params(when, P, T)) {
+      case 0: break;
+      case 1: rv1 = 1; break;
+      case 2: rv2 = 1; break;
+      default: nl_error(3, "Invalid return %d from %s::adjust_params()", rv, (*func)->name);
+    }
   }
-  return rv;
+  return rv1 ? 1 : (rv2 ? 2 : 0);
 }
 
 void evaluation_order::dump() {

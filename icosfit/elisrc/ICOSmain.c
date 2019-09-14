@@ -13,10 +13,10 @@
    verbose & 2 => V_INFO include info[1:9] in output
    verbose & 4 => V_CHKJAC check Jacobian and report in standard output file
    verbose & 8 => V_ITERATIONS output verbose files with fit curves for each iteration
-   verbose & 0x10 16 => V_DERIVATIVES include derivatives in verbose output files
-   verbose & 0x20 32 => V_SCALE include dscl with parameters in output files
-   verbose & 0x40 64 => V_CHKDER Manually check derivatives
-   verbose & 0x80 128 => V_VOIGT output X and K values for each voigt line in verbose(1) fits
+   verbose & 0x10 16 => V_DERIVATIVES Include analytic derivatives in verbose output files
+   verbose & 0x20 32 => V_SCALE Include dscl with parameters in output files
+   verbose & 0x40 64 => V_CHKDER Estimate derivatives via finite differences and include in fit curves files
+   verbose & 0x80 128 => V_VOIGT Output X and K values for each voigt line in verbose(1) fits
 */
 
 void ICOS_init() {

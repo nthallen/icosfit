@@ -274,13 +274,20 @@ int fitdata::fit( ) {
         func_evaluator::dump_evaluation_order.dump();
         return 0;
       }
-      if (adjust_params(scan_finalize)) {
-        for ( i = 0; i < mp; ++i ) p[i] = p_save[i];
-        nl_error( 0,
-          "Parameters rolled back, Retrying after updating line constraints");
-      } else {
-        chisq = info[1]/(End-Start+1); // population variance
-        return 1;
+      switch (adjust_params(scan_finalize)) {
+        case 1:
+          for ( i = 0; i < mp; ++i ) p[i] = p_save[i];
+          nl_error( 0,
+            "%d: Parameters rolled back, Retrying after updating line constraints", vctr);
+          break;
+        case 2:
+          nl_error(0, "%d: Continuing without rollback", vctr);
+          break;
+        case 0:
+          chisq = info[1]/(End-Start+1); // population variance
+          return 1;
+        default:
+          nl_error(3, "%d: Unexpected return value from fitdata::adjust_params()", vctr);
       }
     }
   } else {
@@ -424,6 +431,6 @@ void fitdata::vwrite(ICOS_Float *pv, ICOS_Float *J) {
       }
       fclose(vvfp);
     }
-    ++vctr;
   }
+  ++vctr;
 }
