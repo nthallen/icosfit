@@ -157,6 +157,11 @@ void func_skew::pre_eval(ICOS_Float x, ICOS_Float *a) {
   skewidx = 0;
   for (ICOS_Float xi = x - M + 1.; xi < x; ++xi) {
     skew_eval_order.evaluate(xi, a);
+    // This is a test to see if this resolves the jacobian
+    // errors. Ideally, we would have
+    //   pre_eval() and pre_eval_partials() as well as
+    //   sub_eval() and sub_eval_partials().
+    skew_eval_order.evaluate_partials(xi, a);
     sub_eval(xi, a);
   }
 }
