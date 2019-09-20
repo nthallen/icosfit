@@ -138,8 +138,14 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
   S.scannum = S.fitdata(:,1);
   S.chi2 = S.fitdata(:,4);
   S.nu_F0 = S.fitdata(:,S.n_input_params+S.n_base_params+1);
-  if S.ICOSfit_format_ver >= 3 && bitand(S.Verbosity,2)
-    S.info = S.fitdata(:,6+(1:9));
+  if S.ICOSfit_format_ver >= 3
+    if bitand(S.Verbosity,2)
+      S.info = S.fitdata(:,6+(1:9));
+    end
+    S.output_cols = output_cols;
+    S.p_cols = p_cols;
+    S.float_cols = float_cols;
+    S.scale_cols = scale_cols;
   end
 end
 

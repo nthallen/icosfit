@@ -179,23 +179,24 @@ fitdata *build_func() {
     int output_col = 7;
     fprintf(fp,
       "%% Output file column definitions\n"
-      "%%  1: ScanNum\n"
-      "%%  2: Pressure Torr\n"
-      "%%  3: Temperature K\n"
-      "%%  4: chisq (or something like it)\n"
-      "%%  5: Starting sample for fit region\n"
-      "%%  6: Ending sample for fit region\n");
+      "output_cols = {\n"
+      "  'ScanNum' %% col 1\n"
+      "  'Pressure Torr' %% col 2\n"
+      "  'Temperature K' %% col 3\n"
+      "  'chisq (or something like it)' %% col 4\n"
+      "  'Starting sample for fit region' %% col 5\n"
+      "  'Ending sample for fit region' %% col 6\n");
     if (fd->verbose & V_INFO) {
       fprintf(fp,
-        "%% %2d: info[1]: ||e||_2\n"
-        "%% %2d: info[2]: ||J^T e||_inf\n"
-        "%% %2d: info[3]: ||Dp||_2\n"
-        "%% %2d: info[4]: mu/max[J^T J]_ii\n"
-        "%% %2d: info[5]: # of iterations\n"
-        "%% %2d: info[6]: reason for terminating\n"
-        "%% %2d: info[7]: # of function evaluations\n"
-        "%% %2d: info[8]: # of Jacobian evaluations\n"
-        "%% %2d: info[9]: # of linear systems solved\n",
+        "  'info[1]: ||e||_2' %% col %d\n"
+        "  'info[2]: ||J^T e||_inf' %% col %d\n"
+        "  'info[3]: ||Dp||_2' %% col %d\n"
+        "  'info[4]: mu/max[J^T J]_ii' %% col %d\n"
+        "  'info[5]: # of iterations' %% col %d\n"
+        "  'info[6]: reason for terminating' %% col %d\n"
+        "  'info[7]: # of function evaluations' %% col %d\n"
+        "  'info[8]: # of Jacobian evaluations' %% col %d\n"
+        "  'info[9]: # of linear systems solved' %% col %d\n",
         output_col, output_col+1, output_col+2, output_col+3,
         output_col+4, output_col+5, output_col+6, output_col+7,
         output_col+8);
@@ -207,8 +208,8 @@ fitdata *build_func() {
            ++child) {
         func_line *line = child->arg->is_line();
         if (line) {
-          fprintf(fp, "%% %2d: Line[%d] Floating\n", output_col++, line->line_number);
-          fprintf(fp, "%% %2d: Line[%d] Threshold\n", output_col++, line->line_number);
+          fprintf(fp, "  'Line[%d] Floating' %% col %d\n", line->line_number, output_col++);
+          fprintf(fp, "  'Line[%d] Threshold' %% col %d\n", line->line_number, output_col++);
         }
       }
     }
@@ -217,6 +218,7 @@ fitdata *build_func() {
     if (fd->verbose & 0x20) {
       fd->func->output_params(fp, func_evaluator::op_desc_dscl, output_col);
     }
+    fprintf(fp, "};\n");
     if (fd->verbose & V_INFO) {
       fprintf(fp,
         "%%\n"
@@ -235,7 +237,38 @@ fitdata *build_func() {
       "%%\n"
       "%% Floating values are 1 if the parameter is floating, 0 if fixed\n"
     );
+    fprintf(fp, "p_cols = [");
+    std::vector<func_parameter *>::iterator fpi;
+    const char *semicolon = "";
+    for (fpi = func_parameter::parameters.begin();
+         fpi != func_parameter::parameters.end();
+         ++fpi) {
+      fprintf(fp, "%s%d", semicolon, (*fpi)->param_col);
+      semicolon = ";";
+    }
+    fprintf(fp, "];\n");
     
+    fprintf(fp, "float_cols = [");
+    semicolon = "";
+    for (fpi = func_parameter::parameters.begin();
+         fpi != func_parameter::parameters.end();
+         ++fpi) {
+      fprintf(fp, "%s%d", semicolon, (*fpi)->float_col);
+      semicolon = ";";
+    }
+    fprintf(fp, "];\n");
+
+    fprintf(fp, "scale_cols = [");
+    if (fd->verbose & V_SCALE) {
+      semicolon = "";
+      for (fpi = func_parameter::parameters.begin();
+           fpi != func_parameter::parameters.end();
+           ++fpi) {
+        fprintf(fp, "%s%d", semicolon, (*fpi)->float_col);
+        semicolon = ";";
+      }
+    }
+    fprintf(fp, "];\n");
     fclose(fp);
   }
   return fd;

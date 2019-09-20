@@ -28,9 +28,7 @@ class paramref {
  * a func_evaluator. There is not a 1:1 relationship between actual
  * parameters and parameter objects, since a func_evaluator references
  * all the parameters that its children do. The parameters themselves
- * are characterized by the p, ul and ub vectors. If we want to
- * mark a parameter as fixed or floating, we probably need to restore
- * the ia vector.
+ * are characterized by the p, is_floating, ub and lb vectors.
  */
 class parameter {
   public:
@@ -254,8 +252,12 @@ class func_parameter : public func_evaluator {
     virtual void input_params(char *&bp, op_type which);
     
     int index; ///< Parameter's global index
+    int param_col; ///< The first output column that holds this parameter's value
+    int float_col; ///< The first output column that holds this parameter's float status
+    int scale_col; ///< The first output column that holds this parameter's scale
     static unsigned n_parameters;
     static bool checking_jacobian;
+    static std::vector<func_parameter *> parameters;
   protected:
     ICOS_Float init_val; ///< Initialization value
     uint32_t refs_float; ///< Bit-mapped
