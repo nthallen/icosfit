@@ -22,13 +22,13 @@ class fitdata {
     FILE *pathopen( const char *path, const char *format, int fileno );
     int adjust_params(adjust_event when);
 
-    int BaseStart;
-    int BaseEnd;
-    /** The index of the first sample of the SignalRegion adjusted backwards
+    // int BaseStart;
+    // int BaseEnd;
+    /** The 0-based index of the first sample of the SignalRegion adjusted backwards
         to account for the number of samples in the ICOS skew calculation
         (if any). */
     int SignalStart;
-    /** The index of the last sample of the SignalRegion */
+    /** The 0-based index of the last sample of the SignalRegion */
     int SignalEnd;
     /** The index of the first sample in the range of the raw scan data we will fit */
     int Start;

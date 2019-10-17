@@ -102,7 +102,7 @@ func_line::func_line( const char *name, int mol, int iso,
   n_air = n_in;
   delta = delta_in;
   S_thresh = threshold;
-  ipos = ipos_in;
+  ipos = ipos_in-MLBASE;
   Corr_Tref = 1/(exp(-C2 * E / Tref ) * (1-exp(-C2*nu/Tref)));
   nu_F0_idx = -1;
 }

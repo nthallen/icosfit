@@ -82,4 +82,10 @@ typedef float ICOS_Float;
 #define QTXSTR(x) QTSTR(x)
 #define QTDIR_DEFAULT_STR QTXSTR(QTDIR_DEFAULT)
 
+/** The array index base used by Matlab and in the
+ * configuration file. We need to correct for it
+ * to convert to 0-based internal indexing.
+ */
+#define MLBASE 1
+
 #endif

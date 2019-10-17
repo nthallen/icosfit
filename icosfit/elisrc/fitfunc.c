@@ -30,10 +30,10 @@ fitdata::fitdata( PTfile *ptf, ICOSfile *IF,
   if ( verbose & 8 ) {
     vmlf = mlf_init( 3, 60, 1, GlobalData.OutputDir, "dir", NULL );
   }
-  BaseStart = GlobalData.BackgroundRegion[0];
-  BaseEnd = GlobalData.BackgroundRegion[1];
-  SignalStart = GlobalData.SignalRegion[0] + func->skew_samples();
-  SignalEnd = GlobalData.SignalRegion[1];
+  // BaseStart = GlobalData.BackgroundRegion[0];
+  // BaseEnd = GlobalData.BackgroundRegion[1];
+  SignalStart = GlobalData.SignalRegion[0]-MLBASE + func->skew_samples();
+  SignalEnd = GlobalData.SignalRegion[1]-MLBASE;
   
   Start = End = 0;
   npts = 0;
@@ -220,8 +220,8 @@ int fitdata::fit( ) {
   {
     // Note: Wavenumber decreases with sample number
     ICOS_Float nu_F0 = absorb->get_arg(func_abs::nu_F0_idx );
-    ICOS_Float wnStart = IFile->wndata->data[SignalEnd] + nu_F0;
-    ICOS_Float wnEnd = IFile->wndata->data[SignalStart] + nu_F0;
+    ICOS_Float wnStart = IFile->wndata->data[SignalEnd-MLBASE] + nu_F0;
+    ICOS_Float wnEnd = IFile->wndata->data[SignalStart-MLBASE] + nu_F0;
     while ( func->line_check( 0, wnStart, wnEnd, PTf->P, PTf->T) != 0 );
     func->line_check( 1, wnStart, wnEnd, PTf->P, PTf->T);
     ICOS_Float EwnStart = 0., EwnEnd = 0.;
@@ -334,7 +334,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
         yfit = func->value;
         fprintf( vofp, "%12.6" FMT_E " %14.8" FMT_E " %12.6" FMT_E
           " %12.6" FMT_E " %12.6" FMT_E " %12.6" FMT_E,
-          x[i], ICOSfile::wndata->data[i+Start],
+          x[i]+MLBASE, ICOSfile::wndata->data[i+Start],
           y[i], yfit, base->value, absorb->value );
         if (verbose & V_VOIGT)
           absorb->print_intermediates(vofp);
@@ -366,7 +366,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
     int n_i_p = 6;
     nl_assert( ScanNum_col == 1 );
     fprintf( ofp, "%6d %6.2lf %6.2lf %12.5le %d %d",
-      fileno, PTf->P, PTf->T, chisq, Start, End);
+      fileno, PTf->P, PTf->T, chisq, Start+MLBASE, End+MLBASE);
     if (verbose & V_INFO) {
       n_i_p += 9;
       fprintf(ofp,
