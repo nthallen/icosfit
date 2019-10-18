@@ -24,9 +24,6 @@ if ischar(arg1)
     % regions.
     RC.S = S;
     
-    % Load baseline stuff
-    RC.Baseline = loadetlnbase(RC);
-    
     % Load PTE stuff
     if ~exist(RC.S.PTEfile,'file')
         error('Unable to locate PTEfile %s', RC.S.PTEfile);
@@ -34,34 +31,34 @@ if ischar(arg1)
     RC.PTE = load(RC.S.PTEfile);
     i = 1;
     while i <= length(varargin)
-        if ~ischar(varargin{i})
-            error('Expected option string at argument %d', i+1);
-        elseif strcmpi(varargin{i}, 'scannum')
-            i = i + 1;
-            if i > length(varargin)
-                error('Scans option requires value');
-            end
-            RC.Scans = varargin{i};
-            if size(RC.Scans,1) == 1
-                RC.Scans = RC.Scans';
-            end
-            % should check that these scans are all in S.scannum
-            [ss,I] = unique(RC.S.scannum);
-            Is = interp1(ss,I,RC.Scans,'nearest','extrap');
-            v = RC.S.scannum(Is) == RC.Scans;
-            if ~any(v)
-                error('Specified scan range does not match fit data range');
-            elseif ~all(v)
-                warning('ICOSfit:recalc:ScanNumRange', 'Some scans in specified range are missing');
-                RC.Scans = RC.Scans(v);
-                RC.IScans = Is(v);
-            else
-                RC.IScans = Is;
-            end
-        else
-            error('Unrecognized option: "%s"', varargin{i});
-        end
+      if ~ischar(varargin{i})
+        error('Expected option string at argument %d', i+1);
+      elseif strcmpi(varargin{i}, 'scannum')
         i = i + 1;
+        if i > length(varargin)
+          error('Scans option requires value');
+        end
+        RC.Scans = varargin{i};
+        if size(RC.Scans,1) == 1
+          RC.Scans = RC.Scans';
+        end
+        % should check that these scans are all in S.scannum
+        [ss,I] = unique(RC.S.scannum);
+        Is = interp1(ss,I,RC.Scans,'nearest','extrap');
+        v = RC.S.scannum(Is) == RC.Scans;
+        if ~any(v)
+          error('Specified scan range does not match fit data range');
+        elseif ~all(v)
+          warning('ICOSfit:recalc:ScanNumRange', 'Some scans in specified range are missing');
+          RC.Scans = RC.Scans(v);
+          RC.IScans = Is(v);
+        else
+          RC.IScans = Is;
+        end
+      else
+        error('Unrecognized option: "%s"', varargin{i});
+      end
+      i = i + 1;
     end
 
     % Now map RC.Scans onto rows of PTE
@@ -85,6 +82,30 @@ if ischar(arg1)
     RC.BGi = ...
         RC.S.BackgroundRegion(1):RC.S.BackgroundRegion(2);
     
+    if S.N_Passes == 0 % ICOS
+      % CavityLength = S.CavLen;
+      % MirrorLoss = cellparams.MirrorLoss*1e-6;
+      c = lightspeed; % cm/sec
+      R = 1-S.MirrorLoss;
+      RC.N = c/(2*S.CavLen*S.SampleRate);
+      RC.M = ceil(log(S.SkewTolerance)/(2*RC.N*log(R)));
+      RC.R2 = R^2;
+      RC.R2N = RC.R2.^RC.N;
+      RC.P_scale = (1-RC.R2N)/(1-RC.R2);
+      % Create a skew matrix for baseline power
+      npts = max(S.SignalRegion(:,2)) - min(S.SignalRegion(:,1)) + RC.M;
+      n = 0:RC.M-1;
+      RC.PA = spdiags(ones(npts,1)*(RC.R2N.^n), -n, npts, npts);
+      % This provides a correction for the first M-1 points
+      % Not really necessary
+      %wt = sum(RC.PA,2);
+      %RC.PA = RC.P_scale*RC.PA.*((wt(end)./wt)*ones(1,npts));
+      RC.PA = RC.P_scale*RC.PA;
+    end
+    
+    % Load baseline stuff
+    RC.Baseline = loadetlnbase(RC);
+      
     outval = RC;
 else
     RC = arg1;
@@ -98,7 +119,11 @@ else
     ifile = mlf_path(RC.ScanBase,ScanNum,'.dat');
     raw = loadbin(ifile); % Includes zero
     raw = raw - mean(raw(RC.BGi,1));
-    SR = (S.fitdata(IScan,5):S.fitdata(IScan,6))';
+    if S.N_Passes == 0
+      SR = (S.fitdata(IScan,5)-RC.M+1:S.fitdata(IScan,6))';
+    else
+      SR = (S.fitdata(IScan,5):S.fitdata(IScan,6))';
+    end
     BP = S.fitdata(IScan,RC.Baseline.PVi)';
     nu_rel = -S.EtalonFSR*etln_evalJ(RC.PTE(PScan,5:11), ...
         (SR-RC.PTE(PScan,4)+1)/RC.Baseline.Pscale);
@@ -115,8 +140,24 @@ else
         Abs = Abs + S.Nfit(IScan,i)*S.Scorr(IScan,i)*S.CavLen*K / ...
             (S.Ged(IScan,i) * sqrt(pi));
     end
-    fit = baseline .* exp(-S.N_Passes * Abs);
+    if S.N_Passes > 0
+      fit = baseline .* exp(-S.N_Passes * Abs);
+    else
+      npts = length(SR);
+      beta = exp(-Abs);
+      gamma = RC.R2 * beta.^2;
+      eps = gamma.^RC.N;
+      delta = (eps-1)./(gamma-1);
+      g = baseline.*beta.*delta;
+      n = 0:RC.M-1;
+      A = spdiags((eps*ones(1,RC.M)).^(ones(npts,1)*n), -n, npts, npts);
+      fit = A*g;
+      baseline = RC.PA(1:npts,1:npts) * baseline;
+    end
     outval = [ SR nu_rel raw(SR,1) fit baseline Abs XK ];
+    if S.N_Passes == 0
+      outval = outval(RC.M:end,:);
+    end
 end
 
 function Baseline = loadetlnbase(RC)
@@ -132,6 +173,9 @@ n_vectors = size(vectors,2);
 assert(RC.S.n_base_params == n_vectors + p_coeffs);
 assert(length(PV) == p_coeffs);
 Baseline.minx = min(RC.S.fitdata(:,5));
+if RC.S.N_Passes == 0
+  Baseline.minx = Baseline.minx - RC.M + 1;
+end
 maxx = max(RC.S.fitdata(:,6));
 Baseline.XM = ((Baseline.minx:maxx)'*ones(1,p_coeffs)/Pscale) .^ ...
     (ones(maxx-Baseline.minx+1,1)*(0:p_coeffs-1));
