@@ -59,6 +59,9 @@ if exist( [ base '/ICOSconfig.m' ], 'file' )
       S.BackgroundRegion = BackgroundRegion;
       S.EtalonFSR = EtalonFSR;
       S.N_Passes = N_Passes;
+      S.MirrorLoss = MirrorLoss;
+      S.SampleRate = SampleRate;
+      S.SkewTolerance = SkewTolerance;
       S.SignalRegion = S.fitdata(:,[5 6]);
   end
   if exist('Verbosity','var')
@@ -142,6 +145,8 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
     if bitand(S.Verbosity,2)
       S.info = S.fitdata(:,6+(1:9));
     end
+  end
+  if S.ICOSfit_format_ver >= 4
     S.output_cols = output_cols;
     S.p_cols = p_cols;
     S.float_cols = float_cols;
