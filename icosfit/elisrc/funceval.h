@@ -55,9 +55,31 @@ class argref {
 class evaluation_order {
   public:
     std::vector<func_evaluator*> order;
+    /**
+     * Add func and all children to the evaluation order, evaluating
+     * the children first.
+     * @param func The function to be added
+     * @param top true if being invoked at the top level
+     * @param clear set to true for the first pass
+     */
     void set(func_evaluator *func, bool top = true, bool clear = false);
+    /**
+     * Add func and all children to the evaluation order, evaluating
+     * the func before the children.
+     * @param func The function to be added
+     * @param top true if being invoked at the top level
+     * @param clear set to true for the first pass
+     */
     void set_pre_order(func_evaluator *func, bool top = true, bool clear = false);
+    /**
+     * Similar to set(func, true) but without adding this func to the order.
+     * @param func The function whose children are to be added
+     */
     void set_children(func_evaluator *func);
+    /**
+     * Adds func to the end of the current evaluation order.
+     @param func The function to be added.
+     */
     void add(func_evaluator *func);
     void evaluate(ICOS_Float x, ICOS_Float *p);
     void evaluate_partials(ICOS_Float x, ICOS_Float *p);

@@ -361,7 +361,7 @@ int ICOSfile::read( unsigned long int fileno ) {
 }
 
 /**
- * Translate wavenumber back to sample number
+ * Translate wavenumber back to 0-based sample number
  * We will now assume that nu_F0 (the free parameter) has been
  * subtracted from wn before the call, and hence wn is suitable
  * for direct lookup in wndata.

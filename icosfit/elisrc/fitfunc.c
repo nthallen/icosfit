@@ -220,8 +220,8 @@ int fitdata::fit( ) {
   {
     // Note: Wavenumber decreases with sample number
     ICOS_Float nu_F0 = absorb->get_arg(func_abs::nu_F0_idx );
-    ICOS_Float wnStart = IFile->wndata->data[SignalEnd-MLBASE] + nu_F0;
-    ICOS_Float wnEnd = IFile->wndata->data[SignalStart-MLBASE] + nu_F0;
+    ICOS_Float wnStart = IFile->wndata->data[SignalEnd] + nu_F0;
+    ICOS_Float wnEnd = IFile->wndata->data[SignalStart] + nu_F0;
     while ( func->line_check( 0, wnStart, wnEnd, PTf->P, PTf->T) != 0 );
     func->line_check( 1, wnStart, wnEnd, PTf->P, PTf->T);
     ICOS_Float EwnStart = 0., EwnEnd = 0.;
@@ -327,7 +327,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
           delta, difjac, mp, npts, &adata);
         func_parameter::checking_jacobian = true;
       }
-      func_evaluator::pre_evaluation_order.pre_eval(x[1], pv);
+      func_evaluator::pre_evaluation_order.pre_eval(x[0], pv);
       for (i = 0; i < npts; ++i) {
         ICOS_Float yfit;
         func_evaluator::global_evaluation_order.evaluate_partials(x[i], pv);
