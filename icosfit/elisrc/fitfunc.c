@@ -34,6 +34,11 @@ fitdata::fitdata( PTfile *ptf, ICOSfile *IF,
   // BaseEnd = GlobalData.BackgroundRegion[1];
   SignalStart = GlobalData.SignalRegion[0]-MLBASE + func->skew_samples();
   SignalEnd = GlobalData.SignalRegion[1]-MLBASE;
+  opts[0] = GlobalData.mu_scale;
+  opts[1] = GlobalData.epsilon1;
+  opts[2] = GlobalData.epsilon2;
+  opts[3] = GlobalData.epsilon3;
+  opts[4] = 1e-6; // LM_DIFF_DELTA
   
   Start = End = 0;
   npts = 0;
@@ -269,7 +274,7 @@ int fitdata::fit( ) {
       // returns # of iterations or LM_ERROR (-1)
       // Defaulting opts and covar
       if (dlevmar_bc_der(levmar_func, levmar_jacf, p, y, mp, npts, lb, ub, dscl,
-            GlobalData.MaxIterations, 0, info, lm_work, 0, &adata) == LM_ERROR) {
+            GlobalData.MaxIterations, opts, info, lm_work, 0, &adata) == LM_ERROR) {
         nl_error(1, "LM_ERROR: reason %.0lf", info[6]);
         func_evaluator::dump_evaluation_order.dump();
         return 0;

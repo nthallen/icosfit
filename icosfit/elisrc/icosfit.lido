@@ -96,6 +96,18 @@ END;
 RULE: ConfigCmd ::= 'SkewTolerance' '=' FloatVal opt_ppm COMPUTE
   SetGlobal(SkewTolerance, MUL( FloatVal.FVal, opt_ppm.FVal));
 END;
+RULE: ConfigCmd ::= 'mu_scale' '=' FloatVal COMPUTE
+  SetGlobal(mu_scale, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'epsilon1' '=' FloatVal COMPUTE
+  SetGlobal(epsilon1, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'epsilon2' '=' FloatVal COMPUTE
+  SetGlobal(epsilon2, FloatVal.FVal);
+END;
+RULE: ConfigCmd ::= 'epsilon3' '=' FloatVal COMPUTE
+  SetGlobal(epsilon3, FloatVal.FVal);
+END;
 RULE: ConfigCmd ::= 'ConvergenceStep' '=' FloatVal COMPUTE
   SetGlobal(ConvergenceStep, FloatVal.FVal);
 END;

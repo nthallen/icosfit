@@ -26,6 +26,10 @@ ConfigCmd :
   'TuningRate' '=' FloatVal opt_tunerate /
   'SampleRate' '=' FloatVal Frequency /
   'SkewTolerance' '=' FloatVal opt_ppm /
+  'mu_scale' '=' FloatVal /
+  'epsilon1' '=' FloatVal /
+  'epsilon2' '=' FloatVal /
+  'epsilon3' '=' FloatVal /
   'ConvergenceStep' '=' FloatVal /
   'ConvergenceCount' '=' Integer /
   'MaxIterations' '=' Integer /

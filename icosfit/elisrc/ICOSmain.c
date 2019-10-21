@@ -264,7 +264,7 @@ fitdata *build_func() {
       for (fpi = func_parameter::parameters.begin();
            fpi != func_parameter::parameters.end();
            ++fpi) {
-        fprintf(fp, "%s%d", semicolon, (*fpi)->float_col);
+        fprintf(fp, "%s%d", semicolon, (*fpi)->scale_col);
         semicolon = ";";
       }
     }

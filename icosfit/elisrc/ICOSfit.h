@@ -87,6 +87,7 @@ class fitdata {
   private:
     // int mfit, mf_size;
     // ICOS_Float *atry,*beta,*da,**oneda, *dyda;
+    ICOS_Float opts[5];
 };
 
 // Located in build.cc
