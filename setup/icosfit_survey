@@ -1,0 +1,49 @@
+#! /bin/bash
+# icosfit_survey.sh [ <template_file> [ <epsilon2_values> ] ]
+#
+# <template_file> is an icosfit configuration file with no OutputDir or
+# epsilon2 specification. The default is 'icosfit.survey'
+#
+# <epsilon2_values> is a list of epsilon2 values to test. The default
+# list is '1e-6 2e-6 5e-6 1e-5 2e-5 5e-5 1e-4 2e-4 5e-4 1e-3 2e-3 5e-3 1e-2'
+#
+# Creates output directory ICOSout.survey and an output directory
+# under that for each epsilon2 value specified.
+#
+# The point is to find an optimal value of the epsilon2 termination
+# parameter that will minimize fit time without adversely affecting
+# accuracy. The Matlab script icosfit_survey.m knows how to work with
+# this directory structure to produce relevant summary plots.
+
+function nl_error {
+  echo "icosfit_survey: $*" >&2
+  exit 1
+}
+
+base=ICOSout.survey
+template=icosfit.survey
+epsilon2='1e-6 2e-6 5e-6 1e-5 2e-5 5e-5 1e-4 2e-4 5e-4 1e-3 2e-3 5e-3 1e-2'
+if [ -n $1 ]; then
+  template=$1
+  shift
+fi
+
+if [ -n $1 ]; then
+  epsilon2=$1
+  shift
+end
+
+[ -e $template ] || nl_error "Template file $template not found"
+[ -d $base ] || nl_error "Output directory $base already exists"
+mkdir $base
+for eps2 in $epsilon2; do
+  cfgfile=$base/icosfit.survey.$eps2
+  ( cat $template
+    echo "OutputDir = $base/ICOSout.survey.$eps2;"
+    echo "epsilon2 = $eps2;"
+  ) >$cfgfile
+  ( time icosfit $cfgfile ) 2>$base/icosfit.time
+  cat $base/icosfit.time |
+    sed -ne 's/^\(real\|user\|sys\)\t//' -e 's/m/ /' -e 's/s$//p' > $base/ICOSout.survey.$eps2/icosfit.time.dat
+  rm $base/icosfit.time
+done
