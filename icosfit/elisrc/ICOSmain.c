@@ -178,6 +178,7 @@ fitdata *build_func() {
     abs->print_config( fp );
     int output_col = 7;
     fprintf(fp,
+      "\n"
       "%% Output file column definitions\n"
       "output_cols = {\n"
       "  'ScanNum' %% col 1\n"
@@ -234,10 +235,18 @@ fitdata *build_func() {
       );
     }
     fprintf(fp,
-      "%%\n"
+      "\n"
       "%% Floating values are 1 if the parameter is floating, 0 if fixed\n"
     );
-    fprintf(fp, "p_cols = [");
+    
+    
+    fprintf(fp,
+      "\n"
+      "%% p_cols is a list of parameter columns in the icosfit output file in the order\n"
+      "%% of the icosfit internal parameter array. Hence p_cols[i] is the 1-based\n"
+      "%% output column for the 0-based icosfit internal parameter p[i-1]\n"
+      "p_cols = ["
+    );
     std::vector<func_parameter *>::iterator fpi;
     const char *semicolon = "";
     for (fpi = func_parameter::parameters.begin();
@@ -246,9 +255,26 @@ fitdata *build_func() {
       fprintf(fp, "%s%d", semicolon, (*fpi)->param_col);
       semicolon = ";";
     }
+    fprintf(fp, "];\n\n");
+
+    fprintf(fp,
+      "%% col_params maps parameter columns in the icosfit output file to internal\n"
+      "%% 0-based icosfit parameter indices. The first 1-based column index of parameter\n"
+      "%% values in the icosfit output is min(p_cols). That output column corresponds\n"
+      "%% to the 0-based internal icosfit parameter col_params[1].\n"
+      "col_params = ["
+    );
+    output_col = 0;
+    fd->func->output_params(fp, func_evaluator::op_desc_col_params, output_col);
     fprintf(fp, "];\n");
     
-    fprintf(fp, "float_cols = [");
+    fprintf(fp,
+      "\n"
+      "%% float_cols are the 1-based column indices for the values that indicate\n"
+      "%% whether the corresponding column's parameter value was fixed or floating\n"
+      "%% during the fit.\n"
+      "float_cols = ["
+    );
     semicolon = "";
     for (fpi = func_parameter::parameters.begin();
          fpi != func_parameter::parameters.end();
@@ -258,7 +284,14 @@ fitdata *build_func() {
     }
     fprintf(fp, "];\n");
 
-    fprintf(fp, "scale_cols = [");
+    
+    fprintf(fp,
+      "\n"
+      "%% scale_cols are the 1-based column indices for the scale values for the\n"
+      "%% corresponding column's parameter value during the fit. scale_cols will\n"
+      "%% be empty unless the appropriate Verbosity bit is set.\n"
+      "scale_cols = ["
+    );
     if (fd->verbose & V_SCALE) {
       semicolon = "";
       for (fpi = func_parameter::parameters.begin();

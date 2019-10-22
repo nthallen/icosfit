@@ -214,7 +214,7 @@ class func_evaluator {
     virtual void print_config(FILE *fp);
     virtual void print_intermediates(FILE *fp);
     
-    typedef enum { op_value, op_float, op_dscl, op_desc, op_desc_float, op_desc_dscl } op_type;
+    typedef enum { op_value, op_float, op_dscl, op_desc, op_desc_float, op_desc_dscl, op_desc_col_params } op_type;
     /**
       @param ofp FILE pointer to ICOSsum.dat
       @param fixed true to output fixed/floating bool values, false to output

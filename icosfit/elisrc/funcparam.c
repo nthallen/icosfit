@@ -130,6 +130,9 @@ void func_parameter::output_params(FILE *ofp, op_type which, int &output_col) {
         scale_col = output_col;
       fprintf(ofp, "  'param[%2d] Scale: %s' %% col %d\n", index, name, output_col);
       break;
+    case op_desc_col_params:
+      fprintf(ofp, "%s%d", output_col > 0 ? ";" : "", index);
+      break;
     default:
       nl_error(3, "func_parameter::output_params(): op_type %d unsupported", which);
   }
