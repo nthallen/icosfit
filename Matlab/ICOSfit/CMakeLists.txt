@@ -20,7 +20,7 @@ install(FILES
   save_waveform_params.m scan_viewer.fig scan_viewer.m scanload.m 
   scantime.m scanview.m skew_matrix.m trackline.m voigt3.m 
   waves_editor.fig waves_editor.m waves_used.m writebase.m writebin.m 
-  writeetlnbase.m writeskewbase.m 
+  writeetlnbase.m writeskewbase.m icosfit_survey.m
   DESTINATION share/icosfit/Matlab/ICOSfit)
 
 add_subdirectory(QT)
