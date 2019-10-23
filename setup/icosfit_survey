@@ -39,7 +39,9 @@ fi
 mkdir $base
 for eps2 in $epsilon2; do
   cfgfile=$base/icosfit.survey.$eps2
-  echo "\nProcessing epsilon2=$eps\n"
+  echo
+  echo "Processing epsilon2=$eps2"
+  echo
   ( cat $template
     echo "OutputDir = $base/ICOSout.survey.$eps2;"
     echo "epsilon2 = $eps2;"
