@@ -8,4 +8,4 @@
 
 ## V4.0.1 August 19, 2019
 
-Initial Public Release
+  * Initial Public Release
