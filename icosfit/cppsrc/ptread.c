@@ -181,8 +181,9 @@ void PTfile::calc_wndata() {
       }
       fn = fn - P*sin(2 * M_PI * fn);
     }
-    ICOSfile::wndata->data[i] = -GlobalData.EtalonFSR * fn;
-    if (i > from && ICOSfile::wndata->data[i] >= ICOSfile::wndata->data[i-1]) {
+    ICOSfile::wndata->data[i-MLBASE] = -GlobalData.EtalonFSR * fn;
+    if (i > from &&
+        ICOSfile::wndata->data[i-MLBASE] >= ICOSfile::wndata->data[i-MLBASE-1]) {
       nl_error(3, "%ld:%d: Tuning rate not monotonically decreasing", ScanNum, i);
     }
   }
@@ -348,8 +349,8 @@ int ICOSfile::read( unsigned long int fileno ) {
        GlobalData.BackgroundRegion[1] ) {
     ICOS_Float baseline = 0., *yin = sdata->data;
     unsigned int i;
-    for (i = GlobalData.BackgroundRegion[0];
-         i <= GlobalData.BackgroundRegion[1];
+    for (i = GlobalData.BackgroundRegion[0]-MLBASE;
+         i <= GlobalData.BackgroundRegion[1]-MLBASE;
          ++i) baseline += yin[i];
     baseline /=
       GlobalData.BackgroundRegion[1]-GlobalData.BackgroundRegion[0]+1;
@@ -360,7 +361,7 @@ int ICOSfile::read( unsigned long int fileno ) {
 }
 
 /**
- * Translate wavenumber back to sample number
+ * Translate wavenumber back to 0-based sample number
  * We will now assume that nu_F0 (the free parameter) has been
  * subtracted from wn before the call, and hence wn is suitable
  * for direct lookup in wndata.
@@ -372,8 +373,8 @@ int ICOSfile::wn_sample( ICOS_Float wn ) {
   // to identify the lower wavenumber value, although it is the
   // higher index number
   // wn -= nu_F0;
-  int low = GlobalData.SignalRegion[1];
-  int high = GlobalData.SignalRegion[0];
+  int low = GlobalData.SignalRegion[1]-MLBASE;
+  int high = GlobalData.SignalRegion[0]-MLBASE;
   ICOS_Float wnlow = wndata->data[low];
   ICOS_Float wnhigh = wndata->data[high];
   if ( wn <= wnlow ) return low;

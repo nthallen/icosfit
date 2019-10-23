@@ -24,7 +24,10 @@ GlobalData_t::GlobalData_t() {
   QCLI_Wave = 0;
   SampleRate = 0.;
   SkewTolerance = 1e-5;
-  // DefaultTemp = 22.56;
+  mu_scale = 1e-3;
+  epsilon1 = 1e-17;
+  epsilon2 = 1e-17;
+  epsilon3 = 1e-17;
   binary = 1;
   ICOSdir = "Scans";
   PTFile = "PTE.txt";

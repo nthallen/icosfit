@@ -269,17 +269,12 @@ void voigt::evaluate( ICOS_Float xx, ICOS_Float *p) {
 }
 
 /** adjust_params
- * @param alamda The Levenberg-Marquardt lambda parameter
+ * @param when either before or after the fit
  * @param P Current pressure in Torr
  * @param T Current temperature in Kelvin
  * @param a Pointer to paramater values vector
  * @return non-zero if a change in which parameters are free is mandated.
  *
- * alamda is used to indicate:
- *  alamda < 0 Initialization: set fixed parameters
- *  alamda < -1.5 called once per data set
- *  alamda > 0 Iteration: check floating parameters
- *  alamda == 0 Finalization: check if redo is required
  * Might be possible to get into oscillation if line gets
  *  re-disabled, but that should be unlikely. If it does
  *  happen, it could be detected by keeping track. It is
@@ -294,8 +289,9 @@ void voigt::evaluate( ICOS_Float xx, ICOS_Float *p) {
  *  complain at alamda==0 time.
  */
 int voigt::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
-  if ( func_line::adjust_params(when, P, T) )
-    return 1;
+  int rv;
+  if ( rv = func_line::adjust_params(when, P, T) )
+    return rv;
   if (when == scan_init) {
     ICOS_Float Gl_calc = G_air * (P/760.) * pow( 296./T, n_air);
     set_param_scale(gl_idx, Gl_calc);

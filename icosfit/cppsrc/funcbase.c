@@ -186,7 +186,7 @@ func_base_ptbnu::func_base_ptbnu(const char *filename, func_evaluator *nu_F0) :
         nl_error( 3, "Out of memory in func_base_ptbnu::init" );
     }
     for ( int j = 0; j < nx; j++ ) {
-      ICOS_Float x = j/cfg.poly_scale;
+      ICOS_Float x = (j+MLBASE)/cfg.poly_scale;
       ICOS_Float power = x;
       for ( int i = 0; i < cfg.poly_coeffs-1; i++ ) {
         polyvecs[i][j] = power;

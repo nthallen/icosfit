@@ -115,7 +115,7 @@ fitfunc.o:	fitfunc.c ICOSfit.h global.h clp.h vector.h nl_assert.h \
 
 vector.o:	vector.c vector.h nl.h config.h
 
-evalorder.o:	evalorder.c config.h funceval.h
+evalorder.o:	evalorder.c config.h funceval.h nl.h
 
 funceval.o:	funceval.c config.h nl.h funceval.h global.h ptread.h mlf.h \
 		f_vector.h

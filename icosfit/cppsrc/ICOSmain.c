@@ -13,10 +13,10 @@
    verbose & 2 => V_INFO include info[1:9] in output
    verbose & 4 => V_CHKJAC check Jacobian and report in standard output file
    verbose & 8 => V_ITERATIONS output verbose files with fit curves for each iteration
-   verbose & 0x10 16 => V_DERIVATIVES include derivatives in verbose output files
-   verbose & 0x20 32 => V_SCALE include dscl with parameters in output files
-   verbose & 0x40 64 => V_CHKDER Manually check derivatives
-   verbose & 0x80 128 => V_VOIGT output X and K values for each voigt line in verbose(1) fits
+   verbose & 0x10 16 => V_DERIVATIVES Include analytic derivatives in verbose output files
+   verbose & 0x20 32 => V_SCALE Include dscl with parameters in output files
+   verbose & 0x40 64 => V_CHKDER Estimate derivatives via finite differences and include in fit curves files
+   verbose & 0x80 128 => V_VOIGT Output X and K values for each voigt line in verbose(1) fits
 */
 
 void ICOS_init() {
@@ -149,7 +149,7 @@ fitdata *build_func() {
     assert( abs != 0 && abs->args.size() != 0 && abs->args[0].arg->params.size() != 0 );
     fprintf( fp,
       "%% ICOS configuration data\n"
-      "ICOSfit_format_ver = 3;\n"
+      "ICOSfit_format_ver = 4;\n"
       "n_input_params = %d;\n"
       "n_base_params = %ld;\n"
       "binary = %d;\n"
@@ -178,24 +178,26 @@ fitdata *build_func() {
     abs->print_config( fp );
     int output_col = 7;
     fprintf(fp,
+      "\n"
       "%% Output file column definitions\n"
-      "%%  1: ScanNum\n"
-      "%%  2: Pressure Torr\n"
-      "%%  3: Temperature K\n"
-      "%%  4: chisq (or something like it)\n"
-      "%%  5: Starting sample for fit region\n"
-      "%%  6: Ending sample for fit region\n");
+      "output_cols = {\n"
+      "  'ScanNum' %% col 1\n"
+      "  'Pressure Torr' %% col 2\n"
+      "  'Temperature K' %% col 3\n"
+      "  'chisq (or something like it)' %% col 4\n"
+      "  'Starting sample for fit region' %% col 5\n"
+      "  'Ending sample for fit region' %% col 6\n");
     if (fd->verbose & V_INFO) {
       fprintf(fp,
-        "%% %2d: info[1]: ||e||_2\n"
-        "%% %2d: info[2]: ||J^T e||_inf\n"
-        "%% %2d: info[3]: ||Dp||_2\n"
-        "%% %2d: info[4]: mu/max[J^T J]_ii\n"
-        "%% %2d: info[5]: # of iterations\n"
-        "%% %2d: info[6]: reason for terminating\n"
-        "%% %2d: info[7]: # of function evaluations\n"
-        "%% %2d: info[8]: # of Jacobian evaluations\n"
-        "%% %2d: info[9]: # of linear systems solved\n",
+        "  'info[1]: ||e||_2' %% col %d\n"
+        "  'info[2]: ||J^T e||_inf' %% col %d\n"
+        "  'info[3]: ||Dp||_2' %% col %d\n"
+        "  'info[4]: mu/max[J^T J]_ii' %% col %d\n"
+        "  'info[5]: # of iterations' %% col %d\n"
+        "  'info[6]: reason for terminating' %% col %d\n"
+        "  'info[7]: # of function evaluations' %% col %d\n"
+        "  'info[8]: # of Jacobian evaluations' %% col %d\n"
+        "  'info[9]: # of linear systems solved' %% col %d\n",
         output_col, output_col+1, output_col+2, output_col+3,
         output_col+4, output_col+5, output_col+6, output_col+7,
         output_col+8);
@@ -207,8 +209,8 @@ fitdata *build_func() {
            ++child) {
         func_line *line = child->arg->is_line();
         if (line) {
-          fprintf(fp, "%% %2d: Line[%d] Floating\n", output_col++, line->line_number);
-          fprintf(fp, "%% %2d: Line[%d] Threshold\n", output_col++, line->line_number);
+          fprintf(fp, "  'Line[%d] Floating' %% col %d\n", line->line_number, output_col++);
+          fprintf(fp, "  'Line[%d] Threshold' %% col %d\n", line->line_number, output_col++);
         }
       }
     }
@@ -217,6 +219,7 @@ fitdata *build_func() {
     if (fd->verbose & 0x20) {
       fd->func->output_params(fp, func_evaluator::op_desc_dscl, output_col);
     }
+    fprintf(fp, "};\n");
     if (fd->verbose & V_INFO) {
       fprintf(fp,
         "%%\n"
@@ -232,10 +235,73 @@ fitdata *build_func() {
       );
     }
     fprintf(fp,
-      "%%\n"
+      "\n"
       "%% Floating values are 1 if the parameter is floating, 0 if fixed\n"
     );
     
+    
+    fprintf(fp,
+      "\n"
+      "%% p_cols is a list of parameter columns in the icosfit output file in the order\n"
+      "%% of the icosfit internal parameter array. Hence p_cols[i] is the 1-based\n"
+      "%% output column for the 0-based icosfit internal parameter p[i-1]\n"
+      "p_cols = ["
+    );
+    std::vector<func_parameter *>::iterator fpi;
+    const char *semicolon = "";
+    for (fpi = func_parameter::parameters.begin();
+         fpi != func_parameter::parameters.end();
+         ++fpi) {
+      fprintf(fp, "%s%d", semicolon, (*fpi)->param_col);
+      semicolon = ";";
+    }
+    fprintf(fp, "];\n\n");
+
+    fprintf(fp,
+      "%% col_params maps parameter columns in the icosfit output file to internal\n"
+      "%% 0-based icosfit parameter indices. The first 1-based column index of parameter\n"
+      "%% values in the icosfit output is min(p_cols). That output column corresponds\n"
+      "%% to the 0-based internal icosfit parameter col_params[1].\n"
+      "col_params = ["
+    );
+    output_col = 0;
+    fd->func->output_params(fp, func_evaluator::op_desc_col_params, output_col);
+    fprintf(fp, "];\n");
+    
+    fprintf(fp,
+      "\n"
+      "%% float_cols are the 1-based column indices for the values that indicate\n"
+      "%% whether the corresponding column's parameter value was fixed or floating\n"
+      "%% during the fit.\n"
+      "float_cols = ["
+    );
+    semicolon = "";
+    for (fpi = func_parameter::parameters.begin();
+         fpi != func_parameter::parameters.end();
+         ++fpi) {
+      fprintf(fp, "%s%d", semicolon, (*fpi)->float_col);
+      semicolon = ";";
+    }
+    fprintf(fp, "];\n");
+
+    
+    fprintf(fp,
+      "\n"
+      "%% scale_cols are the 1-based column indices for the scale values for the\n"
+      "%% corresponding column's parameter value during the fit. scale_cols will\n"
+      "%% be empty unless the appropriate Verbosity bit is set.\n"
+      "scale_cols = ["
+    );
+    if (fd->verbose & V_SCALE) {
+      semicolon = "";
+      for (fpi = func_parameter::parameters.begin();
+           fpi != func_parameter::parameters.end();
+           ++fpi) {
+        fprintf(fp, "%s%d", semicolon, (*fpi)->scale_col);
+        semicolon = ";";
+      }
+    }
+    fprintf(fp, "];\n");
     fclose(fp);
   }
   return fd;

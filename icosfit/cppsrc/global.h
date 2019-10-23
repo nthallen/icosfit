@@ -25,7 +25,10 @@ class GlobalData_t {
     ICOS_Float Sigma;
     ICOS_Float SampleRate;
     ICOS_Float SkewTolerance;
-    // ICOS_Float DefaultTemp;
+    ICOS_Float mu_scale;
+    ICOS_Float epsilon1;
+    ICOS_Float epsilon2;
+    ICOS_Float epsilon3;
     unsigned short QCLI_Wave;
     int binary;
     const char *ICOSdir;

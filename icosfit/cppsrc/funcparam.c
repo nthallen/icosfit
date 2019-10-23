@@ -11,12 +11,18 @@
 #include "ptread.h"
 #include "nl_assert.h"
 
+std::vector<func_parameter *> func_parameter::parameters;
+
 func_parameter::func_parameter(const char *name, ICOS_Float init_value,
         bool indexed, int idx) : func_evaluator(name,indexed,idx) {
   index = n_parameters++;
+  param_col = -1;
+  float_col = -1;
+  scale_col = -1;
   init_val = init_value;
   refs_float = 0;
   pre_evaluation_order.add(this);
+  parameters.push_back(this);
 }
 
 void func_parameter::init(ICOS_Float *p) {
@@ -110,13 +116,22 @@ void func_parameter::output_params(FILE *ofp, op_type which, int &output_col) {
       fprintf(ofp, " %13.7" FMT_E, dscl[index]);
       break;
     case op_desc:
-      fprintf(ofp, "%% %2d: param[%2d] Value: %s\n", output_col, index, name);
+      if (param_col < 0)
+        param_col = output_col;
+      fprintf(ofp, "  'param[%2d] Value: %s' %% col %d\n", index, name, output_col);
       break;
     case op_desc_float:
-      fprintf(ofp, "%% %2d: param[%2d] Floating: %s\n", output_col, index, name);
+      if (float_col < 0)
+        float_col = output_col;
+      fprintf(ofp, "  'param[%2d] Floating: %s' %% col %d\n", index, name, output_col);
       break;
     case op_desc_dscl:
-      fprintf(ofp, "%% %2d: param[%2d] Scale: %s\n", output_col, index, name);
+      if (scale_col < 0)
+        scale_col = output_col;
+      fprintf(ofp, "  'param[%2d] Scale: %s' %% col %d\n", index, name, output_col);
+      break;
+    case op_desc_col_params:
+      fprintf(ofp, "%s%d", output_col > 0 ? ";" : "", index);
       break;
     default:
       nl_error(3, "func_parameter::output_params(): op_type %d unsupported", which);

@@ -30,10 +30,15 @@ fitdata::fitdata( PTfile *ptf, ICOSfile *IF,
   if ( verbose & 8 ) {
     vmlf = mlf_init( 3, 60, 1, GlobalData.OutputDir, "dir", NULL );
   }
-  BaseStart = GlobalData.BackgroundRegion[0];
-  BaseEnd = GlobalData.BackgroundRegion[1];
-  SignalStart = GlobalData.SignalRegion[0] + func->skew_samples();
-  SignalEnd = GlobalData.SignalRegion[1];
+  // BaseStart = GlobalData.BackgroundRegion[0];
+  // BaseEnd = GlobalData.BackgroundRegion[1];
+  SignalStart = GlobalData.SignalRegion[0]-MLBASE + func->skew_samples();
+  SignalEnd = GlobalData.SignalRegion[1]-MLBASE;
+  opts[0] = GlobalData.mu_scale;
+  opts[1] = GlobalData.epsilon1;
+  opts[2] = GlobalData.epsilon2;
+  opts[3] = GlobalData.epsilon3;
+  opts[4] = 1e-6; // LM_DIFF_DELTA
   
   Start = End = 0;
   npts = 0;
@@ -269,18 +274,25 @@ int fitdata::fit( ) {
       // returns # of iterations or LM_ERROR (-1)
       // Defaulting opts and covar
       if (dlevmar_bc_der(levmar_func, levmar_jacf, p, y, mp, npts, lb, ub, dscl,
-            GlobalData.MaxIterations, 0, info, lm_work, 0, &adata) == LM_ERROR) {
+            GlobalData.MaxIterations, opts, info, lm_work, 0, &adata) == LM_ERROR) {
         nl_error(1, "LM_ERROR: reason %.0lf", info[6]);
         func_evaluator::dump_evaluation_order.dump();
         return 0;
       }
-      if (adjust_params(scan_finalize)) {
-        for ( i = 0; i < mp; ++i ) p[i] = p_save[i];
-        nl_error( 0,
-          "Parameters rolled back, Retrying after updating line constraints");
-      } else {
-        chisq = info[1]/(End-Start+1); // population variance
-        return 1;
+      switch (adjust_params(scan_finalize)) {
+        case 1:
+          for ( i = 0; i < mp; ++i ) p[i] = p_save[i];
+          nl_error( 0,
+            "%d: Parameters rolled back, Retrying after updating line constraints", vctr);
+          break;
+        case 2:
+          nl_error(0, "%d: Continuing without rollback", vctr);
+          break;
+        case 0:
+          chisq = info[1]/(End-Start+1); // population variance
+          return 1;
+        default:
+          nl_error(3, "%d: Unexpected return value from fitdata::adjust_params()", vctr);
       }
     }
   } else {
@@ -320,14 +332,14 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
           delta, difjac, mp, npts, &adata);
         func_parameter::checking_jacobian = true;
       }
-      func_evaluator::pre_evaluation_order.pre_eval(x[1], pv);
+      func_evaluator::pre_evaluation_order.pre_eval(x[0], pv);
       for (i = 0; i < npts; ++i) {
         ICOS_Float yfit;
         func_evaluator::global_evaluation_order.evaluate_partials(x[i], pv);
         yfit = func->value;
         fprintf( vofp, "%12.6" FMT_E " %14.8" FMT_E " %12.6" FMT_E
           " %12.6" FMT_E " %12.6" FMT_E " %12.6" FMT_E,
-          x[i], ICOSfile::wndata->data[i+Start],
+          x[i]+MLBASE, ICOSfile::wndata->data[i+Start],
           y[i], yfit, base->value, absorb->value );
         if (verbose & V_VOIGT)
           absorb->print_intermediates(vofp);
@@ -359,7 +371,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
     int n_i_p = 6;
     nl_assert( ScanNum_col == 1 );
     fprintf( ofp, "%6d %6.2lf %6.2lf %12.5le %d %d",
-      fileno, PTf->P, PTf->T, chisq, Start, End);
+      fileno, PTf->P, PTf->T, chisq, Start+MLBASE, End+MLBASE);
     if (verbose & V_INFO) {
       n_i_p += 9;
       fprintf(ofp,
@@ -424,6 +436,6 @@ void fitdata::vwrite(ICOS_Float *pv, ICOS_Float *J) {
       }
       fclose(vvfp);
     }
-    ++vctr;
   }
+  ++vctr;
 }

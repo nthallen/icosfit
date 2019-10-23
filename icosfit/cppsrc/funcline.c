@@ -102,7 +102,7 @@ func_line::func_line( const char *name, int mol, int iso,
   n_air = n_in;
   delta = delta_in;
   S_thresh = threshold;
-  ipos = ipos_in;
+  ipos = ipos_in-MLBASE;
   Corr_Tref = 1/(exp(-C2 * E / Tref ) * (1-exp(-C2*nu/Tref)));
   nu_F0_idx = -1;
 }
@@ -180,7 +180,7 @@ int func_line::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
           nl_error( 0, "Floating line %d (strength %" FMT_G ")",
                       line_number, strength );
           line_float();
-          return 1;
+          return 2;
         } else nl_error( 0, "NOT re-floating line %d",
                   line_number );
       }

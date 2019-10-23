@@ -28,9 +28,7 @@ class paramref {
  * a func_evaluator. There is not a 1:1 relationship between actual
  * parameters and parameter objects, since a func_evaluator references
  * all the parameters that its children do. The parameters themselves
- * are characterized by the p, ul and ub vectors. If we want to
- * mark a parameter as fixed or floating, we probably need to restore
- * the ia vector.
+ * are characterized by the p, is_floating, ub and lb vectors.
  */
 class parameter {
   public:
@@ -57,9 +55,31 @@ class argref {
 class evaluation_order {
   public:
     std::vector<func_evaluator*> order;
+    /**
+     * Add func and all children to the evaluation order, evaluating
+     * the children first.
+     * @param func The function to be added
+     * @param top true if being invoked at the top level
+     * @param clear set to true for the first pass
+     */
     void set(func_evaluator *func, bool top = true, bool clear = false);
+    /**
+     * Add func and all children to the evaluation order, evaluating
+     * the func before the children.
+     * @param func The function to be added
+     * @param top true if being invoked at the top level
+     * @param clear set to true for the first pass
+     */
     void set_pre_order(func_evaluator *func, bool top = true, bool clear = false);
+    /**
+     * Similar to set(func, true) but without adding this func to the order.
+     * @param func The function whose children are to be added
+     */
     void set_children(func_evaluator *func);
+    /**
+     * Adds func to the end of the current evaluation order.
+     @param func The function to be added.
+     */
     void add(func_evaluator *func);
     void evaluate(ICOS_Float x, ICOS_Float *p);
     void evaluate_partials(ICOS_Float x, ICOS_Float *p);
@@ -158,23 +178,17 @@ class func_evaluator {
     }
     /**
      * @param alamda The Levenberg-Marquardt lambda parameter
+     * @param when indicates whether this invocation is before or after the fit
      * @param P Current pressure in Torr
      * @param T Current temperature in Kelvin
+     * @return non-zero if line constraints have changed after fitting.
      *
-     * According to the description of the Levenberg-Marquardt Method
-     * in Numerical Recipes in C, alamda takes on a few special values.
-     * Values less than zero indicate initialization. alamda is also set
-     * to zero for the final computation of the covariance matrix.
-     * Otherwise it takes values greater than zero. In adjust_params(),
-     * we use alamda purely to identify initialization steps. In
-     * particular, alamda is used to indicate:
-     *  - alamda = -2.0 called once per data set for initialization (scan_init)
-     *  - alamda - -1.0 Initialization: set fixed parameters (scan_reinit)
-     *  - alamda > 0 Iteration: check floating parameters (deprecated)
-     *  - alamda == 0 Finalization: check if redo is required (scan_finalize)
-     *
-     * With levmar, we will replace the alamda > 0 checks with box
-     * constraints.
+     * Function returns:
+     *   0 if constraints or parameter values have not changed
+     *   1 if constraints have changed after the fit and require rollback
+     *   2 if constraints have changed and fit should continue without rollback
+     * Assumption is that non-zero values should only be returned when
+     * when==scan_finalize.
      *
      * Might be possible to get into oscillation if line gets
      * re-disabled, but that should be unlikely. If it does
@@ -200,7 +214,7 @@ class func_evaluator {
     virtual void print_config(FILE *fp);
     virtual void print_intermediates(FILE *fp);
     
-    typedef enum { op_value, op_float, op_dscl, op_desc, op_desc_float, op_desc_dscl } op_type;
+    typedef enum { op_value, op_float, op_dscl, op_desc, op_desc_float, op_desc_dscl, op_desc_col_params } op_type;
     /**
       @param ofp FILE pointer to ICOSsum.dat
       @param fixed true to output fixed/floating bool values, false to output
@@ -260,8 +274,12 @@ class func_parameter : public func_evaluator {
     virtual void input_params(char *&bp, op_type which);
     
     int index; ///< Parameter's global index
+    int param_col; ///< The first output column that holds this parameter's value
+    int float_col; ///< The first output column that holds this parameter's float status
+    int scale_col; ///< The first output column that holds this parameter's scale
     static unsigned n_parameters;
     static bool checking_jacobian;
+    static std::vector<func_parameter *> parameters;
   protected:
     ICOS_Float init_val; ///< Initialization value
     uint32_t refs_float; ///< Bit-mapped
