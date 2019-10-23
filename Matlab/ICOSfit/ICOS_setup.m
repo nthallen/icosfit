@@ -149,6 +149,7 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
   if S.ICOSfit_format_ver >= 4
     S.output_cols = output_cols;
     S.p_cols = p_cols;
+    S.col_params = col_params;
     S.float_cols = float_cols;
     S.scale_cols = scale_cols;
   end
