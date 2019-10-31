@@ -4,10 +4,12 @@ function [ base, etln, bkgd ] = loadscans(basepath, scannum, x, zero)
 % Extracts a number of ICOS scans from the raw files.
 % base has length(x) rows and length(scannum) columns
 % x defaults to the entire scan;
-% etln and bkgd are an optional outputs.
-% The optional zero input if non-zero indicates that
-% the mean of samples [1:wv.TzSamples] should be subtracted.
+% etln and bkgd are optional outputs.
+% The optional zero input, if non-zero, indicates that
+% the mean of samples in the BackgroundRegion should be subtracted.
 % Setting zero to 0 disables this subtraction.
+% The BackgroundRegion defaults to 5:wv.TzSamples, but can be
+% changed using save_waveform_params().
 if nargin < 3
   x = [];
 end
@@ -27,7 +29,7 @@ wv = waves_used(scannum);
 if length(wv) > 1
   error('More than one waveform used');
 end
-x0 = 5:wv.TzSamples;
+x0 = get_waveform_params(wv.Name, 'BackgroundRegion', 5:wv.TzSamples);
 if isempty(x0)
   x0 = 1;
   zero = 0;

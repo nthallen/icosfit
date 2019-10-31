@@ -170,7 +170,12 @@ Baseline = struct('nu', nu, 'vectors', vectors, ...
 assert(Ptype == 0);
 % assert(isempty(vectors));
 n_vectors = size(vectors,2);
-assert(RC.S.n_base_params == n_vectors + p_coeffs);
+if n_vectors
+  n_base_params = n_vectors + p_coeffs + 1; % for nu_f0
+else
+  n_base_params = p_coeffs;
+end
+assert(RC.S.n_base_params == n_base_params);
 assert(length(PV) == p_coeffs);
 Baseline.minx = min(RC.S.fitdata(:,5));
 if RC.S.N_Passes == 0
@@ -186,5 +191,5 @@ baseline = RC.Baseline.XM(SR - RC.Baseline.minx+1,:) * ...
     BP(end-RC.Baseline.p_coeffs+1:end);
 for i=1:size(RC.Baseline.vectors,2)
     baseline = baseline + ...
-        interp1(RC.Baseline.nu,RC.Baseline.vectors(:,i),nu) * BP(i);
+        interp1(RC.Baseline.nu,RC.Baseline.vectors(:,i),nu) * BP(i+1);
 end

@@ -19,6 +19,8 @@ function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
 %
 % periods is a vector of wave periods to include in the baseline. For each
 % period, two vectors (cos & sin) will be included in the baseline.
+% Now: periods is an n x 2 matrix where the first column holds wave periods
+% and the second column holds wave amplitude.
 %
 % scannum is a representative scannum number to use for approximating the polynomial
 % coefficients for Herriot Cell configurations. Could be extended for use with
@@ -40,10 +42,18 @@ nu = [nu_min:res:nu_max];
 if ~isempty(c_nu)
     c_vector=interp1(c_nu,c_vector,nu);
 end
+if ~isempty(periods)
+  if size(periods,2) ~= 2
+    error('periods must be size nx2 with ampltitude in the second column');
+  end
+  if size(periods,1) == 1
+    warning('periods of size 1x2 being interpreted as one period,ampltitude pair');
+  end
+end
 if nargout > 0
   nu_out = nu';
   if nargout > 1
-    Vout = zeros(length(nu),length(periods)*2);
+    Vout = zeros(length(nu),size(periods,1)*2);
   end
 end
 
@@ -81,19 +91,19 @@ fid = fopen( fname2, 'w' );
 if fid > 0
   fwrite( fid, [0 1], 'integer*4'); % func_base_ptbnu format
   fwrite( fid, [ 1000 min(nu) res ], 'real*8' ); % polyscale, nu_min, dnu
-  fwrite( fid, [ 2*length(periods)+size(c_vector,1) length(nu) p_coeffs 0 ], 'integer*2' );
+  fwrite( fid, [ 2*size(periods,1)+size(c_vector,1) length(nu) p_coeffs 0 ], 'integer*2' );
   % n_vectors n_pts poly_coeffs poly_of_nu
-  fwrite( fid, ones(1,2*length(periods)+size(c_vector,1)), 'real*4' );
+  fwrite( fid, ones(1,2*size(periods,1)+size(c_vector,1)), 'real*4' );
   % Initial parameter values
   fwrite( fid, V, 'real*4' );
   fwrite( fid, c_vector/k, 'real*4');
-  for i=1:length(periods)
-    theta = 2*pi*nu/periods(i);
-    fwrite( fid, sin(theta)/k, 'real*4');
-    fwrite( fid, cos(theta)/k, 'real*4');
+  for i=1:size(periods,1)
+    theta = 2*pi*nu/periods(i,1);
+    fwrite( fid, periods(i,2)*sin(theta)/(k*sqrt(2)), 'real*4');
+    fwrite( fid, periods(i,2)*cos(theta)/(k*sqrt(2)), 'real*4');
     if nargout > 1
-      Vout(:,2*i-1) = sin(theta);
-      Vout(:,2*i) = cos(theta);
+      Vout(:,2*i-1) = periods(i,2)*sin(theta)/sqrt(2);
+      Vout(:,2*i) = periods(i,2)*cos(theta)/sqrt(2);
     end
   end
   fclose(fid);

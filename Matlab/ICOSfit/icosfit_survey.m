@@ -122,6 +122,7 @@ for j = 1:length(N)
   ylabel('mol/cm^3');
 end
 %%
+% Look at percentage differences in number density
 for j = 1:length(N)
   NN = N{j}.N;
   NN0 = NN(:,1)*ones(1,neps2);
@@ -133,4 +134,26 @@ for j = 1:length(N)
   xlabel('\epsilon_2');
   ylabel('percent error');
   ylim([-0.2 1.2]);
+end
+%%
+% Look at absolute differences in number density
+for j = 1:length(N)
+  NN = N{j}.N;
+  NN0 = NN(:,1)*ones(1,neps2);
+  dNN = NN - NN0;
+  f = figure;
+  ax = [subplot(3,1,1) nsubplot(3,1,2) nsubplot(3,1,3)];
+  %semilogx(ax(1),seps2,mean(dNN),seps2,std(dNN),'-*');
+  errorbar(ax(1),seps2,mean(dNN),std(dNN),'-*');
+  set(ax(1),'XScale','log');
+  title(ax(1),sprintf('%s vs \\epsilon_2',N{j}.name));
+  xlabel(ax(1),'\epsilon_2');
+  ylabel(ax(1),'N error molecules/cm^3');
+  plot(ax(2),scannum,NN(:,1));
+  ylabel(ax(2),'"best" fit molecules/cm^3');
+  set(ax(2),'XTickLabels',[]);
+  plot(ax(3),scannum,dNN,'-*');
+  set(ax(3),'YAxisLocation','Right');
+  ylabel(ax(3),'Error molecules/cm^3');
+  linkaxes(ax(2:3),'x');
 end

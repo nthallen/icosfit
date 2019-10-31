@@ -110,7 +110,8 @@ void func_parameter::output_params(FILE *ofp, op_type which, int &output_col) {
       fprintf(ofp, " %13.7" FMT_E, value);
       break;
     case op_float:
-      fprintf(ofp, " %d", refs_float);
+      nl_assert(is_floating[index] == (refs_float != 0));
+      fprintf(ofp, " %d", refs_float ? 1 : 0);
       break;
     case op_dscl:
       fprintf(ofp, " %13.7" FMT_E, dscl[index]);
