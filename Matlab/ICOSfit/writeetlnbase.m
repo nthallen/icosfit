@@ -10,17 +10,21 @@ function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
 % Note: The func_base_ptbnu format allows polynomials of wavenumber as
 % well, but this function does not currently support that option.
 %
-% p_coeffs is the number of polynomial coefficients (degree+1). Output
-% specifies polynomial function of sample number/1000.
+% p_coeffs is either:
+%   a: the scalar number of polynomial coefficients (degree+1). Output
+%      will estimate the coefficients based on the specified scan data.
+%   b: a vector of polynomical coefficents in polyfit order (highest degree
+%      first.)
+% The polynomial function's input is sample number/1000.
 %
 % c_nu and c_vector, if non-empty, specify explicit SVD-type vectors
 % to include in the baseline. These vectors are resampled onto an evenly-
 % spaced nu vector.
 %
-% periods is a vector of wave periods to include in the baseline. For each
-% period, two vectors (cos & sin) will be included in the baseline.
-% Now: periods is an n x 2 matrix where the first column holds wave periods
-% and the second column holds wave amplitude.
+% periods is an n x 2 matrix where the first column holds wave periods
+% and the second column holds wave amplitude. This is a change from earlier
+% versions where all amplitudes were assumed to be 1. This change could be
+% reverted if baseline_rescale works well.
 %
 % scannum is a representative scannum number to use for approximating the polynomial
 % coefficients for Herriot Cell configurations. Could be extended for use with
@@ -40,7 +44,23 @@ nu_min = min(nuc)-margin;
 nu_max = max(nuc)+margin+res;
 nu = [nu_min:res:nu_max];
 if ~isempty(c_nu)
+  % complain if c_nu does not cover the range
+  if nu_min < min(c_nu)-res/2 || nu_max > max(c_nu)+res/2
+    error('c_nu does not cover the range required');
+  end
+  % resample only if c_nu is not uniformly spaced
+  d_c_nu = diff(c_nu);
+  ud_c_nu = unique(abs(d_c_nu));
+  md_c_nu = abs(mean(d_c_nu));
+  if any((diff(ud_c_nu)/md_c_nu) > 1e-8)
+    fprintf(1,'Resampling c_vector due to non-uniform c_nu\n');
     c_vector=interp1(c_nu,c_vector,nu);
+  else
+    nu = c_nu;
+  end
+end
+if nargin < 5
+  periods = [];
 end
 if ~isempty(periods)
   if size(periods,2) ~= 2
@@ -69,7 +89,13 @@ N_Passes = cellparams.N_Passes;
 % % into account the ICOS gain (see skew_matrix). For a non-
 % % integrating cavity, you don't get that gain.
 k = 1;
-if p_coeffs>0
+if length(p_coeffs) > 1
+  if size(p_coeffs,2)==1
+    p_coeffs = p_coeffs';
+  end
+  V = fliplr(p_coeffs);
+  p_coeffs = length(V);
+elseif p_coeffs>0
   if nargin >= 6
     wv = waves_used(scannum);
     x = get_waveform_params(wv.Name,'SignalRegion', 1:wv.NetSamples);
@@ -91,7 +117,8 @@ fid = fopen( fname2, 'w' );
 if fid > 0
   fwrite( fid, [0 1], 'integer*4'); % func_base_ptbnu format
   fwrite( fid, [ 1000 min(nu) res ], 'real*8' ); % polyscale, nu_min, dnu
-  fwrite( fid, [ 2*size(periods,1)+size(c_vector,1) length(nu) p_coeffs 0 ], 'integer*2' );
+  n_vectors = 2*size(periods,1)+size(c_vector,2);
+  fwrite( fid, [ n_vectors length(nu) p_coeffs 0 ], 'integer*2' );
   % n_vectors n_pts poly_coeffs poly_of_nu
   fwrite( fid, ones(1,2*size(periods,1)+size(c_vector,1)), 'real*4' );
   % Initial parameter values

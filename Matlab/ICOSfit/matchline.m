@@ -84,10 +84,12 @@ if nargin == 0 || strcmp(op,'init')
   SampleRate = round(wv.RawRate/wv.NAverage);
   % fprintf(1,'Waveform is %s\n',wv.Name);
   
-  [ holdoff, x, LineMargin, LineMarginMultiplier ] = get_waveform_params( wv.Name, ...
-    'holdoff', 4e-4, ...
-    'SignalRegion', [], ...
-    'LineMargin', 0.05, 'LineMarginMultiplier',8 );
+  [ holdoff, x, LineMargin, LineMarginMultiplier, BackgroundRegion ] = ...
+    get_waveform_params( wv.Name, ...
+      'holdoff', 4e-4, ...
+      'SignalRegion', [], ...
+      'LineMargin', 0.05, 'LineMarginMultiplier',8, ...
+      'BackgroundRegion', [5,wv.TzSamples]);
   if isempty(x)
     startsample = round(wv.TzSamples + holdoff*SampleRate);
     endsample = wv.NetSamples - wv.TzSamples - 1;
@@ -232,6 +234,7 @@ if nargin == 0 || strcmp(op,'init')
   ml_obj.wv = wv;
   ml_obj.LineMargin = LineMargin;
   ml_obj.LineMarginMultiplier = LineMarginMultiplier;
+  ml_obj.BackgroundRegion = BackgroundRegion;
   ml_obj.SampleRate = SampleRate;
   ml_obj.MirrorLoss = MirrorLoss;
   ml_obj.EtalonFSR = cellparams.fsr;
@@ -291,7 +294,7 @@ function draw_lines(ml_obj)
 fig = get(ml_obj.ax,'parent');
 axes(ml_obj.ax);
 cla;
-XV = polyfit(ml_obj.x,ml_obj.base,1);
+XV = polyfit(ml_obj.x,ml_obj.base,2);
 Xy = polyval(XV,ml_obj.x);
 plot(ml_obj.x, ml_obj.f-Xy, ml_obj.x, ml_obj.base-Xy);
 hold on;
@@ -358,7 +361,8 @@ fprintf( fid, 'Verbosity = 1;\n' );
 fprintf( fid, 'QCLI_Wave = %d; # Waveform %s\n', ml_obj.QCLI_Wave, ml_obj.wv.Name );
 fprintf( fid, 'ScanNumRange = [ %d, %d ];\n', ScanNum(1), ScanNum(2) );
 fprintf( fid, 'SignalRegion = [ %d, %d ];\n', min(ml_obj.x), max(ml_obj.x) );
-fprintf( fid, 'BackgroundRegion = [ %d, %d ];\n', 5, ml_obj.wv.TzSamples );
+fprintf( fid, 'BackgroundRegion = [ %d, %d ];\n', ...
+  ml_obj.BackgroundRegion(1), ml_obj.BackgroundRegion(end));
 % fprintf( fid, 'MinimumFringeSpacing = %.1f;\n', min(diff(frx)));
 fprintf( fid, 'SampleRate = %d Hz;\n', ml_obj.SampleRate );
 fprintf( fid, 'Threshold = %g;\n', ml_obj.line_obj.Threshold );
@@ -395,8 +399,7 @@ for i=1:size(lines,1)
   end
   fprintf(fid, ';\n' );
 end
-fprintf( fid, '};\n\n%s\n', ...
-  '# DSFRLimits = [ .90, 1.26 ];');
+fprintf( fid, '};\n\n');
 
 fprintf( fid, 'LineMargin = %.2f cm-1;\n', ml_obj.LineMargin );
 fprintf( fid, 'LineMarginMultiplier = %d;\n', ml_obj.LineMarginMultiplier );

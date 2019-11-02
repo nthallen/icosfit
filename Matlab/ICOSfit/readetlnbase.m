@@ -2,6 +2,7 @@ function [ nu, vectors, p_coeffs, Ptype, PV, Pscale ] = readetlnbase( file )
 % [ nu, vectors, p_coeffs, Ptype, PV, Pscale ] = readetlnbase( file );
 % read func_base_ptbnu file format for baseline files containing
 % polynomials and etalons (or other vectors of nu).
+% PV is of length p_coeffs in polyfit order (highest degree first).
 % FILEFORMAT (from funceval.h):
 % // This is a function supporting vectors as a function of
 % // nu as well as polynomials as a function of x or nu

@@ -42,7 +42,7 @@ for eps2 in $epsilon2; do
   echo
   echo "Processing epsilon2=$eps2"
   echo
-  ( cat $template
+  ( grep -v 'OutputDir\|epsilon2' $template
     echo "OutputDir = $base/ICOSout.survey.$eps2;"
     echo "epsilon2 = $eps2;"
   ) >$cfgfile
