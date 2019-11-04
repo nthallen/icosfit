@@ -10,18 +10,19 @@ while true
   if isempty(tline) || isnumeric(tline)
     break;
   end
-  hasfld = '';
+  hasfld = false;
   for i=1:length(flds)
     if contains(tline,flds{i})
-      hasfld = flds{i};
+      hasfld = true;
       break;
     end
   end
-  if isempty(hasfld)
+  if ~hasfld
     fprintf(ofp, '%s', tline);
-  else
-    fprintf(ofp, '%s = %s;\n', hasfld, opts.(hasfld));
   end
 end
 fclose(ifp);
+for i=1:length(flds)
+  fprintf(ofp, '%s = %s;\n', flds{i}, opts.(flds{i}));
+end
 fclose(ofp);

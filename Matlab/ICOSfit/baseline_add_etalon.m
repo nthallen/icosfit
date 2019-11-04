@@ -17,6 +17,7 @@ if nargin < 3 || isempty(scans)
 else
   scani = interp1(S.scannum,scani,scans,'nearest');
 end
+if nargin < 2, oname = ''; end
 
 % Load the existing baseline and perform sanity checks
 [nu, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
@@ -46,9 +47,17 @@ mDFT = mean(DFT,2);
 fmax = f(find(mDFT==max(mDFT),1));
 figure;
 plot(f,DFT,fmax*[1 1],[0 max(max(DFT))*1.1],'r');
-title(sprintf('Adding largest etalon at %.1f cm^{-1}', fmax));
+if isempty(oname)
+  title(sprintf('%s: Largest etalon at %.1f cm^{-1}', ...
+    base, fmax));
+else
+  title(sprintf('%s: Adding largest etalon at %.1f cm^{-1} as %s', ...
+    base, fmax, oname));
+end
 xlabel('cm^{-1}');
 
 pmax = 1/fmax;
-writeetlnbase(oname,PV,nu,vectors, [pmax 1]);
+if ~isempty(oname)
+  writeetlnbase(oname,PV,nu,vectors, [pmax 1]);
+end
 % writeetlnbase(oname,oPV,nu,vectors);

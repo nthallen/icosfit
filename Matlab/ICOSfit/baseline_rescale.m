@@ -26,7 +26,7 @@ if p_coeffs ~= length(PV)
 end
 n_base_params = p_coeffs;
 if ~isempty(vectors)
-  n_base_params = 1 + size(vectors,2);
+  n_base_params = n_base_params + 1 + size(vectors,2);
 end
 if n_base_params ~= S.n_base_params
   error('n_base_params do not agree');
@@ -37,7 +37,7 @@ end
 meanp = mean(S.fitdata(scani,S.n_input_params + (1:n_base_params)));
 oPV = fliplr(meanp(1,n_base_params + (1-p_coeffs:0)));
 i = 0;
-while i < size(vectors,2)
+for i = 0:(size(vectors,2)/2)-1
   mag = mean(sqrt(sum(S.fitdata(scani,S.n_input_params + 2*i + (1:2)).^2,2)));
   if mag > 0
     vectors(:,2*i+(1:2)) = mag * vectors(:,2*i+(1:2));
