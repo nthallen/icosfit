@@ -231,8 +231,6 @@ classdef icosfit_runs < handle
       if self.param_idx == 0
         self.param_idx = 1;
       end
-      val0txt = self.survey(self.ivals(1)).text;
-      valtxt = self.survey(self.ivals(self.inp_idx)).text;
       if self.param_idx > 0
         pname = self.params{self.param_idx};
         NN = self.P(:,:,self.param_idx);
@@ -246,15 +244,27 @@ classdef icosfit_runs < handle
         end
         NN = self.(pname);
       end
-      NN0 = NN(:,1)*ones(1,self.n_vals);
+      pname = strrep(pname, '_', '\_');
+      refcols = find(any(~isnan(NN)));
+      if isempty(refcols)
+        refcol = 1;
+      else
+        refcol = refcols(1);
+        if (self.inp_idx <= refcol || all(isnan(NN(:,self.inp_idx)))) && length(refcols) > 1
+          self.inp_idx = refcols(2);
+        end
+      end
+      val0txt = self.survey(self.ivals(refcol)).text;
+      valtxt = self.survey(self.ivals(self.inp_idx)).text;
+      NN0 = NN(:,refcol)*ones(1,self.n_vals);
       dNN = NN - NN0;
       errorbar(lax(1),self.svals,mean(dNN),std(dNN),'-*');
-      set(lax(1),'XScale',self.scale);
+      set(lax(1),'XScale',self.scale,'XTick',self.svals,'XTickLabel',{ self.survey.text } );
       title(lax(1),sprintf('%s vs %s',pname,self.criterion));
       xlabel(lax(1),self.units);
       ylabel(lax(1),sprintf('%s error',pname));
       
-      plot(lax(2),self.scannum,NN(:,[1 self.inp_idx]));
+      plot(lax(2),self.scannum,NN(:,[refcol self.inp_idx]));
       title(lax(2),sprintf('Parameter %s with %s = %s',pname,self.criterion, valtxt));
       ylabel(lax(2),sprintf('%s value',pname));
       legend(lax(2),val0txt, valtxt);

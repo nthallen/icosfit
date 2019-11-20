@@ -38,9 +38,10 @@ meanp = mean(S.fitdata(scani,S.n_input_params + (1:n_base_params)));
 oPV = fliplr(meanp(1,n_base_params + (1-p_coeffs:0)));
 i = 0;
 for i = 0:(size(vectors,2)/2)-1
-  mag = mean(sqrt(sum(S.fitdata(scani,S.n_input_params + 2*i + (1:2)).^2,2)));
+  vcols = 2*i+(1:2);
+  mag = mean(sqrt(sum(S.fitdata(scani,S.n_input_params + 1 + vcols).^2,2)));
   if mag > 0
-    vectors(:,2*i+(1:2)) = mag * vectors(:,2*i+(1:2));
+    vectors(:,vcols) = mag * vectors(:,vcols);
   end
 end
 writeetlnbase(oname,oPV,nu,vectors);

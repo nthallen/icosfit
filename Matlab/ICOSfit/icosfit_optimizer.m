@@ -20,6 +20,9 @@ classdef icosfit_optimizer < handle
       % IO.new_polynomial(n_pcoeffs);
       % Create a new baseline file using the specified number of
       % polynomial coefficients.
+      % create new config file
+      % run the fit
+      % add the fit to the survey
     end
     
     function etalon_analysis(self)

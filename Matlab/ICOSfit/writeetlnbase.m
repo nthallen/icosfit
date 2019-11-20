@@ -120,7 +120,7 @@ if fid > 0
   n_vectors = 2*size(periods,1)+size(c_vector,2);
   fwrite( fid, [ n_vectors length(nu) p_coeffs 0 ], 'integer*2' );
   % n_vectors n_pts poly_coeffs poly_of_nu
-  fwrite( fid, ones(1,2*size(periods,1)+size(c_vector,1)), 'real*4' );
+  fwrite( fid, ones(1,2*size(periods,1)+size(c_vector,2)), 'real*4' );
   % Initial parameter values
   fwrite( fid, V, 'real*4' );
   fwrite( fid, c_vector/k, 'real*4');
