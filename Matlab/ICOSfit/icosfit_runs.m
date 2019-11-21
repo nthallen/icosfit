@@ -51,6 +51,7 @@ classdef icosfit_runs < handle
     % figure stuff
     f % The current figure. Should be empty if none
     ax % The axes of f
+    ref_idx % The index of the reference input criterion
     inp_idx % The index of the currently displayed input criterion
     param_idx % The index of the currently displayed parameter
   end
@@ -84,7 +85,12 @@ classdef icosfit_runs < handle
       end
       self.f = [];
       self.param_idx = 0;
+      self.ref_idx = 1;
       self.inp_idx = 0;
+      self.setup_survey;
+    end
+    
+    function setup_survey(self)
       [self.svals, self.ivals] = sort([self.survey.value]);
       self.n_vals = length(self.svals);
       %%
@@ -93,7 +99,7 @@ classdef icosfit_runs < handle
       % each run. Want to cache this info, but don't need to store it
       % in the object
       cache(self.n_vals) = struct('S',[],'p_cols',[]);
-      params = [];
+      lparams = [];
       for i=1:self.n_vals
         base = self.survey(self.ivals(i)).base;
         S = ICOS_setup(base);
@@ -102,29 +108,29 @@ classdef icosfit_runs < handle
         Spfix = regexprep(Sparams,'\[','_');
         Spfix = regexprep(Spfix,'\]','');
         for j=1:length(Sparams)
-          if ~isfield(params, Spfix{j})
+          if ~isfield(lparams, Spfix{j})
             p_cols = zeros(self.n_vals,1);
             p_cols(i) = S.p_cols(j);
-            params.(Spfix{j}) = ...
+            lparams.(Spfix{j}) = ...
               struct('name', Sparams{j}, 'p_cols', p_cols, ...
                 'floats', any(S.fitdata(:,S.float_cols(j))));
           else
-            params.(Spfix{j}).p_cols(i) = S.p_cols(j);
-            if ~params.(Spfix{j}).floats
-              params.(Spfix{j}).floats = any(S.fitdata(:,S.float_cols(j)));
+            lparams.(Spfix{j}).p_cols(i) = S.p_cols(j);
+            if ~lparams.(Spfix{j}).floats
+              lparams.(Spfix{j}).floats = any(S.fitdata(:,S.float_cols(j)));
             end
           end
         end
       end
       
       % Determine which params are floating and sort them
-      all_p = fields(params);
+      all_p = fields(lparams);
       floats(length(all_p)) = false;
       for j = 1:length(all_p)
-        floats(j) = params.(all_p{j}).floats;
+        floats(j) = lparams.(all_p{j}).floats;
       end
       self.n_params = sum(floats);
-      [self.params,Iparams] = sort(all_p(floats));
+      [self.params,~] = sort(all_p(floats));
       
       % Now build the following matrices:
       %   chi2(ncans,self.n_vals)
@@ -159,7 +165,7 @@ classdef icosfit_runs < handle
           self.rtimes(:,i) = rtimes_in;
         end
         for j=1:self.n_params
-          col = params.(self.params{j}).p_cols(i);
+          col = lparams.(self.params{j}).p_cols(i);
           if col > 0
             self.P(:,i,j) = S.fitdata(:,col);
           end
@@ -170,62 +176,76 @@ classdef icosfit_runs < handle
     function show_times(self)
       figure;
       if self.use_times
-        ax = [nsubplot(3,1,1) nsubplot(3,1,2) nsubplot(3,1,3)];
+        lax = [nsubplot(3,1,1) nsubplot(3,1,2) nsubplot(3,1,3)];
         ut = 1;
-        plot(ax(1),self.svals,self.rtimes');
-        set(ax(1),'XTickLabels',[],'YAxisLocation','Left');
+        plot(lax(1),self.svals,self.rtimes');
+        set(lax(1),'XTickLabels',[],'YAxisLocation','Left');
         xlabel(self.units);
-        ylabel(ax(1),'Mean Seconds/Scan');
-        legend(ax(1),'real','user','sys');
+        ylabel(lax(1),'Mean Seconds/Scan');
+        legend(lax(1),'real','user','sys');
       else
-        ax = [nsubplot(2,1,1) nsubplot(2,1,2)];
+        lax = [nsubplot(2,1,1) nsubplot(2,1,2)];
         ut = 0;
       end
       
-      plot(ax(1+ut),self.svals,self.iterations','-*');
-      ylabel(ax(1+ut),'Iterations');
-      set(ax(1+ut),'XTickLabels',[],'YAxisLocation','Right');
+      plot(lax(1+ut),self.svals,self.iterations','-*');
+      ylabel(lax(1+ut),'Iterations');
+      set(lax(1+ut),'XTickLabels',[],'YAxisLocation','Right');
       
-      plot(ax(2+ut),self.svals,self.nfev','-*');
-      xlabel(ax(2+ut), '\epsilon_2');
-      ylabel(ax(2+ut), 'nfev');
+      plot(lax(2+ut),self.svals,self.nfev','-*');
+      xlabel(lax(2+ut), '\epsilon_2');
+      ylabel(lax(2+ut), 'nfev');
       
-      title(ax(1),sprintf('Fit Time vs %s', self.criterion));
-      set(ax,'XScale',self.scale);
-      linkaxes(ax,'x');
+      title(lax(1),sprintf('Fit Time vs %s', self.criterion));
+      set(lax,'XScale',self.scale);
+      linkaxes(lax,'x');
     end
     
-    function show_params(self, inp_idx, param_idx)
+    function show_params(self, ref_idx, inp_idx, param_idx)
       if isempty(self.f) || ~isgraphics(self.f)
         self.f = figure;
+        self.ax = [];
+      else
+        figure(self.f);
+      end
+      if isempty(self.ax)
         self.ax = [subplot(3,1,1) nsubplot(3,1,2) nsubplot(3,1,3)];
-        self.inp_idx = 0;
-        self.param_idx = 0;
-        me = uimenu(gcf,'Text',self.criterion);
-        for i=2:self.n_vals
+        % self.ref_idx = 
+        % self.inp_idx = 0;
+        % self.param_idx = 0;
+        me = uimenu(gcf,'Text','Reference');
+        for i=1:self.n_vals
           uimenu(me,'Text',self.survey(self.ivals(i)).text, ...
-            'Callback', @(src,evt)pfcb(self,src,evt,i,0));
+            'Callback', @(src,evt)pfcb(self,src,evt,i,0,0));
+        end
+        me = uimenu(gcf,'Text',self.criterion);
+        for i=1:self.n_vals
+          uimenu(me,'Text',self.survey(self.ivals(i)).text, ...
+            'Callback', @(src,evt)pfcb(self,src,evt,0,i,0));
         end
         me = uimenu(gcf,'Text','Parameter');
         for i=1:self.n_params
           uimenu(me,'Text', self.params{i}, ...
-            'Callback', @(src,evt)pfcb(self,src,evt,0,i));
+            'Callback', @(src,evt)pfcb(self,src,evt,0,0,i));
         end
         uimenu(me,'Text', 'chi2', ...
-          'Callback', @(src,evt)pfcb(self,src,evt,0,-1));
+          'Callback', @(src,evt)pfcb(self,src,evt,0,0,-1));
         uimenu(me,'Text', 'iterations', ...
-          'Callback', @(src,evt)pfcb(self,src,evt,0,-2));
+          'Callback', @(src,evt)pfcb(self,src,evt,0,0,-2));
         uimenu(me,'Text', 'nfev', ...
-          'Callback', @(src,evt)pfcb(self,src,evt,0,-3));
+          'Callback', @(src,evt)pfcb(self,src,evt,0,0,-3));
       end
       lax = self.ax;
-      if nargin >= 2 && inp_idx >= 1
+      if nargin >= 2 && ref_idx >= 1
+        self.ref_idx = ref_idx;
+      end
+      if nargin >= 3 && inp_idx >= 1
         self.inp_idx = inp_idx;
       end
       if self.inp_idx < 1
         self.inp_idx = self.n_vals;
       end
-      if nargin >= 3 && param_idx ~= 0
+      if nargin >= 4 && param_idx ~= 0
         self.param_idx = param_idx;
       end
       if self.param_idx == 0
@@ -245,32 +265,39 @@ classdef icosfit_runs < handle
         NN = self.(pname);
       end
       pname = strrep(pname, '_', '\_');
-      refcols = find(any(~isnan(NN)));
-      if isempty(refcols)
-        refcol = 1;
+      refcols = any(~isnan(NN));
+      if self.ref_idx > 0 && self.ref_idx <= self.n_vals ...
+          && (refcols(self.ref_idx) || ~any(refcols))
+        refcol = self.ref_idx;
       else
-        refcol = refcols(1);
-        if (self.inp_idx <= refcol || all(isnan(NN(:,self.inp_idx)))) && length(refcols) > 1
-          self.inp_idx = refcols(2);
-        end
+        refcol = find(refcols,1);
+      end
+      refcols(refcol) = false;
+      if self.inp_idx < 1 || self.inp_idx > length(refcols)
+        self.inp_idx = 1;
+      end
+      if any(refcols) && ~refcols(self.inp_idx)
+        inpcol = find(refcols,1);
+      else
+        inpcol = self.inp_idx;
       end
       val0txt = self.survey(self.ivals(refcol)).text;
-      valtxt = self.survey(self.ivals(self.inp_idx)).text;
-      NN0 = NN(:,refcol)*ones(1,self.n_vals);
-      dNN = NN - NN0;
-      errorbar(lax(1),self.svals,mean(dNN),std(dNN),'-*');
+      valtxt = self.survey(self.ivals(inpcol)).text;
+      % NN0 = NN(:,refcol)*ones(1,self.n_vals);
+      % dNN = NN - NN0;
+      errorbar(lax(1),self.svals,mean(NN),std(NN),'-*');
       set(lax(1),'XScale',self.scale,'XTick',self.svals,'XTickLabel',{ self.survey.text } );
       title(lax(1),sprintf('%s vs %s',pname,self.criterion));
       xlabel(lax(1),self.units);
       ylabel(lax(1),sprintf('\\Delta %s',pname));
       
-      plot(lax(2),self.scannum,NN(:,[refcol self.inp_idx]));
+      plot(lax(2),self.scannum,NN(:,[refcol inpcol]));
       title(lax(2),sprintf('Parameter %s with %s = %s',pname,self.criterion, valtxt));
       ylabel(lax(2),sprintf('%s value',pname));
       legend(lax(2),val0txt, valtxt);
       set(lax(2),'XTickLabels',[]);
       
-      plot(lax(3),self.scannum,dNN(:,self.inp_idx),'-*');
+      plot(lax(3),self.scannum,NN(:,inpcol)-NN(:,refcol),'-*');
       set(lax(3),'YAxisLocation','Right');
       ylabel(lax(3),sprintf('\\Delta %s', pname));
       xlabel(lax(3),'Scan Number');
@@ -278,8 +305,20 @@ classdef icosfit_runs < handle
       shg;
     end
     
-    function pfcb(self,~,~, inp_idx, param_idx)
-      self.show_params(inp_idx, param_idx);
+    function refresh(self,survey)
+      if isempty(self.f) || ~isgraphics(self.f)
+        self.f = [];
+      else
+        clf(self.f);
+      end
+      self.ax = [];
+      self.survey = survey;
+      self.setup_survey;
+      self.show_params();
+    end
+    
+    function pfcb(self,~,~, ref_idx, inp_idx, param_idx)
+      self.show_params(ref_idx, inp_idx, param_idx);
     end
   end
 end

@@ -63,12 +63,14 @@ if nargin < 5
   periods = [];
 end
 if ~isempty(periods)
-  if size(periods,2) ~= 2
-    error('periods must be size nx2 with ampltitude in the second column');
+  if min(size(periods)) ~= 1
+    error('periods must be a vector');
   end
-  if size(periods,1) == 1
-    warning('periods of size 1x2 being interpreted as one period,ampltitude pair');
+  if size(periods,2) > 1
+    periods = periods';
   end
+  % second column is the default amplitude
+  periods(:,2) = 1;
 end
 if nargout > 0
   nu_out = nu';

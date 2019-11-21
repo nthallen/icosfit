@@ -1,4 +1,4 @@
-function baseline_add_etalon(base, oname, scans)
+function pmax_out = baseline_add_etalon(base, oname, scans, periods)
 % baseline_add_etalon(base, oname[, scans])
 % base is the output directory of an icosfit run
 % oname is the baseline name fragment. Output is written to
@@ -9,13 +9,23 @@ function baseline_add_etalon(base, oname, scans)
 %
 % The scans in the icosfit run must be numbered monitonically, either
 % increasing or decreasing.
+%
+% The 'frequency' is in cm and the period is in cm-1. The cm-1 values are
+% most readily 'readable' in an rrfit plot, so that is what I will return.
 S = ICOS_setup(base);
 n_scans = length(S.scannum);
 scani = 1:n_scans;
-if nargin < 3 || isempty(scans)
-  scans = S.scannum;
-else
+if nargin >= 3 && ~isempty(scans)
   scani = interp1(S.scannum,scani,scans,'nearest');
+end
+if nargin < 4
+  periods = [];
+elseif ~isempty(periods)
+  if ~isvector(periods)
+    error('periods input must be a vector or empty');
+  elseif iscolumn(periods)
+    periods = periods';
+  end
 end
 if nargin < 2, oname = ''; end
 
@@ -36,7 +46,10 @@ if n_base_params ~= S.n_base_params
 end
 
 n_scans = length(scani);
-f = 1:0.1:40;
+D = load(mlf_path(base,S.scannum(1)));
+min_freq = 1/abs(D(1,2)-D(end,2));
+max_freq = 1/mean(abs(diff(D(:,2))))/2;
+f = linspace(min_freq,max_freq,1024);
 DFT = zeros(length(f),n_scans);
 for i=1:n_scans
   D = load(mlf_path(base,S.scannum(i)));
@@ -45,19 +58,24 @@ end
 
 mDFT = mean(DFT,2);
 fmax = f(find(mDFT==max(mDFT),1));
-figure;
-plot(f,DFT,fmax*[1 1],[0 max(max(DFT))*1.1],'r');
-if isempty(oname)
-  title(sprintf('%s: Largest etalon at %.1f cm^{-1}', ...
-    base, fmax));
-else
-  title(sprintf('%s: Adding largest etalon at %.1f cm^{-1} as %s', ...
-    base, fmax, oname));
-end
-xlabel('cm^{-1}');
-
 pmax = 1/fmax;
-if ~isempty(oname)
-  writeetlnbase(oname,PV,nu,vectors, [pmax 1]);
+if isempty(oname)
+  figure;
+  yrange = [0 max(max(DFT))*1.1];
+  plot(f,DFT,fmax*[1 1],yrange,'r');
+  if ~isempty(periods)
+    freqs = 1./periods;
+    x = [freqs;freqs];
+    y = yrange'*ones(size(periods));
+    hold on;
+    plot(x,y,'g');
+  end
+  title(sprintf('%s: Largest etalon at %.1f cm (%.2f cm^{-1})', ...
+    base, fmax, 1/fmax));
+  xlabel('cm');
+else
+  writeetlnbase(oname,PV,nu,vectors, pmax);
 end
-% writeetlnbase(oname,oPV,nu,vectors);
+if nargout > 0
+  pmax_out = pmax;
+end
