@@ -357,6 +357,14 @@ if fid == -1
 end
 fprintf( fid, '# Configuration for %s region %s line set %s\n', ...
   ml_obj.run, reg_name, suffix );
+fprintf(fid, '# Verbosity & 1 => V_CURVES output verbose files with fit curves for each scan\n');
+fprintf(fid, '# Verbosity & 2 => V_INFO include info[1:9] in output\n');
+fprintf(fid, '# Verbosity & 4 => V_CHKJAC check Jacobian and report in standard output file\n');
+fprintf(fid, '# Verbosity & 8 => V_ITERATIONS output verbose files with fit curves for each iteration\n');
+fprintf(fid, '# Verbosity & 0x10 16 => V_DERIVATIVES Include analytic derivatives in verbose output files\n');
+fprintf(fid, '# Verbosity & 0x20 32 => V_SCALE Include dscl with parameters in output files\n');
+fprintf(fid, '# Verbosity & 0x40 64 => V_CHKDER Estimate derivatives via finite differences and include in fit curves files\n');
+fprintf(fid, '# Verbosity & 0x80 128 => V_VOIGT Output X and K values for each voigt line in verbose(1) fits\n');
 fprintf( fid, 'Verbosity = 1;\n' );
 fprintf( fid, 'QCLI_Wave = %d; # Waveform %s\n', ml_obj.QCLI_Wave, ml_obj.wv.Name );
 fprintf( fid, 'ScanNumRange = [ %d, %d ];\n', ScanNum(1), ScanNum(2) );

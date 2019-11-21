@@ -262,7 +262,7 @@ classdef icosfit_runs < handle
       set(lax(1),'XScale',self.scale,'XTick',self.svals,'XTickLabel',{ self.survey.text } );
       title(lax(1),sprintf('%s vs %s',pname,self.criterion));
       xlabel(lax(1),self.units);
-      ylabel(lax(1),sprintf('%s error',pname));
+      ylabel(lax(1),sprintf('\\Delta %s',pname));
       
       plot(lax(2),self.scannum,NN(:,[refcol self.inp_idx]));
       title(lax(2),sprintf('Parameter %s with %s = %s',pname,self.criterion, valtxt));
@@ -273,6 +273,7 @@ classdef icosfit_runs < handle
       plot(lax(3),self.scannum,dNN(:,self.inp_idx),'-*');
       set(lax(3),'YAxisLocation','Right');
       ylabel(lax(3),sprintf('\\Delta %s', pname));
+      xlabel(lax(3),'Scan Number');
       linkaxes(lax(2:3),'x');
       shg;
     end
