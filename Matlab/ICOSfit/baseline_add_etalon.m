@@ -1,4 +1,4 @@
-function pmax_out = baseline_add_etalon(base, oname, scans, periods)
+function pmax_out = baseline_add_etalon(base, oname, scans, periods, maxf)
 % baseline_add_etalon(base, oname[, scans])
 % base is the output directory of an icosfit run
 % oname is the baseline name fragment. Output is written to
@@ -15,6 +15,7 @@ function pmax_out = baseline_add_etalon(base, oname, scans, periods)
 S = ICOS_setup(base);
 n_scans = length(S.scannum);
 scani = 1:n_scans;
+if nargin < 2, oname = ''; end
 if nargin >= 3 && ~isempty(scans)
   scani = interp1(S.scannum,scani,scans,'nearest');
 end
@@ -27,7 +28,7 @@ elseif ~isempty(periods)
     periods = periods';
   end
 end
-if nargin < 2, oname = ''; end
+if nargin < 5, maxf = 0; end
 
 % Load the existing baseline and perform sanity checks
 [nu, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
@@ -48,7 +49,11 @@ end
 n_scans = length(scani);
 D = load(mlf_path(base,S.scannum(1)));
 min_freq = 1/abs(D(1,2)-D(end,2));
-max_freq = 1/mean(abs(diff(D(:,2))))/2;
+max_freq = min(1/mean(abs(diff(D(:,2))))/2, ...
+  2/min(mean(S.Gv)));
+if maxf > 0
+  max_freq = min(max_freq, maxf);
+end
 f = linspace(min_freq,max_freq,1024);
 DFT = zeros(length(f),n_scans);
 for i=1:n_scans
