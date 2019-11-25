@@ -46,7 +46,7 @@ classdef baseline_optimizer < icosfit_optimizer
     end
     
     function period_out = analyze_etalons(self, maxf, oname)
-      % OptB.analyze_etalons([oname[, maxf]])
+      % OptB.analyze_etalons([maxf[, oname]])
       % oname is the name fragment to use for the new baseline file,
       % the new config file and the new output directory.
       % If oname is empty, this just displays the analysis.
@@ -124,5 +124,18 @@ classdef baseline_optimizer < icosfit_optimizer
         'BaselineFile', [ 'sbase.' newname '.ptb' ]);
     end
 
+    function update_menus(self, f)
+      me = uimenu(f,'Text','Analyze');
+      uimenu(me,'Text','Scaling','Callback', ...
+        @(src,evt)self.analyze_scaling());
+      uimenu(me,'Text','Etalons','Callback', ...
+        @(src,evt)self.analyze_etalons());
+      me = uimenu(f,'Text','Operations');
+      uimenu(me,'Text','rrfit','Callback',@(src,evt)self.rrfit());
+      uimenu(me,'Text','Rescale','Callback', ...
+        @(src,evt)self.rescale_baseline());
+      uimenu(me,'Text','Add Etalon','Callback', ...
+        @(src,evt)self.add_etalon());
+    end
   end
 end

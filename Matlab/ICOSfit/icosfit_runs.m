@@ -31,6 +31,7 @@ classdef icosfit_runs < handle
     criterion
     units % units for the input criterion (if any)
     scale % log or linear
+    Opt   % The icosfit_optimizer object, if any
     scannum
     n_scans % length(scannum)
     svals % sorted input criterion values
@@ -67,6 +68,7 @@ classdef icosfit_runs < handle
       self.criterion = 'unknown';
       self.units = '';
       self.scale = 'linear';
+      self.Opt = [];
       for i = 1:2:length(varargin)-1
         arg = convertCharsToStrings(varargin{i});
         if ~isStringScalar(arg)
@@ -79,6 +81,8 @@ classdef icosfit_runs < handle
           self.units = varargin{i+1};
         elseif arg == "scale"
           self.scale = varargin{i+1};
+        elseif arg == "Opt"
+          self.Opt = varargin{i+1};
         else
           error('Unrecognized input at position %d', i);
         end
@@ -234,6 +238,9 @@ classdef icosfit_runs < handle
           'Callback', @(src,evt)pfcb(self,src,evt,0,0,-2));
         uimenu(me,'Text', 'nfev', ...
           'Callback', @(src,evt)pfcb(self,src,evt,0,0,-3));
+        if ~isempty(self.Opt)
+          self.Opt.update_menus(self.f);
+        end
       end
       lax = self.ax;
       if nargin >= 2 && ref_idx >= 1

@@ -104,13 +104,13 @@ classdef icosfit_optimizer < handle
       self.IR = save_IR;
     end
     
-    function UI(OptI)
-      if isempty(OptI.IR)
-        OptI.IR = icosfit_runs('criterion', OptI.opt.criteria, ...
-          'units', OptI.opt.criteria, 'scale', OptI.opt.xscale, ...
-          'survey', OptI.survey);
+    function UI(self)
+      if isempty(self.IR)
+        self.IR = icosfit_runs('criterion', self.opt.criteria, ...
+          'units', self.opt.criteria, 'scale', self.opt.xscale, ...
+          'survey', self.survey, 'Opt', self);
       end
-      OptI.IR.show_params;
+      self.IR.show_params;
     end
     
     function analyze_scaling(OptI)
@@ -119,10 +119,27 @@ classdef icosfit_optimizer < handle
       icosfit_scale_check(OptI.survey(end).base);
     end
     
-    function rrfit(OptI)
-      rrfit(OptI.survey(end).base);
+    function rrfit(OptI, idx)
+      if nargin < 2
+        idx = 0;
+      end
+      if idx == 0
+        if ~isempty(OptI.IR) && OptI.IR.inp_idx > 0 && ...
+              OptI.IR.inp_idx <= length(OptI.survey)
+          idx = OptI.IR.inp_idx;
+        else
+          idx = length(OptI.survey);
+        end
+      end
+      if idx > 0
+        rrfit(OptI.survey(idx).base);
+      end
     end
     
+    function update_menus(~, ~)
+      % OptI.update_menus(f)
+      % Add any application-specific menus to the figure
+    end
     % This has to move into a separate epsilon2_optimizer
     %function eps2_analysis(self, varargin)
     %end
