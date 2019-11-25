@@ -9,10 +9,12 @@ classdef baseline_optimizer < icosfit_optimizer
   methods
     function self = baseline_optimizer(varargin)
       % options are:
-      %   mnemonic
       %   cfg_base 
+      %   mnemonic ('optb')
+      %   save_var ('OptB')
+      %   n_coeffs ([])
       self = self@icosfit_optimizer( ...
-        'mnemonic','opt','criteria','Baseline');
+        'mnemonic','optb','criteria','Baseline','save_var','OptB');
       self.bopt.n_coeffs = [];
       self.n_etalons = 0;
       self.n_rescale = 0;
@@ -38,11 +40,13 @@ classdef baseline_optimizer < icosfit_optimizer
       name = sprintf('%dp', n_pcoeffs);
       writeetlnbase(name, n_pcoeffs, [], [], [], self.ScanNumRange(1));
       % create new config file, run the fit and add to the survey
-      self.iterate(name, 'BaselineFile', [ 'sbase.' name '.ptb' ]);
+      value = length(self.survey)+1;
+      self.iterate(name, value, ...
+        'BaselineFile', [ 'sbase.' name '.ptb' ]);
     end
     
     function period_out = analyze_etalons(self, maxf, oname)
-      % BO.analyze_etalons([oname[, maxf]])
+      % OptB.analyze_etalons([oname[, maxf]])
       % oname is the name fragment to use for the new baseline file,
       % the new config file and the new output directory.
       % If oname is empty, this just displays the analysis.
@@ -73,7 +77,7 @@ classdef baseline_optimizer < icosfit_optimizer
     end
     
     function add_etalon(self, maxf)
-      % BO.add_etalon([maxf])
+      % OptB.add_etalon([maxf])
       % Calls analyze_etalons and operates on the results.
       if isempty(self.survey)
         fprintf(1,'No data to analyze\n');
@@ -88,15 +92,17 @@ classdef baseline_optimizer < icosfit_optimizer
       period = self.analyze_etalons(maxf, newname);
       self.n_etalons = self.n_etalons+1;
       self.etalon_periods(self.n_etalons) = period;
-      self.iterate(newname, 'BaselineFile', [ 'sbase.' newname '.ptb' ]);
+      value = length(self.survey)+1;
+      self.iterate(newname, value, ...
+        'BaselineFile', [ 'sbase.' newname '.ptb' ]);
     end
     
-    function rescale_baseline(BO)
-      % BO.rescale_baseline()
+    function rescale_baseline(OptB)
+      % OptB.rescale_baseline()
       %
       % Analyzes the scaling of baseline parameters and
       % creates an new appropriately scaled baseline file.
-      name = BO.survey(end).text;
+      name = OptB.survey(end).text;
       t = regexp(name,'^(.*[^0-9r])([0-9]*)(r?)$','tokens');
       t = t{1};
       if strcmp(t{3},'r')
@@ -112,21 +118,10 @@ classdef baseline_optimizer < icosfit_optimizer
         end
         newname = [ name 'r' ];
       end
-      baseline_rescale(BO.survey(end).base, newname);
-      BO.iterate(newname, 'BaselineFile', [ 'sbase.' newname '.ptb' ]);
-    end
-    
-    function savefile(BO)
-      % BO.savefile
-      % Writes the BO object to a .mat file with the name derived
-      % from the mnemonic in BO.opt.mnemonic. The filename is prefixed
-      % with 'BO_'.
-      save_IR = BO.IR;
-      BO.IR = [];
-      fname = sprintf('BO_%s.mat', BO.opt.mnemonic);
-      save(fname, 'BO');
-      fprintf(1, 'baseline_optimizer saved to %s\n', fname);
-      BO.IR = save_IR;
+      baseline_rescale(OptB.survey(end).base, newname);
+      value = length(self.survey)+1;
+      OptB.iterate(newname, value, ...
+        'BaselineFile', [ 'sbase.' newname '.ptb' ]);
     end
 
   end

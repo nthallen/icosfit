@@ -286,7 +286,7 @@ classdef icosfit_runs < handle
       % NN0 = NN(:,refcol)*ones(1,self.n_vals);
       % dNN = NN - NN0;
       errorbar(lax(1),self.svals,mean(NN),std(NN),'-*');
-      set(lax(1),'XScale',self.scale,'XTick',self.svals,'XTickLabel',{ self.survey.text } );
+      set(lax(1),'XScale',self.scale,'XTick',self.svals,'XTickLabel',{ self.survey(self.ivals).text } );
       title(lax(1),sprintf('%s vs %s',pname,self.criterion));
       xlabel(lax(1),self.units);
       ylabel(lax(1),sprintf('\\Delta %s',pname));

@@ -17,6 +17,7 @@ classdef icosfit_optimizer < handle
       self.opt.cfg_ref = '';
       self.opt.xscale = 'linear';
       self.opt.cygwin_root = 'c:\cygwin64';
+      self.opt.save_var = 'Opt';
       self.cfg_map = { 'Verbosity', '35', 'epsilon2', '5e-4' };
       for i=1:2:length(varargin)-1
         if isfield(self.opt, varargin{i})
@@ -47,7 +48,7 @@ classdef icosfit_optimizer < handle
       error('ScanNumRange not found in cfg_ref %s', self.opt.cfg_ref);
     end
     
-    function iterate(self, name, varargin)
+    function iterate(self, name, value, varargin)
       % create new config file with given parameters
       ofile = [ 'icosfit.' self.opt.mnemonic '.' name ];
       odir = [ 'ICOSout.' self.opt.mnemonic '.' name ];
@@ -73,7 +74,7 @@ classdef icosfit_optimizer < handle
       end
       % add the fit to the survey
       new_svy = ...
-        struct('base',odir,'value',length(self.survey)+1,'text',name);
+        struct('base',odir,'value',value,'text',name);
       if isempty(self.survey)
         self.survey = new_svy;
       else
@@ -88,36 +89,38 @@ classdef icosfit_optimizer < handle
       end
     end
     
-    function savefile(IO)
-      % IO.savefile
-      % Writes the IO object to a .mat file with the name derived
-      % from the mnemonic in IO.opt.mnemonic. The filename is prefixed
-      % with 'IO_'.
-      save_IR = IO.IR;
-      IO.IR = [];
-      fname = sprintf('IO_%s.mat', IO.opt.mnemonic);
-      save(fname, 'IO');
-      fprintf(1, 'icosfit_optimizer saved to %s\n', fname);
-      IO.IR = save_IR;
+    function savefile(self)
+      % OptI.savefile
+      % Writes the OptI object to a .mat file with the name derived
+      % from the mnemonic in OptI.opt.mnemonic. The filename is prefixed
+      % with 'OptI_'.
+      save_IR = self.IR;
+      self.IR = [];
+      S.(self.opt.save_var) = self;
+      fname = sprintf('Opt_%s.mat', self.opt.mnemonic);
+      save(fname, '-struct', 'S');
+      fprintf(1, '%s %s saved to %s\n', class(self), ...
+        self.opt.save_var, fname);
+      self.IR = save_IR;
     end
     
-    function UI(IO)
-      if isempty(IO.IR)
-        IO.IR = icosfit_runs('criterion', IO.opt.criteria, ...
-          'units', IO.opt.criteria, ...
-          'survey', IO.survey);
+    function UI(OptI)
+      if isempty(OptI.IR)
+        OptI.IR = icosfit_runs('criterion', OptI.opt.criteria, ...
+          'units', OptI.opt.criteria, 'scale', OptI.opt.xscale, ...
+          'survey', OptI.survey);
       end
-      IO.IR.show_params;
+      OptI.IR.show_params;
     end
     
-    function analyze_scaling(IO)
+    function analyze_scaling(OptI)
       % IO.analyze_scaling;
       % Produces a figure showing the scaling of fit parameters
-      icosfit_scale_check(IO.survey(end).base);
+      icosfit_scale_check(OptI.survey(end).base);
     end
     
-    function rrfit(IO)
-      rrfit(IO.survey(end).base);
+    function rrfit(OptI)
+      rrfit(OptI.survey(end).base);
     end
     
     % This has to move into a separate epsilon2_optimizer
