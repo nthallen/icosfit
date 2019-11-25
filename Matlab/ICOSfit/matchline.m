@@ -411,6 +411,7 @@ fprintf( fid, '};\n\n');
 
 fprintf( fid, 'LineMargin = %.2f cm-1;\n', ml_obj.LineMargin );
 fprintf( fid, 'LineMarginMultiplier = %d;\n', ml_obj.LineMarginMultiplier );
+fprintf( fid, 'epsilon2 = 1e-4;\n');
 fprintf( fid, 'MirrorLoss = %.1f ppm;\n', ml_obj.MirrorLoss );
 fprintf( fid, 'CavityLength = %.3f;\n', ml_obj.CavityLength );
 if ml_obj.N_Passes > 0
