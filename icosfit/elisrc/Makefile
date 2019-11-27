@@ -1,4 +1,5 @@
 CC      = g++
+QTDIR   = /usr/share/icosfit/Matlab/ICOSfit/QT
 CFLAGS  = -Wall -DQTDIR_DEFAULT=$(QTDIR)
 
 LIBS    = -L/usr/local/lib -lm
@@ -12,7 +13,7 @@ Odinfile : Odinfile.in Makefile
 test :
 	eli '%dtarget >/usr/local/bin/icosfit_test.exe'
 cppsrc :
-	./gen_cppsrc.sh
+	./gen_cppsrc.sh $(VERSION)
 cppsrcexe :
 	cd ../cppsrc && make
 $(LIBLEVMAR) : $(LEVMARBUILDDIR)/Makefile

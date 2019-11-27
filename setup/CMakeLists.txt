@@ -1,6 +1,5 @@
 install(PROGRAMS
   ${CMAKE_CURRENT_BINARY_DIR}/icosfit_matlab_setup.sh
-  icosfit_survey
   DESTINATION share/icosfit/setup
 )
 configure_file (

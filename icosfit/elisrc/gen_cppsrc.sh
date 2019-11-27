@@ -3,6 +3,8 @@ function nl_error {
   echo "gen_cppsrc.sh: $*" >&2
   exit 1
 }
+VERSION=$1
+[ -n "$VERSION" ] || nl_error Must specify VERSION argument
 dir="../cppsrc"
 [ -e "$dir" ] && rm -rf $dir
 [ -d "$dir" ] && nl_error "Unable to delete cppsrc directory"
@@ -17,7 +19,7 @@ cd $dir
 
 cat <<EOF >CMakeLists.txt
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_src VERSION 4.0.0)
+project(icosfit_src VERSION $VERSION)
 
 EOF
 

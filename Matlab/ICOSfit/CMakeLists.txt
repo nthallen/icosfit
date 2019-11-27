@@ -1,10 +1,9 @@
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_matlab VERSION 4.0.0)
+project(icosfit_matlab VERSION 4.2.0)
 
 install(FILES
   Contents.m
   ICOS_setup.m
-  ICOS_survey.m
   ICOSsetup.m
   PTE_gen.m
   PTE_hack.m
@@ -16,6 +15,9 @@ install(FILES
   average_spectra.m
   basefile.m
   basefilefromresid.m
+  baseline_add_etalon.m
+  baseline_optimizer.m
+  baseline_rescale.m
   combineICOSout.m
   diagnose.m
   dispfix.m
@@ -24,9 +26,9 @@ install(FILES
   edit_cell_cfg.fig
   edit_cell_cfg.m
   eng2PT.m
+  epsilon2_optimizer.m
   etln_evalJ.m
-  etln_fit.fig
-  etln_fit.m
+  etln_fit.fig etln_fit.m
   etlnfb_evalJ.m
   feedback_analysis.m
   find_scans_dir.m
@@ -44,8 +46,12 @@ install(FILES
   humdev.m
   humlik.m
   icos_resample.m
+  icosfit_getconfig.m
+  icosfit_optimizer.m
   icosfit_recalculate.m
-  icosfit_survey.m
+  icosfit_reconfig.m
+  icosfit_runs.m
+  icosfit_scale_check.m
   isovals.m
   laser_drift.m
   listscans.m
