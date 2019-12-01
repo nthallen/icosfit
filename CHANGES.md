@@ -1,5 +1,9 @@
 # Version History for icosfit.
 
+## V4.2.1 December 1, 2019
+
+  * Re-release to coordinate with Zenodo
+
 ## V4.2.0 December 1, 2019
 
   * New Matlab optimization tools

@@ -1,5 +1,5 @@
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_src VERSION 4.2.0)
+project(icosfit_src VERSION 4.2.1)
 
 SET(FITSRCS  attrmain.c auxEOF.c auxNUL.c auxScanEOL.c BitSet.c
   Ccomment.c Cint.c clp.c clpintf.c clplib.c coord.c CScope.c csm.c
