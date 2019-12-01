@@ -6,6 +6,7 @@ data from the [Anderson Group](https://www.arp.harvard.edu/)'s ICOS instruments.
 since been extended to support other optical configurations, such as Herriott Cells.
 
 The current version of ICOSfit is V4.2.1, released December 1, 2019.
+[![DOI](https://zenodo.org/badge/202190942.svg)](https://zenodo.org/badge/latestdoi/202190942)
 
 This archive consists of the following:
 - **icosfit:** The core ICOSfit fitting program
