@@ -5,7 +5,7 @@ ICOSfit is a non-linear least-squares fit algorithm originally developed for pro
 data from the [Anderson Group](https://www.arp.harvard.edu/)'s ICOS instruments. It has
 since been extended to support other optical configurations, such as Herriott Cells.
 
-The current version of ICOSfit is V4.1.0, released October 23, 2019.
+The current version of ICOSfit is V4.2.0, released December 1, 2019.
 
 This archive consists of the following:
 - **icosfit:** The core ICOSfit fitting program
