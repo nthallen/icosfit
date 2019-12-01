@@ -1,5 +1,9 @@
 # Version History for icosfit.
 
+## V4.2.0 December 1, 2019
+
+  * New Matlab optimization tools
+
 ## V4.1.0 October 23, 2019
 
   * Fixed off-by-one errors affecting accuracy
