@@ -13,7 +13,7 @@ classdef epsilon2_optimizer < icosfit_optimizer
       for i=1:2:length(varargin)-1
         if isfield(eps2.opt, varargin{i})
           eps2.opt.(varargin{i}) = varargin{i+1};
-        elseif isfield(eps2.bopt, varargin{i})
+        elseif isfield(eps2.eopt, varargin{i})
           eps2.eopt.(varargin{i}) = varargin{i+1};
         else
           error('Unrecognized option: %s', varargin{i});

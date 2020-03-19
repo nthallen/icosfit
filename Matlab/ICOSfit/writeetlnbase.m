@@ -1,6 +1,8 @@
 function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
    c_vector, periods, scannum )
-% [ nu_out, Vout ] = writeetlnbase( name, poly_coeffs, c_nu, c_vector, periods[,scannum] );
+% [ nu_out, Vout ] = ...
+%    writeetlnbase( name, poly_coeffs, c_nu, c_vector[, periods[,scannum]] );
+%
 % Creates sbase.<name>.ptb specifying a baseline
 % function containing a polynomial of sample number, an arbitrary
 % number of explicit basis vectors as a function of wavenumber,
@@ -104,7 +106,7 @@ elseif p_coeffs>0
     rawdata = loadscans([],scannum,x);
     x = x'/1000;
   else
-    error('Cannot currently guess suitable raw source for Herriot');
+    error('Cannot currently guess suitable raw source for Scaling');
   end
   if N_Passes == 0
     [~,k] = skew_matrix(scannum,length(x),1e-6);
