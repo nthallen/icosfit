@@ -46,5 +46,5 @@ text( 2, 13, '\gamma_L');
 xlim([ 0 7]-1); ylim([-2 30]);
 set(gca,'Visible','off');
 if nargout >= 1
-  fddata = fitdata;
+  fdata = fitdata;
 end

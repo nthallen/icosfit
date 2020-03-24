@@ -9,7 +9,7 @@ classdef baseline_optimizer < icosfit_optimizer
   methods
     function self = baseline_optimizer(varargin)
       % options are:
-      %   cfg_base 
+      %   cfg_ref 
       %   mnemonic ('optb')
       %   save_var ('OptB')
       %   n_coeffs ([])
