@@ -208,6 +208,13 @@ ICOS_Float func_line::line_end() {
 }
 
 /**
+ * @param include 0, 1 or 2 to indicate pass
+ * @param start The lowest wavenumber value in the current scan range
+ * @param end The highest wavenumber value in the current scan range
+ * @param P Pressure in Torr
+ * @param T Temperature in Kelvin
+ * @return non-zero if the range has changed
+ *
  * line_check(include, start, end, P, T);
  * operates in three passes. First, include is set to 0 to
  * indicate the 'exclude' step. A line is excluded if it
@@ -267,7 +274,7 @@ int func_line::line_check(int include, ICOS_Float& start, ICOS_Float& end,
         if ( GlobalData.Verbosity & 2 )
           nl_error( 0, "Exclude: Updated end to %.4" FMT_F, end );
       }
-      if ( ! param_fixed(n_idx) ) {
+      if ( ! param_ref_fixed(n_idx) ) {
         nl_error( 0, "Turning off line %d (%.4" FMT_F ",%.4" FMT_F ")",
                           line_number, ls, le );
         fix_param(n_idx);

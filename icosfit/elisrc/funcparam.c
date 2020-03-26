@@ -75,6 +75,10 @@ bool func_parameter::param_fixed() {
   return !is_floating[params[0].index];
 }
 
+bool func_parameter::param_ref_fixed(unsigned int refnum) {
+  return ((refs_float & (1<<refnum)) == 0);
+}
+
 ICOS_Float func_parameter::set_param(ICOS_Float value) {
   this->value = p_can[params[0].index] = value;
   return value;

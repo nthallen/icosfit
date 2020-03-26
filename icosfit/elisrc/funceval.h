@@ -151,6 +151,9 @@ class func_evaluator {
     virtual bool param_fixed();
     inline bool param_fixed(int i) {
       return args[i].arg->param_fixed(); }
+    inline bool param_ref_fixed(int i) {
+      return args[i].arg->param_ref_fixed(args[i].refnum);
+    }
     inline void fix_param(int i) {
       args[i].arg->fix_float_param(false,args[i].refnum); }
     inline void float_param(int i) {
@@ -252,6 +255,7 @@ class func_parameter : public func_evaluator {
     int adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T);
     void fix_float_param(bool float_it, unsigned int refnum);
     bool param_fixed();
+    bool param_ref_fixed(unsigned int refnum);
     ICOS_Float set_param(ICOS_Float value);
     void set_param_limits(ICOS_Float lb_in, ICOS_Float ub_in);
     virtual void set_param_scale(ICOS_Float scl);
