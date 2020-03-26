@@ -85,6 +85,7 @@ func_line::func_line( const char *name, int mol, int iso,
   append_func(new func_parameter("gd", 1., true, line_number));
   append_func(N ? N : new func_parameter("N", 0., true, line_number));
   fixed = true;
+  outside = false;
   fix_finepos = fix_fp;
   fix_width = fix_w;
   // prev_numdens = 0.;
@@ -175,7 +176,7 @@ int func_line::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
   if (when == scan_finalize) {
     ICOS_Float strength = gamma_ed > 0 ? Ks * numdens / gamma_ed : 0.;
     if ( fixed ) {
-      if ( strength > S_thresh * 4. ) {
+      if ( !outside && strength > S_thresh * 4. ) {
         if ( rolledback < 2 ) {
           nl_error( 0, "Floating line %d (strength %" FMT_G ")",
                       line_number, strength );
@@ -283,6 +284,7 @@ int func_line::line_check(int include, ICOS_Float& start, ICOS_Float& end,
           set_param_limits(n_idx, 0., 0.);
         }
         line_fix();
+        outside = true;
       }
       if ( rv != 0 ) return rv;
     }
@@ -292,6 +294,7 @@ int func_line::line_check(int include, ICOS_Float& start, ICOS_Float& end,
       nl_error( 0, "Turning on line %d (%.4" FMT_F ",%.4" FMT_F ")",
                           line_number, ls, le );
       float_param(n_idx);
+      outside = false;
       // We don't actually line_float() until the fit raises the
       // number density high enough.
     }

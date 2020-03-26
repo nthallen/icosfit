@@ -102,6 +102,16 @@ bool func_evaluator::param_fixed() {
   return false;
 }
 
+bool func_evaluator::param_ref_fixed(int i) {
+  return args[i].arg->param_refnum_fixed(args[i].refnum);
+}
+
+bool func_evaluator::param_refnum_fixed(int i) {
+  nl_error(3, "%s->param_refnum_fixed(%d) illegal except on func_paramter",
+    this->name, i);
+  return false;
+}
+
 ICOS_Float func_evaluator::set_param(ICOS_Float value) {
   nl_error(3, "Illegal attempt to set value of a non-parameter");
   return 0.;

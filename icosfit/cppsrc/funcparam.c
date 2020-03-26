@@ -75,7 +75,7 @@ bool func_parameter::param_fixed() {
   return !is_floating[params[0].index];
 }
 
-bool func_parameter::param_ref_fixed(unsigned int refnum) {
+bool func_parameter::param_refnum_fixed(int refnum) {
   return ((refs_float & (1<<refnum)) == 0);
 }
 

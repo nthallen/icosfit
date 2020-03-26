@@ -150,10 +150,33 @@ class func_evaluator {
     virtual void fix_float_param(bool float_it, unsigned int refnum);
     virtual bool param_fixed();
     inline bool param_fixed(int i) {
-      return args[i].arg->param_fixed(); }
-    inline bool param_ref_fixed(int i) {
-      return args[i].arg->param_ref_fixed(args[i].refnum);
+      return args[i].arg->param_fixed();
     }
+    /**
+     * A parameter may be referenced by more than one
+     * func_parameter, and the different func_parameters may
+     * not all agree on whether the parameter should be fixed
+     * or floating. This function checks to see if this
+     * parameter is fixed relative to this reference. There
+     * is an underlying assumption that this function is
+     * called in a particularly narrow context where the
+     * i-th argument of the func_evaluator is know to be a
+     * func_parameter. It will be a fatal error if called
+     * in some other context.
+     * @param i index of argument to query
+     * @return true if the specified argument is fixed with respect
+     * this reference.
+     */
+    virtual bool param_ref_fixed(int i);
+    /**
+     * This method is valid only for func_parameters.
+     * See the description of param_ref_fixed() for more
+     * information.
+     * @param refnum The reference number
+     * @return true if the associated parameter is fixed
+     * with respect to the specified reference number.
+     */
+    virtual bool param_refnum_fixed(int refnum);
     inline void fix_param(int i) {
       args[i].arg->fix_float_param(false,args[i].refnum); }
     inline void float_param(int i) {
@@ -255,7 +278,7 @@ class func_parameter : public func_evaluator {
     int adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T);
     void fix_float_param(bool float_it, unsigned int refnum);
     bool param_fixed();
-    bool param_ref_fixed(unsigned int refnum);
+    bool param_refnum_fixed(int refnum);
     ICOS_Float set_param(ICOS_Float value);
     void set_param_limits(ICOS_Float lb_in, ICOS_Float ub_in);
     virtual void set_param_scale(ICOS_Float scl);
@@ -334,6 +357,7 @@ class func_line : public func_evaluator {
     static int n_lines;
     int line_number; ///< 1-based indexing
     bool fixed; ///< 0 = free, 1 = fixed
+    bool outside; ///< 1 = line is outside signal region
     bool fix_finepos; ///< 0 = free-ish, 1 = fixed
     bool fix_width; ///< 0 = free-ish, 1 = fixed
     void init(ICOS_Float *p);
