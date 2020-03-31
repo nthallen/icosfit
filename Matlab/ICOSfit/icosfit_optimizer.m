@@ -73,6 +73,13 @@ classdef icosfit_optimizer < handle
         error('"icosfit %s" apparently failed', ofile);
       end
       % add the fit to the survey
+      self.add_run_to_survey(odir, value, name);
+    end
+    
+    function add_run_to_survey(self, odir, value, name)
+      % IO.add_run_to_survey(odir, value, name);
+      % Adds the specified output directory to the survey
+      % using the given value and name.
       new_svy = ...
         struct('base',odir,'value',value,'text',name);
       if isempty(self.survey)
