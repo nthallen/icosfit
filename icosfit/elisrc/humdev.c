@@ -293,7 +293,7 @@ int voigt::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
   if ( rv = func_line::adjust_params(when, P, T) )
     return rv;
   if (when == scan_init) {
-    ICOS_Float Gl_calc = G_air * (P/760.) * pow( 296./T, n_air);
+    ICOS_Float Gl_calc = (P>0) ? G_air * (P/760.) * pow( 296./T, n_air) : 0;
     set_param_scale(gl_idx, Gl_calc);
     if (param_fixed(gl_idx)) {
       // The following formula comes from the HITRAN appendix
