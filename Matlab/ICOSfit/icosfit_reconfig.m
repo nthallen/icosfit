@@ -1,4 +1,7 @@
 function icosfit_reconfig(ifile, ofile, varargin)
+% icosfit_reconfig(ifile, ofile, opt1, val1, opt2, val2 ...);
+% Reads ifile and writes to ofile replacing lines defining
+% the specified options with the new value.
 for i = 1:2:(length(varargin)-1)
   opts.(varargin{i}) = varargin{i+1};
 end

@@ -119,7 +119,7 @@ classdef baseline_optimizer < icosfit_optimizer
         newname = [ name 'r' ];
       end
       baseline_rescale(OptB.survey(end).base, newname);
-      value = length(self.survey)+1;
+      value = length(OptB.survey)+1;
       OptB.iterate(newname, value, ...
         'BaselineFile', [ 'sbase.' newname '.ptb' ]);
     end
