@@ -15,6 +15,7 @@ classdef icosfit_optimizer < handle
       self.opt.criteria = '';
       self.opt.mnemonic = ''; % string used for config files and output directories
       self.opt.cfg_ref = '';
+      self.opt.nscans = []; % For subsampling the ScanNumRange
       self.opt.xscale = 'linear';
       self.opt.cygwin_root = 'c:\cygwin64';
       self.opt.save_var = 'Opt';
@@ -48,29 +49,79 @@ classdef icosfit_optimizer < handle
       error('ScanNumRange not found in cfg_ref %s', self.opt.cfg_ref);
     end
     
-    function iterate(self, name, value, varargin)
-      % create new config file with given parameters
-      ofile = [ 'icosfit.' self.opt.mnemonic '.' name ];
-      odir = [ 'ICOSout.' self.opt.mnemonic '.' name ];
-      icosfit_reconfig(self.opt.cfg_ref, ofile, ...
-        self.cfg_map{:}, varargin{:}, ...
-        'OutputDir', odir);
-      % run the fit
-      self.savefile;
-      if isfolder(odir)
-        fprintf(1,'Removing OutputDir %s\n', odir);
-        rmdir(odir,'s');
-      end
+    function run_icosfit(self, cfgfile)
       if ispc
         cmd = [ self.opt.cygwin_root ...
           '\bin\bash -c ". /etc/profile.d/lapack0.sh; /bin/icosfit ' ...
-          ofile ];
+          cfgfile ];
         res = system(cmd);
       else
         error('Non-PC platforms not yet sorted');
       end
       if res ~= 0
         error('"icosfit %s" apparently failed', ofile);
+      end
+    end
+    
+    function iterate(self, name, value, varargin)
+      % create new config file with given parameters
+      cfgfile = [ 'icosfit.' self.opt.mnemonic '.' name ];
+      odir = [ 'ICOSout.' self.opt.mnemonic '.' name ];
+      if isfolder(odir)
+        fprintf(1,'Removing OutputDir %s\n', odir);
+        rmdir(odir,'s');
+      end
+      if isempty(self.opt.nscans)
+        icosfit_reconfig(self.opt.cfg_ref, cfgfile, ...
+          self.cfg_map{:}, varargin{:}, ...
+          'OutputDir', odir);
+        % run the fit
+        self.savefile;
+        self.run_icosfit(cfgfile);
+      else % nscans is specified
+        % I need to know the BaselineFile. could be specified in
+        % cfg_map or varargin or neither, if it's just in the
+        % cfg_ref file.
+        allopts = [ self.cfg_map varargin ];
+        varargs.BaselineFile = [];
+        for i=1:2:length(allopts)-1
+          varargs.(allopts{i}) = allopts{i+1};
+        end
+        if isempty(varargs.BaselineFile)
+          error('Must specify BaselineFile explicitly for subsampling');
+        end
+        if isempty(self.ScanNumRange)
+          self.get_scanregion;
+        end
+        % Complain if PTEFile is not specified
+        PTE = load(varargs.PTEFile);
+        scans = PTE(:,1);
+        V = scans >= self.ScanNumRange(1) & ...
+          scans <= self.ScanNumRange(2);
+        if any(PTE(V,12) == 0)
+          error('For subsampling, nu_F0 must be defined in PTEFile');
+        end
+        scans = scans(V);
+        if self.opt.nscans < length(scans)
+          ssix = round(linspace(1, length(scans), self.opt.nscans));
+          scans = scans(ssix);
+        end
+        BaselineMnc = [ self.opt.mnemonic '_ss' ];
+        BaselineFile = [ 'sbase.' BaselineMnc '.ptb' ];
+        PTEFile = [ varargs.PTEFile ' + nu_F0' ];
+        for i=1:length(scans)
+          scan = scans(i);
+          SR = sprintf('[%d,%d]', scan, scan);
+          baseline_reinit(varargs.BaselineFile, BaselineMnc, scan);
+          icosfit_reconfig(self.opt.cfg_ref, cfgfile, ...
+            allopts{:}, ...
+            'PTEFile', PTEFile, ...
+            'ScanNumRange', SR, ...
+            'BaselineFile', BaselineFile, ...
+            'Threshold', '1e-3', ...
+            'OutputDir', odir);
+          self.run_icosfit(cfgfile);
+        end
       end
       % add the fit to the survey
       self.add_run_to_survey(odir, value, name);

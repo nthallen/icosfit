@@ -26,7 +26,10 @@ classdef baseline_optimizer < icosfit_optimizer
         elseif isfield(self.bopt, varargin{i})
           self.bopt.(varargin{i}) = varargin{i+1};
         else
-          error('Unrecognized option: %s', varargin{i});
+          % self.cfg_map.(varargin{i}) = varargin{i+1};
+          self.cfg_map = { self.cfg_map{:} varargin{i} varargin{i+1} };
+          fprintf(1,'Assuming %s is a cfg_map item\n', varargin{i});
+          % error('Unrecognized option: %s', varargin{i});
         end
       end
       self.get_scanregion;
