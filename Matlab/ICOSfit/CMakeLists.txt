@@ -1,5 +1,5 @@
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_matlab VERSION 4.2.0)
+project(icosfit_matlab VERSION 4.2.4)
 
 install(FILES
   Contents.m
@@ -17,6 +17,7 @@ install(FILES
   basefilefromresid.m
   baseline_add_etalon.m
   baseline_optimizer.m
+  baseline_reinit.m
   baseline_rescale.m
   combineICOSout.m
   diagnose.m
@@ -65,6 +66,7 @@ install(FILES
   loadscans.m
   logchi.m
   matchline.m
+  maxiterations_optimizer.m
   mixlines.m
   mixlines_multi.m
   mlf_index.m

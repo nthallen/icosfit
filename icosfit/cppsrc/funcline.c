@@ -148,7 +148,7 @@ int func_line::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
     nu_P = nu1 + delta * P/760.;
     rolledback = 0;
     set_param_scale(w_idx, Ged_calc);
-    ICOS_Float N = get_arg(n_idx);
+    ICOS_Float N = fabs(get_arg(n_idx));
     if (N <= 1e12) N = 1e12;
     if (GlobalData.Sigma > 0) N = GlobalData.Sigma;
     set_param_scale(n_idx, N);
