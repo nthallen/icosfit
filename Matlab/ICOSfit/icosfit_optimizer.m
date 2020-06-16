@@ -12,6 +12,7 @@ classdef icosfit_optimizer < handle
       self.survey = [];
       self.ScanNumRange = [];
       self.IR = [];
+      self.opt.sopt = [];
       self.opt.criteria = '';
       self.opt.mnemonic = ''; % string used for config files and output directories
       self.opt.cfg_ref = '';
@@ -23,13 +24,30 @@ classdef icosfit_optimizer < handle
       for i=1:2:length(varargin)-1
         if isfield(self.opt, varargin{i})
           self.opt.(varargin{i}) = varargin{i+1};
+        elseif isfield(self.opt.sopt, varargin{i})
+          self.opt.sopt.(varargin{i}) = varargin{i+1};
+        else
+          self.cfg_map = [ self.cfg_map(:)' {varargin{i}} {varargin{i+1}} ];
+          fprintf(1,'Assuming %s is a cfg_map item\n', varargin{i});
         end
+      end
+      if isempty(self.opt.mnemonic)
+        error('Must specify mnemonic option');
+      end
+      if exist(self.opt.mnemonic, 'dir')
+        error('Subdirectory "%s" already exists', self.opt.mnemonic);
+      end
+      if ~mkdir('.', self.opt.mnemonic)
+        error('Unable to create subdirectory "%s"', self.opt.mnemonic);
       end
     end
     
     function get_scanregion(self)
       % Reads the cfg_ref file to obtain the ScanNumRange
       ifp = fopen(self.opt.cfg_ref,'r');
+      if ifp == -1
+        error('Unable to open cfg_ref file "%s"', self.opt.cfg_ref);
+      end
       while true
         tline = fgets(ifp);
         if isempty(tline) || isnumeric(tline)
@@ -65,8 +83,8 @@ classdef icosfit_optimizer < handle
     
     function iterate(self, name, value, varargin)
       % create new config file with given parameters
-      cfgfile = [ 'icosfit.' self.opt.mnemonic '.' name ];
-      odir = [ 'ICOSout.' self.opt.mnemonic '.' name ];
+      cfgfile = [ self.opt.mnemonic '/' 'icosfit.' name ];
+      odir = [ self.opt.mnemonic '/' 'ICOSout.' name ];
       if isfolder(odir)
         fprintf(1,'Removing OutputDir %s\n', odir);
         rmdir(odir,'s');
@@ -99,7 +117,7 @@ classdef icosfit_optimizer < handle
         V = scans >= self.ScanNumRange(1) & ...
           scans <= self.ScanNumRange(2);
         if any(PTE(V,12) == 0)
-          error('For subsampling, nu_F0 must be defined in PTEFile');
+          error('For nscans > 0, nu_F0 must be defined in PTEFile');
         end
         scans = scans(V);
         if self.opt.nscans < length(scans)
@@ -112,12 +130,13 @@ classdef icosfit_optimizer < handle
         for i=1:length(scans)
           scan = scans(i);
           SR = sprintf('[%d,%d]', scan, scan);
-          baseline_reinit(varargs.BaselineFile, BaselineMnc, scan);
+          baseline_reinit(varargs.BaselineFile, BaselineMnc, scan, ...
+            self.opt.mnemonic);
           icosfit_reconfig(self.opt.cfg_ref, cfgfile, ...
             allopts{:}, ...
             'PTEFile', PTEFile, ...
             'ScanNumRange', SR, ...
-            'BaselineFile', BaselineFile, ...
+            'BaselineFile', [ self.opt.mnemonic '/' BaselineFile], ...
             'Threshold', '1e-3', ...
             'OutputDir', odir);
           self.run_icosfit(cfgfile);
@@ -155,7 +174,7 @@ classdef icosfit_optimizer < handle
       save_IR = self.IR;
       self.IR = [];
       S.(self.opt.save_var) = self;
-      fname = sprintf('Opt_%s.mat', self.opt.mnemonic);
+      fname = [ self.opt.mnemonic '/' 'Opt_' self.opt.mnemonic '.mat' ];
       save(fname, '-struct', 'S');
       fprintf(1, '%s %s saved to %s\n', class(self), ...
         self.opt.save_var, fname);

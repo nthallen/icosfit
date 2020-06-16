@@ -1,5 +1,5 @@
-function pmax_out = baseline_add_etalon(base, oname, scans, periods, maxf)
-% baseline_add_etalon(base, oname[, scans])
+function pmax_out = baseline_add_etalon(base, oname, scans, periods, maxf, outputdir, k)
+% baseline_add_etalon(base, oname[, scans[,periods[,maxf[,outputdir]]]])
 % base is the output directory of an icosfit run
 % oname is the baseline name fragment. Output is written to
 %   'sbase.oname.ptb'.
@@ -29,6 +29,8 @@ elseif ~isempty(periods)
   end
 end
 if nargin < 5, maxf = 0; end
+if nargin < 6, outputdir = ''; end
+if nargin < 7, k = 1; end
 
 % Load the existing baseline and perform sanity checks
 [nu, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
@@ -79,7 +81,10 @@ if isempty(oname)
     base, fmax, 1/fmax));
   xlabel('cm');
 else
-  writeetlnbase(oname,PV,nu,vectors, pmax);
+  if ~isempty(vectors)
+    vectors = vectors*k;
+  end
+  writeetlnbase(oname,PV,nu,vectors, pmax, [], outputdir);
 end
 if nargout > 0
   pmax_out = pmax;

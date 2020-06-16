@@ -1,7 +1,8 @@
 function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
-   c_vector, periods, scannum )
+   c_vector, periods, scannum, outputdir )
 % [ nu_out, Vout ] = ...
-%    writeetlnbase( name, poly_coeffs, c_nu, c_vector[, periods[,scannum]] );
+%    writeetlnbase( name, poly_coeffs, c_nu, c_vector ...
+%        [, periods[,scannum[,outputdir]]] );
 %
 % Creates sbase.<name>.ptb specifying a baseline
 % function containing a polynomial of sample number, an arbitrary
@@ -64,6 +65,11 @@ end
 if nargin < 5
   periods = [];
 end
+if nargin < 7 || isempty(outputdir)
+  outputdir = '';
+else
+  outputdir = [ outputdir filesep ];
+end
 if ~isempty(periods)
   if min(size(periods)) ~= 1
     error('periods must be a vector');
@@ -116,7 +122,7 @@ elseif p_coeffs>0
 else
   V =[];
 end
-fname2 = [ 'sbase.' name '.ptb' ];
+fname2 = [ outputdir 'sbase.' name '.ptb' ];
 fid = fopen( fname2, 'w' );
 if fid > 0
   fwrite( fid, [0 1], 'integer*4'); % func_base_ptbnu format
@@ -127,7 +133,7 @@ if fid > 0
   fwrite( fid, ones(1,2*size(periods,1)+size(c_vector,2)), 'real*4' );
   % Initial parameter values
   fwrite( fid, V, 'real*4' );
-  fwrite( fid, c_vector/k, 'real*4');
+  fwrite( fid, full(c_vector/k), 'real*4');
   for i=1:size(periods,1)
     theta = 2*pi*nu/periods(i,1);
     fwrite( fid, periods(i,2)*sin(theta)/(k*sqrt(2)), 'real*4');

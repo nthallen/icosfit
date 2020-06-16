@@ -2,25 +2,16 @@ classdef maxiterations_optimizer < icosfit_optimizer
   % Leverage icosfit_optimizer tools to survey performance for
   % a range of MaxIterations values.
   properties
-    eopt
   end
   methods
     function maxi = maxiterations_optimizer(varargin)
+      eopt.maxi_vals = [];
       maxi = maxi@icosfit_optimizer( ...
         'mnemonic','maxi','criteria','MaxIterations','xscale','linear', ...
-        'save_var','OptMI');
-      maxi.eopt.maxi_vals = [];
-      for i=1:2:length(varargin)-1
-        if isfield(maxi.opt, varargin{i})
-          maxi.opt.(varargin{i}) = varargin{i+1};
-        elseif isfield(maxi.eopt, varargin{i})
-          maxi.eopt.(varargin{i}) = varargin{i+1};
-        else
-          error('Unrecognized option: %s', varargin{i});
-        end
-      end
-      if ~isempty(maxi.eopt.maxi_vals)
-        maxi.add_values(maxi.eopt.maxi_vals);
+        'save_var','OptMI','sopt',eopt, ...
+        varargin{:});
+      if ~isempty(maxi.opt.sopt.maxi_vals)
+        maxi.add_values(maxi.opt.sopt.maxi_vals);
       end
     end
     
