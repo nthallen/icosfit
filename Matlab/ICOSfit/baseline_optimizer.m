@@ -114,7 +114,7 @@ classdef baseline_optimizer < icosfit_optimizer
       % OptB.rescale_baseline()
       %
       % Analyzes the scaling of baseline parameters and
-      % creates an new appropriately scaled baseline file.
+      % creates a new appropriately scaled baseline file.
       name = OptB.survey(end).text;
       t = regexp(name,'^(.*[^0-9r])([0-9]*)(r?)$','tokens');
       t = t{1};
@@ -131,10 +131,10 @@ classdef baseline_optimizer < icosfit_optimizer
         end
         newname = [ name 'r' ];
       end
-      baseline_rescale(OptB.survey(end).base, newname);
+      baseline_rescale(OptB.survey(end).base, newname, [], OptB.opt.mnemonic);
       value = length(OptB.survey)+1;
       OptB.iterate(newname, value, ...
-        'BaselineFile', [ 'sbase.' newname '.ptb' ]);
+        'BaselineFile', [ OptB.opt.mnemonic '/sbase.' newname '.ptb' ]);
     end
 
     function update_menus(self, f)

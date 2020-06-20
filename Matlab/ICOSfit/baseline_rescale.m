@@ -1,4 +1,4 @@
-function baseline_rescale(base, oname, scans)
+function baseline_rescale(base, oname, scans, outputdir)
 % baseline_rescale(base, oname, scans)
 % base is the output directory of an icosfit run
 % oname is the baseline name fragment. Output is written to
@@ -15,6 +15,9 @@ function baseline_rescale(base, oname, scans)
 S = ICOS_setup(base);
 if nargin < 3 || isempty(scans)
   scans = S.scannum;
+end
+if nargin < 4
+  outputdir = '';
 end
 scani = interp1(S.scannum,1:length(S.scannum),scans,'nearest');
 [nu, vectors,p_coeffs,Ptype,PV,Pscale] = readetlnbase(S.BaselineFile);
@@ -44,4 +47,4 @@ for i = 0:(size(vectors,2)/2)-1
     vectors(:,vcols) = mag * vectors(:,vcols);
   end
 end
-writeetlnbase(oname,oPV,nu,vectors);
+writeetlnbase(oname,oPV,nu,vectors,[],[],outputdir);

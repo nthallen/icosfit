@@ -77,7 +77,7 @@ classdef icosfit_optimizer < handle
         error('Non-PC platforms not yet sorted');
       end
       if res ~= 0
-        error('"icosfit %s" apparently failed', ofile);
+        error('"icosfit %s" apparently failed', cfgfile);
       end
     end
     

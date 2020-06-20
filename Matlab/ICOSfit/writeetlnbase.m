@@ -48,7 +48,7 @@ nu_max = max(nuc)+margin+res;
 nu = [nu_min:res:nu_max];
 if ~isempty(c_nu)
   % complain if c_nu does not cover the range
-  if nu_min < min(c_nu)-res/2 || nu_max > max(c_nu)+res/2
+  if nu_min < min(c_nu)-res/2 || nu_max > max(c_nu)+res
     error('c_nu does not cover the range required');
   end
   % resample only if c_nu is not uniformly spaced
