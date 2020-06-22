@@ -1,5 +1,10 @@
 # Version History for icosfit.
 
+### V4.2.5 June 22, 2020
+
+  * Fixed minor bugs in optimizer utilities
+  * Added support for non-pc platforms
+  
 ### V4.2.4 June 16, 2020
 
   * Fixed parameter scaling bug with line number density
