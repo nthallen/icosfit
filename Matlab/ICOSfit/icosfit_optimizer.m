@@ -74,7 +74,8 @@ classdef icosfit_optimizer < handle
           cfgfile ];
         res = system(cmd);
       else
-        error('Non-PC platforms not yet sorted');
+        cmd = [ '/usr/local/bin/icosfit ' cfgfile ];
+        res = system(cmd);
       end
       if res ~= 0
         error('"icosfit %s" apparently failed', cfgfile);
