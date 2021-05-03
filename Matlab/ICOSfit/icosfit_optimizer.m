@@ -117,7 +117,7 @@ classdef icosfit_optimizer < handle
         scans = PTE(:,1);
         V = scans >= self.ScanNumRange(1) & ...
           scans <= self.ScanNumRange(2);
-        if any(PTE(V,12) == 0)
+        if size(PTE,2) < 12 || any(PTE(V,12) == 0)
           error('For nscans > 0, nu_F0 must be defined in PTEFile');
         end
         scans = scans(V);
