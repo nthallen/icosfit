@@ -14,7 +14,7 @@ class GlobalData_t {
     ICOS_Float MirrorLoss;
     ICOS_Float EtalonFSR;
     ICOS_Float EtalonFeedback;
-    ICOS_Float TolerableDrift;
+    ICOS_Float MaxFinePositionOffset;
     ICOS_Float LeftLineMargin;
     ICOS_Float LeftLineMarginMultiplier;
     ICOS_Float RightLineMargin;

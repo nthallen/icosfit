@@ -330,7 +330,8 @@ void func_line::line_float() {
   if ( !fix_finepos ) {
     float_param(dnu_idx);
     set_param_limits(dnu_idx,
-      -GlobalData.TolerableDrift, GlobalData.TolerableDrift);
+      -GlobalData.MaxFinePositionOffset,
+       GlobalData.MaxFinePositionOffset);
   }
   if ( !fix_width)
     float_param(w_idx); // Limits must be set by adjust_params

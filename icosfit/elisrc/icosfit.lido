@@ -55,8 +55,8 @@ END;
 RULE: ConfigCmd ::= 'MinimumFringeSpacing' '=' FloatVal COMPUTE
   message(ERROR, "MinimumFringeSpacing is no longer supported",0,COORDREF);
 END;
-RULE: ConfigCmd ::= 'TolerableDrift' '=' FloatVal opt_wn COMPUTE
-  SetGlobal(TolerableDrift, FloatVal.FVal );
+RULE: ConfigCmd ::= 'MaxFinePositionOffset' '=' FloatVal opt_wn COMPUTE
+  SetGlobal(MaxFinePositionOffset, FloatVal.FVal );
 END;
 RULE: ConfigCmd ::= 'LineMargin' '=' FloatVal opt_wn COMPUTE
   SetGlobal(LeftLineMargin, FloatVal.FVal);

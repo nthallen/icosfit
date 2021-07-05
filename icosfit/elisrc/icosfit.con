@@ -12,7 +12,7 @@ ConfigCmd :
   'EtalonFeedback' '=' FloatVal /
   'MinimumFringeSpacing' '=' FloatVal /
   'DSFRLimits' '=' '[' FloatVal ',' FloatVal ']' /
-  'TolerableDrift' '=' FloatVal opt_wn /
+  'MaxFinePositionOffset' '=' FloatVal opt_wn /
   'LineMargin' '=' FloatVal opt_wn /
   'LeftLineMargin' '=' FloatVal opt_wn /
   'RightLineMargin' '=' FloatVal opt_wn /
