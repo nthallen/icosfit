@@ -14,7 +14,8 @@ GlobalData_t::GlobalData_t() {
   MirrorLoss = 180.e-6;
   EtalonFSR = 0.019805;
   EtalonFeedback = 0.;
-  TolerableDrift = .01; // cm-1
+  MaxFinePositionOffset = .01; // cm-1
+  MaxEnsembleDriftPerScan = 5e-3; // cm-1
   CavityLength = 70.; // cm
   CavityFixedLength = 0.; // cm
   LeftLineMargin = RightLineMargin = .05; // cm-1
@@ -49,4 +50,5 @@ GlobalData_t::GlobalData_t() {
   ConvergenceStep = 1e-3;
   ConvergenceCount = 4;
   MaxIterations = 500;
+  last_nu_F0 = 0.;
 }

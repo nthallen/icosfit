@@ -125,6 +125,7 @@ typedef struct _TPrule_73* _TPPrule_73;
 typedef struct _TPrule_74* _TPPrule_74;
 typedef struct _TPrule_75* _TPPrule_75;
 typedef struct _TPrule_76* _TPPrule_76;
+typedef struct _TPrule_77* _TPPrule_77;
 typedef struct _TPrule_030* _TPPrule_030;
 typedef struct _TPrule_029* _TPPrule_029;
 typedef struct _TPrule_028* _TPPrule_028;
@@ -1080,7 +1081,7 @@ struct _TPrule_63
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-POSITION _AT_pos;
+_TSPopt_wn _desc2;
 };
 
 struct _TPrule_64
@@ -1091,6 +1092,7 @@ struct _TPrule_64
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
+POSITION _AT_pos;
 };
 
 struct _TPrule_65
@@ -1101,10 +1103,20 @@ struct _TPrule_65
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_wn _desc2;
 };
 
 struct _TPrule_66
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
+_TSPFloatVal _desc1;
+_TSPopt_wn _desc2;
+};
+
+struct _TPrule_67
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1116,7 +1128,7 @@ _TSPFloatVal _desc2;
 POSITION _AT_pos;
 };
 
-struct _TPrule_67
+struct _TPrule_68
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1125,7 +1137,7 @@ _NODECOMMON
 #endif
 };
 
-struct _TPrule_68
+struct _TPrule_69
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1136,7 +1148,7 @@ _TSPopt_preserve _desc1;
 int _ATTERM_1;
 };
 
-struct _TPrule_69
+struct _TPrule_70
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1145,16 +1157,6 @@ _NODECOMMON
 #endif
 _TSPScanNumRangeName _desc1;
 _TSPIntegerPair _desc2;
-};
-
-struct _TPrule_70
-#ifdef __cplusplus
-	: public NODEPTR_struct {
-#else
-{
-_NODECOMMON
-#endif
-_TSPIntegerPair _desc1;
 };
 
 struct _TPrule_71
@@ -1174,11 +1176,21 @@ struct _TPrule_72
 {
 _NODECOMMON
 #endif
+_TSPIntegerPair _desc1;
+};
+
+struct _TPrule_73
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
 _TSPFloatVal _desc1;
 _TSPopt_ppm _desc2;
 };
 
-struct _TPrule_73
+struct _TPrule_74
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1189,7 +1201,7 @@ int _ATTERM_2;
 int _ATTERM_1;
 };
 
-struct _TPrule_74
+struct _TPrule_75
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1200,7 +1212,7 @@ double _ATFVal;
 _TSPFloatVal _desc1;
 };
 
-struct _TPrule_75
+struct _TPrule_76
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1211,7 +1223,7 @@ double _ATFVal;
 int _ATTERM_1;
 };
 
-struct _TPrule_76
+struct _TPrule_77
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1247,8 +1259,6 @@ struct _TPrule_028
 {
 _NODECOMMON
 #endif
-_TSPPTE_opts _desc1;
-_TSPPTE_opt _desc2;
 };
 
 struct _TPrule_027
@@ -1267,7 +1277,6 @@ struct _TPrule_026
 {
 _NODECOMMON
 #endif
-int _ATTERM_1;
 };
 
 struct _TPrule_025
@@ -1277,7 +1286,6 @@ struct _TPrule_025
 {
 _NODECOMMON
 #endif
-int _ATTERM_1;
 };
 
 struct _TPrule_024
@@ -1323,6 +1331,7 @@ struct _TPrule_020
 {
 _NODECOMMON
 #endif
+int _ATTERM_1;
 };
 
 struct _TPrule_019
@@ -1332,6 +1341,7 @@ struct _TPrule_019
 {
 _NODECOMMON
 #endif
+int _ATTERM_1;
 };
 
 struct _TPrule_018
@@ -1341,6 +1351,8 @@ struct _TPrule_018
 {
 _NODECOMMON
 #endif
+_TSPPTE_opts _desc1;
+_TSPPTE_opt _desc2;
 };
 
 struct _TPrule_017
@@ -1381,8 +1393,7 @@ struct _TPrule_014
 {
 _NODECOMMON
 #endif
-_TSPLineOpts _desc1;
-_TSPLineOpt _desc2;
+_TSPLines _desc1;
 };
 
 struct _TPrule_013
@@ -1392,6 +1403,8 @@ struct _TPrule_013
 {
 _NODECOMMON
 #endif
+_TSPLineOpts _desc1;
+_TSPLineOpt _desc2;
 };
 
 struct _TPrule_012
@@ -1401,7 +1414,6 @@ struct _TPrule_012
 {
 _NODECOMMON
 #endif
-_TSPThreshold _desc1;
 };
 
 struct _TPrule_011
@@ -1411,7 +1423,7 @@ struct _TPrule_011
 {
 _NODECOMMON
 #endif
-_TSPPosition _desc1;
+_TSPThreshold _desc1;
 };
 
 struct _TPrule_010
@@ -1421,7 +1433,7 @@ struct _TPrule_010
 {
 _NODECOMMON
 #endif
-_TSPGroupSpec _desc1;
+_TSPPosition _desc1;
 };
 
 struct _TPrule_09
@@ -1431,7 +1443,7 @@ struct _TPrule_09
 {
 _NODECOMMON
 #endif
-_TSPFixLineParam _desc1;
+_TSPGroupSpec _desc1;
 };
 
 struct _TPrule_08
@@ -1441,7 +1453,7 @@ struct _TPrule_08
 {
 _NODECOMMON
 #endif
-_TSPLines _desc1;
+_TSPFixLineParam _desc1;
 };
 
 struct _TPrule_07

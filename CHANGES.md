@@ -1,5 +1,11 @@
 # Version History for icosfit.
 
+### V4.2.6 July 5, 2021
+
+  * Fixed improper handling of PTEfile options
+  * Renamed parameter TolerableDrift to MaxFinePositionOffset
+  * Added parameter MaxEnsembleDriftPerScan
+
 ### V4.2.5 June 22, 2020
 
   * Fixed minor bugs in optimizer utilities

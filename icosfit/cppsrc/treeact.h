@@ -151,22 +151,22 @@
 
 #define _TERMACT_rule_62
 
-#define _TERMACT_rule_63 \
-	_currn->_AT_pos=(_coordref ? *_coordref : NoCoord);
+#define _TERMACT_rule_63
 
-#define _TERMACT_rule_64
+#define _TERMACT_rule_64 \
+	_currn->_AT_pos=(_coordref ? *_coordref : NoCoord);
 
 #define _TERMACT_rule_65
 
-#define _TERMACT_rule_66 \
+#define _TERMACT_rule_66
+
+#define _TERMACT_rule_67 \
 	_currn->_AT_pos=(_coordref ? *_coordref : NoCoord);
 
-#define _TERMACT_rule_67
+#define _TERMACT_rule_68
 
-#define _TERMACT_rule_68 \
+#define _TERMACT_rule_69 \
 	_currn->_ATTERM_1=_TERM1;
-
-#define _TERMACT_rule_69
 
 #define _TERMACT_rule_70
 
@@ -174,16 +174,18 @@
 
 #define _TERMACT_rule_72
 
-#define _TERMACT_rule_73 \
+#define _TERMACT_rule_73
+
+#define _TERMACT_rule_74 \
 	_currn->_ATTERM_2=_TERM2; \
 	_currn->_ATTERM_1=_TERM1;
 
-#define _TERMACT_rule_74
-
-#define _TERMACT_rule_75 \
-	_currn->_ATTERM_1=_TERM1;
+#define _TERMACT_rule_75
 
 #define _TERMACT_rule_76 \
+	_currn->_ATTERM_1=_TERM1;
+
+#define _TERMACT_rule_77 \
 	_currn->_ATTERM_1=_TERM1;
 
 #define _TERMACT_rule_030
@@ -194,11 +196,9 @@
 
 #define _TERMACT_rule_027
 
-#define _TERMACT_rule_026 \
-	_currn->_ATTERM_1=_TERM1;
+#define _TERMACT_rule_026
 
-#define _TERMACT_rule_025 \
-	_currn->_ATTERM_1=_TERM1;
+#define _TERMACT_rule_025
 
 #define _TERMACT_rule_024
 
@@ -208,9 +208,11 @@
 
 #define _TERMACT_rule_021
 
-#define _TERMACT_rule_020
+#define _TERMACT_rule_020 \
+	_currn->_ATTERM_1=_TERM1;
 
-#define _TERMACT_rule_019
+#define _TERMACT_rule_019 \
+	_currn->_ATTERM_1=_TERM1;
 
 #define _TERMACT_rule_018
 

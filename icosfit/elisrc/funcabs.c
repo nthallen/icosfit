@@ -59,11 +59,14 @@ int func_abs::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
       if ( n_lines > 0 ) nu_F0 /= n_lines;
       else nl_error( 3, "No valid line starting positions recorded" );
     }
+    GlobalData.last_nu_F0 = nu_F0;
     set_param(nu_F0_idx, nu_F0);
     if (param_fixed(nu_F0_idx))
       set_param_limits(nu_F0_idx, nu_F0, nu_F0);
     else
-      set_param_limits(nu_F0_idx, -DBL_MAX, DBL_MAX);
+      set_param_limits(nu_F0_idx,
+        GlobalData.last_nu_F0-GlobalData.MaxEnsembleDriftPerScan,
+        GlobalData.last_nu_F0+GlobalData.MaxEnsembleDriftPerScan);
     initialized = true;
   }
   if (when == scan_init) {
@@ -72,11 +75,14 @@ int func_abs::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
       nu_F0 = GlobalData.input.nu_F0;
       set_param(nu_F0_idx, nu_F0);
     }
+    GlobalData.last_nu_F0 = nu_F0;
     if (param_fixed(nu_F0_idx))
       set_param_limits(nu_F0_idx, nu_F0, nu_F0);
     else
       // This 0.4 needs to be a configuration parameter
-      set_param_limits(nu_F0_idx, nu_F0-0.4, nu_F0+0.4);
+      set_param_limits(nu_F0_idx,
+        GlobalData.last_nu_F0-GlobalData.MaxEnsembleDriftPerScan,
+        GlobalData.last_nu_F0+GlobalData.MaxEnsembleDriftPerScan);
   }
   return 0;
 }

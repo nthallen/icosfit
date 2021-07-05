@@ -325,8 +325,12 @@ void func_line::line_fix() {
 }
 
 void func_line::line_float() {
+  if (param_fixed(nu_F0_idx)) {
+    set_param_limits(nu_F0_idx,
+      GlobalData.last_nu_F0-GlobalData.MaxEnsembleDriftPerScan,
+      GlobalData.last_nu_F0+GlobalData.MaxEnsembleDriftPerScan);
+  }
   float_param(nu_F0_idx);
-  set_param_limits(nu_F0_idx, -DBL_MAX, DBL_MAX);
   if ( !fix_finepos ) {
     float_param(dnu_idx);
     set_param_limits(dnu_idx,

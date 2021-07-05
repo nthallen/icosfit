@@ -15,6 +15,7 @@ class GlobalData_t {
     ICOS_Float EtalonFSR;
     ICOS_Float EtalonFeedback;
     ICOS_Float MaxFinePositionOffset;
+    ICOS_Float MaxEnsembleDriftPerScan;
     ICOS_Float LeftLineMargin;
     ICOS_Float LeftLineMarginMultiplier;
     ICOS_Float RightLineMargin;
@@ -55,6 +56,7 @@ class GlobalData_t {
     ICOS_Float ConvergenceStep;
     int ConvergenceCount;
     int MaxIterations;
+    ICOS_Float last_nu_F0;
 
     GlobalData_t();
 };
