@@ -828,7 +828,7 @@ _AVPTE_opt_PTE_ncols=1;
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
 /*SPC(164)*/
 
-if (SetGlobalOnce(PTE_Feedback_col, ADD(_AVPTE_optPTE_column_pre, 1))) {
+if (SetGlobalOnce(PTE_Feedback_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ Feedback' more than once", 0, (&( _currn->_AT_pos)));
 
 } else {
@@ -855,7 +855,7 @@ _AVPTE_opt_PTE_ncols=7;
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
 /*SPC(164)*/
 
-if (SetGlobalOnce(PTE_PowerParams_col, ADD(_AVPTE_optPTE_column_pre, 1))) {
+if (SetGlobalOnce(PTE_PowerParams_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ PowerParams' more than once", 0, (&( _currn->_AT_pos)));
 
 } else {
@@ -882,7 +882,7 @@ _AVPTE_opt_PTE_ncols=1;
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
 /*SPC(164)*/
 
-if (SetGlobalOnce(PTE_MirrorLoss_col, ADD(_AVPTE_optPTE_column_pre, 1))) {
+if (SetGlobalOnce(PTE_MirrorLoss_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ MirrorLoss' more than once", 0, (&( _currn->_AT_pos)));
 
 } else {
@@ -909,7 +909,7 @@ _AVPTE_opt_PTE_ncols=1;
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
 /*SPC(164)*/
 
-if (SetGlobalOnce(PTE_nu_F0_col, ADD(_AVPTE_optPTE_column_pre, 1))) {
+if (SetGlobalOnce(PTE_nu_F0_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ nu_F0' more than once", 0, (&( _currn->_AT_pos)));
 
 } else {
@@ -931,7 +931,7 @@ _TPPrule_34 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-_AVPTE_optPTE_column_post=0;
+_AVPTE_optPTE_column_post=11;
 /*SPC(161)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 

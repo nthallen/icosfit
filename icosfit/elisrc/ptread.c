@@ -12,10 +12,22 @@
 #include "global.h"
 #include "mlf.h"
 
-PTfile::PTfile( const char *fname ) {
-  int offset;
+/**
+ * There can be 21 defined columns plus an arbitrary number of
+ * 'Placeholder' columns. The standard output from MATLAB uses
+ * 17 characters for each column, so we need space for at least
+ * 21*17 + 2 = 359 chars to include the newline and NUL.
+ * No reason not to push this out to 512.
+ */
+const int MYBUFSIZE = 512;
+const int MAX_VARS = 25;
+
+PTfile::PTfile( const char *fname )
+    : fname(fname),
+      linenum(0),
+      ScanNum(0),
+      next_ScanNum(0) {
   fp = fopen( fname, "r" );
-  ScanNum = next_ScanNum = 0;
   if ( fp == 0 )
     nl_error( nl_response, "Unable to open input file '%s'", fname );
   format = GlobalData.PTformat;
@@ -26,31 +38,29 @@ PTfile::PTfile( const char *fname ) {
     case 2: n_vars = 11; break; // PTE file
     default: nl_error( nl_response, "Unknown format code: %d", format );
   }
-  offset = n_vars - 1;
   if (GlobalData.PTE_Feedback_col) {
-    GlobalData.PTE_Feedback_col += offset;
     ++n_vars;
   }
   if (GlobalData.PTE_nu_F0_col) {
-    GlobalData.PTE_nu_F0_col += offset;
     ++n_vars;
   }
   if (GlobalData.PTE_MirrorLoss_col) {
-    GlobalData.PTE_MirrorLoss_col += offset;
     ++n_vars;
   }
   if (GlobalData.PTE_PowerParams_col) {
-    GlobalData.PTE_PowerParams_col += offset;
     n_vars += 7;
   }
   if ((GlobalData.PTE_Feedback_col || GlobalData.EtalonFeedback)
        && !GlobalData.PTE_PowerParams_col) {
-    nl_error(nl_response, "EtalonFeedback and PTE option '+Feedback' both require PTE option '+PowerParams'");
+    nl_error(nl_response,
+      "EtalonFeedback and PTE option '+Feedback' both require PTE option '+PowerParams'");
+  }
+  if (n_vars > MAX_VARS) {
+    nl_error( 3,
+      "Number of PTE columns defined (%d) exceeds MAX_VARS (%d)\n",
+      n_vars, MAX_VARS);
   }
 }
-
-const int MYBUFSIZE = 256;
-const int MAX_VARS = 20;
 
 int PTfile::readline() {
   if ( fp == 0 ) return 0;
@@ -68,30 +78,37 @@ int PTfile::readline() {
     int i;
 
     last_file_pos = ftell(fp);
-    if ( fgets( buf, MYBUFSIZE, fp ) == 0 ) {
-      fclose(fp);
-      fp = 0;
-      return 0;
-    }
-    for ( p = buf, i = 0; i < n_vars; i++ ) {
-      data[i] = strtod( p, &ep );
-      if ( i == n_vars ) {
-        GlobalData.input.nu_F0 = (p == ep) ? 0. : data[i];
-      } else if ( p == ep ) {
-        nl_error( 2, "Invalid number of parameters in PTEFile\n" );
-        fclose(fp);
-        fp = 0;
-        return 0;
-      }
-      p = ep;
-    }
-    /* Deal with very long input lines */
-    while (buf[strlen(buf)-1] != '\n') {
+    for (;;) {
       if ( fgets( buf, MYBUFSIZE, fp ) == 0 ) {
         fclose(fp);
         fp = 0;
         return 0;
       }
+      ++linenum;
+      /* Deal with very long input lines */
+      if (buf[strlen(buf)-1] != '\n') {
+        nl_error(1, "%s:%d: buffer size (%d) exceeded, skipping\n",
+          fname, linenum, MYBUFSIZE);
+        while (buf[strlen(buf)-1] != '\n') {
+          if ( fgets( buf, MYBUFSIZE, fp ) == 0 ) {
+            fclose(fp);
+            fp = 0;
+            return 0;
+          }
+        }
+      } else break;
+    }
+    for ( p = buf, i = 0; i < n_vars; i++ ) {
+      data[i] = strtod( p, &ep );
+      if ( p == ep && i != n_vars ) {
+        nl_error( 2,
+          "%s:%d: Invalid number of parameters: Expected %d, read %d\n",
+          fname, linenum, n_vars, i);
+        fclose(fp);
+        fp = 0;
+        return 0;
+      }
+      p = ep;
     }
     if ( format == 2 ) {
       time = 0.;

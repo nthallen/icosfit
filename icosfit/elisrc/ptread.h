@@ -21,6 +21,8 @@ class PTfile {
   private:
     int format;
     int n_vars;
+    const char *fname;
+    int linenum;
     long int last_file_pos;
     double Etln_params[14];
 };
