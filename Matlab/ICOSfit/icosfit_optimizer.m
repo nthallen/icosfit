@@ -19,7 +19,7 @@ classdef icosfit_optimizer < handle
       self.opt.nscans = []; % For subsampling the ScanNumRange
       self.opt.xscale = 'linear';
       self.opt.cygwin_root = 'c:\cygwin64';
-      self.opt.save_var = 'Opt';
+      self.opt.save_var = '';
       self.cfg_map = { 'Verbosity', '35', 'epsilon2', '5e-4' };
       for i=1:2:length(varargin)-1
         if isfield(self.opt, varargin{i})
@@ -33,6 +33,9 @@ classdef icosfit_optimizer < handle
       end
       if isempty(self.opt.mnemonic)
         error('Must specify mnemonic option');
+      end
+      if isempty(self.opt.save_var)
+        self.opt.save_var = self.opt.mnemonic;
       end
       if exist(self.opt.mnemonic, 'dir')
         error('Subdirectory "%s" already exists', self.opt.mnemonic);

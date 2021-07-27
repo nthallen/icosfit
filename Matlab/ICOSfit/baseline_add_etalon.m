@@ -44,6 +44,9 @@ n_base_params = p_coeffs;
 if ~isempty(vectors)
   n_base_params = n_base_params + 1 + size(vectors,2);
 end
+if endsWith(S.output_cols{S.n_input_params+1},' Value: k_input')
+  n_base_params = n_base_params + 1;
+end
 if n_base_params ~= S.n_base_params
   error('n_base_params do not agree');
 end

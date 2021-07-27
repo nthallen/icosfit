@@ -5,17 +5,18 @@ classdef baseline_optimizer < icosfit_optimizer
     etalon_periods
     etalon_maxf
     k
+    input
   end
   methods
     function self = baseline_optimizer(varargin)
       % options are:
       %   cfg_ref 
       %   mnemonic ('optb')
-      %   save_var ('OptB')
-      %   n_coeffs ([])
-      % bopt.n_coeffs = [];
+      %   save_var ( mnemonic )
+      %   uses_input ( 0 )
+      bopt.uses_input = 0;
       self = self@icosfit_optimizer( ...
-        'mnemonic','optb','criteria','Baseline','save_var','OptB', ...
+        'mnemonic','optb','criteria','Baseline', 'sopt', bopt, ...
         varargin{:});
         % 'sopt', bopt, ...
       self.n_etalons = 0;
@@ -23,19 +24,11 @@ classdef baseline_optimizer < icosfit_optimizer
       self.etalon_periods = [];
       self.etalon_maxf = 0;
       self.k = 1;
-%       for i=1:2:length(varargin)-1
-%         if isfield(self.opt, varargin{i})
-%           self.opt.(varargin{i}) = varargin{i+1};
-%         elseif isfield(self.bopt, varargin{i})
-%           self.bopt.(varargin{i}) = varargin{i+1};
-%         else
-%           % self.cfg_map.(varargin{i}) = varargin{i+1};
-%           self.cfg_map = [ self.cfg_map(:)' {varargin{i}} {varargin{i+1}} ];
-%           fprintf(1,'Assuming %s is a cfg_map item\n', varargin{i});
-%           % error('Unrecognized option: %s', varargin{i});
-%         end
-%       end
       self.get_scanregion;
+      self.input = '';
+      if self.opt.sopt.uses_input
+        self.input = ' + Input';
+      end
       cellparams=load_cell_cfg;
       if cellparams.N_Passes == 0
         % 100 is a guess at "enough points to exceed the lifetime in the
@@ -55,7 +48,8 @@ classdef baseline_optimizer < icosfit_optimizer
       % create new config file, run the fit and add to the survey
       value = length(self.survey)+1;
       self.iterate(name, value, ...
-        'BaselineFile', [ self.opt.mnemonic '/' 'sbase.' name '.ptb' ]);
+        'BaselineFile', ...
+          [ self.opt.mnemonic '/' 'sbase.' name '.ptb' self.input ]);
     end
     
     function period_out = analyze_etalons(self, maxf, oname)
@@ -107,7 +101,8 @@ classdef baseline_optimizer < icosfit_optimizer
       self.etalon_periods(self.n_etalons) = period;
       value = length(self.survey)+1;
       self.iterate(newname, value, ...
-        'BaselineFile', [ self.opt.mnemonic '/sbase.' newname '.ptb' ]);
+        'BaselineFile', ...
+          [ self.opt.mnemonic '/sbase.' newname '.ptb' self.input ]);
     end
     
     function rescale_baseline(OptB)
@@ -134,7 +129,8 @@ classdef baseline_optimizer < icosfit_optimizer
       baseline_rescale(OptB.survey(end).base, newname, [], OptB.opt.mnemonic);
       value = length(OptB.survey)+1;
       OptB.iterate(newname, value, ...
-        'BaselineFile', [ OptB.opt.mnemonic '/sbase.' newname '.ptb' ]);
+        'BaselineFile', ...
+          [ OptB.opt.mnemonic '/sbase.' newname '.ptb' self.input]);
     end
 
     function update_menus(self, f)
