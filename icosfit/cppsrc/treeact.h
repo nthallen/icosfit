@@ -165,10 +165,10 @@
 
 #define _TERMACT_rule_68
 
-#define _TERMACT_rule_69 \
-	_currn->_ATTERM_1=_TERM1;
+#define _TERMACT_rule_69
 
-#define _TERMACT_rule_70
+#define _TERMACT_rule_70 \
+	_currn->_ATTERM_1=_TERM1;
 
 #define _TERMACT_rule_71
 
@@ -176,16 +176,18 @@
 
 #define _TERMACT_rule_73
 
-#define _TERMACT_rule_74 \
+#define _TERMACT_rule_74
+
+#define _TERMACT_rule_75 \
 	_currn->_ATTERM_2=_TERM2; \
 	_currn->_ATTERM_1=_TERM1;
 
-#define _TERMACT_rule_75
-
-#define _TERMACT_rule_76 \
-	_currn->_ATTERM_1=_TERM1;
+#define _TERMACT_rule_76
 
 #define _TERMACT_rule_77 \
+	_currn->_ATTERM_1=_TERM1;
+
+#define _TERMACT_rule_78 \
 	_currn->_ATTERM_1=_TERM1;
 
 #define _TERMACT_rule_030

@@ -126,6 +126,7 @@ typedef struct _TPrule_74* _TPPrule_74;
 typedef struct _TPrule_75* _TPPrule_75;
 typedef struct _TPrule_76* _TPPrule_76;
 typedef struct _TPrule_77* _TPPrule_77;
+typedef struct _TPrule_78* _TPPrule_78;
 typedef struct _TPrule_030* _TPPrule_030;
 typedef struct _TPrule_029* _TPPrule_029;
 typedef struct _TPrule_028* _TPPrule_028;
@@ -1144,8 +1145,6 @@ struct _TPrule_69
 {
 _NODECOMMON
 #endif
-_TSPopt_preserve _desc1;
-int _ATTERM_1;
 };
 
 struct _TPrule_70
@@ -1155,8 +1154,8 @@ struct _TPrule_70
 {
 _NODECOMMON
 #endif
-_TSPScanNumRangeName _desc1;
-_TSPIntegerPair _desc2;
+_TSPopt_preserve _desc1;
+int _ATTERM_1;
 };
 
 struct _TPrule_71
@@ -1166,7 +1165,8 @@ struct _TPrule_71
 {
 _NODECOMMON
 #endif
-_TSPIntegerPair _desc1;
+_TSPScanNumRangeName _desc1;
+_TSPIntegerPair _desc2;
 };
 
 struct _TPrule_72
@@ -1186,11 +1186,21 @@ struct _TPrule_73
 {
 _NODECOMMON
 #endif
+_TSPIntegerPair _desc1;
+};
+
+struct _TPrule_74
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
 _TSPFloatVal _desc1;
 _TSPopt_ppm _desc2;
 };
 
-struct _TPrule_74
+struct _TPrule_75
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1201,7 +1211,7 @@ int _ATTERM_2;
 int _ATTERM_1;
 };
 
-struct _TPrule_75
+struct _TPrule_76
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1212,7 +1222,7 @@ double _ATFVal;
 _TSPFloatVal _desc1;
 };
 
-struct _TPrule_76
+struct _TPrule_77
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1223,7 +1233,7 @@ double _ATFVal;
 int _ATTERM_1;
 };
 
-struct _TPrule_77
+struct _TPrule_78
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else

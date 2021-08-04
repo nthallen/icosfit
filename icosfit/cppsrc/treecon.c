@@ -2205,12 +2205,10 @@ return ( (NODEPTR) _currn);
 }/* Mkrule_68 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_69 (POSITION *_coordref, int _TERM1, NODEPTR _desc1)
+NODEPTR Mkrule_69 (POSITION *_coordref)
 #else
-NODEPTR Mkrule_69 (_coordref, _TERM1,_desc1)
+NODEPTR Mkrule_69 (_coordref)
 	POSITION *_coordref;
-	int _TERM1;
-	NODEPTR _desc1;
 #endif
 {	_TPPrule_69 _currn;
 #ifdef __cplusplus
@@ -2222,26 +2220,18 @@ _currn = (_TPPrule_69) TreeNodeAlloc (sizeof (struct _TPrule_69));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_69;
-_currn->_desc1 = (_TSPopt_preserve) Mkopt_preserve (_coordref, _desc1);	
-if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_69: root of subtree no. 1 can not be made a opt_preserve node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_69;
-#ifdef MONITOR
-_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
-_dapto_term_int((_currn)->_uid, "Integer", _TERM1);
-#endif
-
 return ( (NODEPTR) _currn);
 }/* Mkrule_69 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_70 (POSITION *_coordref, NODEPTR _desc1, NODEPTR _desc2)
+NODEPTR Mkrule_70 (POSITION *_coordref, int _TERM1, NODEPTR _desc1)
 #else
-NODEPTR Mkrule_70 (_coordref,_desc1,_desc2)
+NODEPTR Mkrule_70 (_coordref, _TERM1,_desc1)
 	POSITION *_coordref;
+	int _TERM1;
 	NODEPTR _desc1;
-	NODEPTR _desc2;
 #endif
 {	_TPPrule_70 _currn;
 #ifdef __cplusplus
@@ -2253,23 +2243,26 @@ _currn = (_TPPrule_70) TreeNodeAlloc (sizeof (struct _TPrule_70));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_70;
-_currn->_desc1 = (_TSPScanNumRangeName) MkScanNumRangeName (_coordref, _desc1);	
+_currn->_desc1 = (_TSPopt_preserve) Mkopt_preserve (_coordref, _desc1);	
 if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_70: root of subtree no. 1 can not be made a ScanNumRangeName node ", 0, _coordref);
-_currn->_desc2 = (_TSPIntegerPair) MkIntegerPair (_coordref, _desc2);	
-if (((NODEPTR)_currn->_desc2) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_70: root of subtree no. 2 can not be made a IntegerPair node ", 0, _coordref);
+	message (DEADLY, "RULE rule_70: root of subtree no. 1 can not be made a opt_preserve node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_70;
+#ifdef MONITOR
+_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
+_dapto_term_int((_currn)->_uid, "Integer", _TERM1);
+#endif
+
 return ( (NODEPTR) _currn);
 }/* Mkrule_70 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_71 (POSITION *_coordref, NODEPTR _desc1)
+NODEPTR Mkrule_71 (POSITION *_coordref, NODEPTR _desc1, NODEPTR _desc2)
 #else
-NODEPTR Mkrule_71 (_coordref,_desc1)
+NODEPTR Mkrule_71 (_coordref,_desc1,_desc2)
 	POSITION *_coordref;
 	NODEPTR _desc1;
+	NODEPTR _desc2;
 #endif
 {	_TPPrule_71 _currn;
 #ifdef __cplusplus
@@ -2281,9 +2274,12 @@ _currn = (_TPPrule_71) TreeNodeAlloc (sizeof (struct _TPrule_71));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_71;
-_currn->_desc1 = (_TSPIntegerPair) MkIntegerPair (_coordref, _desc1);	
+_currn->_desc1 = (_TSPScanNumRangeName) MkScanNumRangeName (_coordref, _desc1);	
 if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_71: root of subtree no. 1 can not be made a IntegerPair node ", 0, _coordref);
+	message (DEADLY, "RULE rule_71: root of subtree no. 1 can not be made a ScanNumRangeName node ", 0, _coordref);
+_currn->_desc2 = (_TSPIntegerPair) MkIntegerPair (_coordref, _desc2);	
+if (((NODEPTR)_currn->_desc2) == NULLNODEPTR)	
+	message (DEADLY, "RULE rule_71: root of subtree no. 2 can not be made a IntegerPair node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_71;
 return ( (NODEPTR) _currn);
@@ -2315,12 +2311,11 @@ return ( (NODEPTR) _currn);
 }/* Mkrule_72 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_73 (POSITION *_coordref, NODEPTR _desc1, NODEPTR _desc2)
+NODEPTR Mkrule_73 (POSITION *_coordref, NODEPTR _desc1)
 #else
-NODEPTR Mkrule_73 (_coordref,_desc1,_desc2)
+NODEPTR Mkrule_73 (_coordref,_desc1)
 	POSITION *_coordref;
 	NODEPTR _desc1;
-	NODEPTR _desc2;
 #endif
 {	_TPPrule_73 _currn;
 #ifdef __cplusplus
@@ -2332,24 +2327,21 @@ _currn = (_TPPrule_73) TreeNodeAlloc (sizeof (struct _TPrule_73));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_73;
-_currn->_desc1 = (_TSPFloatVal) MkFloatVal (_coordref, _desc1);	
+_currn->_desc1 = (_TSPIntegerPair) MkIntegerPair (_coordref, _desc1);	
 if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_73: root of subtree no. 1 can not be made a FloatVal node ", 0, _coordref);
-_currn->_desc2 = (_TSPopt_ppm) Mkopt_ppm (_coordref, _desc2);	
-if (((NODEPTR)_currn->_desc2) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_73: root of subtree no. 2 can not be made a opt_ppm node ", 0, _coordref);
+	message (DEADLY, "RULE rule_73: root of subtree no. 1 can not be made a IntegerPair node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_73;
 return ( (NODEPTR) _currn);
 }/* Mkrule_73 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_74 (POSITION *_coordref, int _TERM1, int _TERM2)
+NODEPTR Mkrule_74 (POSITION *_coordref, NODEPTR _desc1, NODEPTR _desc2)
 #else
-NODEPTR Mkrule_74 (_coordref, _TERM1, _TERM2)
+NODEPTR Mkrule_74 (_coordref,_desc1,_desc2)
 	POSITION *_coordref;
-	int _TERM1;
-	int _TERM2;
+	NODEPTR _desc1;
+	NODEPTR _desc2;
 #endif
 {	_TPPrule_74 _currn;
 #ifdef __cplusplus
@@ -2361,27 +2353,24 @@ _currn = (_TPPrule_74) TreeNodeAlloc (sizeof (struct _TPrule_74));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_74;
+_currn->_desc1 = (_TSPFloatVal) MkFloatVal (_coordref, _desc1);	
+if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
+	message (DEADLY, "RULE rule_74: root of subtree no. 1 can not be made a FloatVal node ", 0, _coordref);
+_currn->_desc2 = (_TSPopt_ppm) Mkopt_ppm (_coordref, _desc2);	
+if (((NODEPTR)_currn->_desc2) == NULLNODEPTR)	
+	message (DEADLY, "RULE rule_74: root of subtree no. 2 can not be made a opt_ppm node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_74;
-#ifdef MONITOR
-_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
-_dapto_term_int((_currn)->_uid, "Integer[1]", _TERM1);
-#endif
-
-#ifdef MONITOR
-_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
-_dapto_term_int((_currn)->_uid, "Integer[2]", _TERM2);
-#endif
-
 return ( (NODEPTR) _currn);
 }/* Mkrule_74 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_75 (POSITION *_coordref, NODEPTR _desc1)
+NODEPTR Mkrule_75 (POSITION *_coordref, int _TERM1, int _TERM2)
 #else
-NODEPTR Mkrule_75 (_coordref,_desc1)
+NODEPTR Mkrule_75 (_coordref, _TERM1, _TERM2)
 	POSITION *_coordref;
-	NODEPTR _desc1;
+	int _TERM1;
+	int _TERM2;
 #endif
 {	_TPPrule_75 _currn;
 #ifdef __cplusplus
@@ -2393,20 +2382,27 @@ _currn = (_TPPrule_75) TreeNodeAlloc (sizeof (struct _TPrule_75));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_75;
-_currn->_desc1 = (_TSPFloatVal) MkFloatVal (_coordref, _desc1);	
-if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
-	message (DEADLY, "RULE rule_75: root of subtree no. 1 can not be made a FloatVal node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_75;
+#ifdef MONITOR
+_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
+_dapto_term_int((_currn)->_uid, "Integer[1]", _TERM1);
+#endif
+
+#ifdef MONITOR
+_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
+_dapto_term_int((_currn)->_uid, "Integer[2]", _TERM2);
+#endif
+
 return ( (NODEPTR) _currn);
 }/* Mkrule_75 */
 
 #if defined(__STDC__) || defined(__cplusplus)
-NODEPTR Mkrule_76 (POSITION *_coordref, int _TERM1)
+NODEPTR Mkrule_76 (POSITION *_coordref, NODEPTR _desc1)
 #else
-NODEPTR Mkrule_76 (_coordref, _TERM1)
+NODEPTR Mkrule_76 (_coordref,_desc1)
 	POSITION *_coordref;
-	int _TERM1;
+	NODEPTR _desc1;
 #endif
 {	_TPPrule_76 _currn;
 #ifdef __cplusplus
@@ -2418,13 +2414,11 @@ _currn = (_TPPrule_76) TreeNodeAlloc (sizeof (struct _TPrule_76));
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
 #endif
 _currn->_prod = RULErule_76;
+_currn->_desc1 = (_TSPFloatVal) MkFloatVal (_coordref, _desc1);	
+if (((NODEPTR)_currn->_desc1) == NULLNODEPTR)	
+	message (DEADLY, "RULE rule_76: root of subtree no. 1 can not be made a FloatVal node ", 0, _coordref);
 _SETCOORD(_currn)
 _TERMACT_rule_76;
-#ifdef MONITOR
-_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
-_dapto_term_int((_currn)->_uid, "Integer", _TERM1);
-#endif
-
 return ( (NODEPTR) _currn);
 }/* Mkrule_76 */
 
@@ -2449,11 +2443,38 @@ _SETCOORD(_currn)
 _TERMACT_rule_77;
 #ifdef MONITOR
 _currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
-_dapto_term_int((_currn)->_uid, "Float", _TERM1);
+_dapto_term_int((_currn)->_uid, "Integer", _TERM1);
 #endif
 
 return ( (NODEPTR) _currn);
 }/* Mkrule_77 */
+
+#if defined(__STDC__) || defined(__cplusplus)
+NODEPTR Mkrule_78 (POSITION *_coordref, int _TERM1)
+#else
+NODEPTR Mkrule_78 (_coordref, _TERM1)
+	POSITION *_coordref;
+	int _TERM1;
+#endif
+{	_TPPrule_78 _currn;
+#ifdef __cplusplus
+_currn = new _TPrule_78;
+#else
+_currn = (_TPPrule_78) TreeNodeAlloc (sizeof (struct _TPrule_78));
+#endif
+#ifdef MONITOR
+_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
+#endif
+_currn->_prod = RULErule_78;
+_SETCOORD(_currn)
+_TERMACT_rule_78;
+#ifdef MONITOR
+_currn->_uid=MONTblStackSize; MONTblStackPush(((NODEPTR)_currn));
+_dapto_term_int((_currn)->_uid, "Float", _TERM1);
+#endif
+
+return ( (NODEPTR) _currn);
+}/* Mkrule_78 */
 
 #if defined(__STDC__) || defined(__cplusplus)
 NODEPTR Mkrule_030 (POSITION *_coordref)

@@ -252,11 +252,11 @@ extern void _VS1rule_67 ELI_ARG((_TPPrule_67 _currn));
 #define _VS3rule_67 _VS0Empty
 
 extern void _VS1rule_68 ELI_ARG((_TPPrule_68 _currn));
+#define _VS2rule_68 _VS0Empty
+
+#define _VS3rule_68 _VS0Empty
+
 extern void _VS1rule_69 ELI_ARG((_TPPrule_69 _currn));
-#define _VS2rule_69 _VS0Empty
-
-#define _VS3rule_69 _VS0Empty
-
 extern void _VS1rule_70 ELI_ARG((_TPPrule_70 _currn));
 #define _VS2rule_70 _VS0Empty
 
@@ -278,9 +278,14 @@ extern void _VS1rule_73 ELI_ARG((_TPPrule_73 _currn));
 #define _VS3rule_73 _VS0Empty
 
 extern void _VS1rule_74 ELI_ARG((_TPPrule_74 _currn));
+#define _VS2rule_74 _VS0Empty
+
+#define _VS3rule_74 _VS0Empty
+
 extern void _VS1rule_75 ELI_ARG((_TPPrule_75 _currn));
 extern void _VS1rule_76 ELI_ARG((_TPPrule_76 _currn));
 extern void _VS1rule_77 ELI_ARG((_TPPrule_77 _currn));
+extern void _VS1rule_78 ELI_ARG((_TPPrule_78 _currn));
 #define _VS1rule_030 _VS0Empty
 
 #define _VS1rule_029 _VS0Empty

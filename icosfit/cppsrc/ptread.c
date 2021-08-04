@@ -172,6 +172,7 @@ void PTfile::backup() {
 }
 
 void PTfile::calc_wndata() {
+  if (GlobalData.ICOSdirFineTuned) return;
   int from = GlobalData.SignalRegion[0];
   int to = GlobalData.SignalRegion[1];
   int i;
@@ -300,7 +301,25 @@ int ICOSfile::read( unsigned long int fileno ) {
       }
 #endif
     }
-    if ( GlobalData.BaselineInput && header[1] >= 3 ) {
+    if ( GlobalData.ICOSdirFineTuned ) {
+      if ( wndata == 0 ) ICOSfile::wndata = new f_vector( header[0]+1, 0 );
+      wndata->check(header[0]);
+      wndata->n_data =
+        fread_swap32( wndata->data+wndata->offset, sizeof(float), header[0], fp );
+      if ( sdata->n_data != (int)header[0] ) {
+        nl_error( 2, "%s: Error reading etalon/wndata: %s", mlf->fpath, strerror(errno) );
+        fclose(fp);
+        return 0;
+  #if RESIZE_INPUT
+      } else {
+        float *raw = (float*)(wndata->data+wndata->offset);
+        raw = raw - wndata->offset;
+        for (int i = wndata->n_data; i > 0; --i) {
+          wndata->data[i] = raw[i];
+        }
+  #endif
+      }
+    } else if (GlobalData.BaselineInput && header[1] >= 3) {
       // Skip column 2 (etalon)
       if (fseek(fp, header[0] * sizeof(float), SEEK_CUR)) {
         nl_error( 2, "%s: Error skipping edata: %s", mlf->fpath,
@@ -308,6 +327,8 @@ int ICOSfile::read( unsigned long int fileno ) {
         fclose(fp);
         return 0;
       }
+    }
+    if (GlobalData.BaselineInput && header[1] >= 3) {
       bdata->check(header[0]);
       bdata->n_data =
         fread_swap32( bdata->data+bdata->offset, sizeof(float), header[0], fp );
