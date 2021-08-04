@@ -160,9 +160,24 @@ classdef icosfit_runs < handle
             self.rtimes = [];
           end
         end
-        self.chi2(:,i) = sqrt(S.chi2);
-        self.iterations(:,i) = S.info(:,5);
-        self.nfev(:,i) = S.info(:,7);
+        % Map S.scannum onto self.scannum
+        [C,IA,IB] = map_vectors(self.scannum, S.scannum);
+        if length(IA) ~= length(C)
+          self.scannum = C;
+          self.n_scans = length(C);
+          nM = NaN*zeros(self.n_scans, self.n_vals);
+          nM(IA,:) = self.chi2;
+          self.chi2 = nM;
+          nM = NaN*zeros(self.n_scans, self.n_vals);
+          nM(IA,:) = self.iterations;
+          self.iterations = nM;
+          nM = NaN*zeros(self.n_scans, self.n_vals);
+          nM(IA,:) = self.nfev;
+          self.nfev = nM;
+        end
+        self.chi2(IB,i) = sqrt(S.chi2);
+        self.iterations(IB,i) = S.info(:,5);
+        self.nfev(IB,i) = S.info(:,7);
         if self.use_times
           rtimes_in = load([base '/icosfit.time.dat'])/self.n_scans;
           rtimes_in = rtimes_in(:,1)*60 + rtimes_in(:,2);
@@ -171,7 +186,7 @@ classdef icosfit_runs < handle
         for j=1:self.n_params
           col = lparams.(self.params{j}).p_cols(i);
           if col > 0
-            self.P(:,i,j) = S.fitdata(:,col);
+            self.P(IB,i,j) = S.fitdata(:,col);
           end
         end
       end
