@@ -38,6 +38,7 @@ GlobalData_t::GlobalData_t() {
   PTE_PowerParams_col = 0;
   PTE_Feedback_col = 0;
   BaselineFile = 0;
+  ICOSdirFineTuned = 0;
   BaselineInput = 0;
   OutputDir = "ICOSout";
   OutputFile = "ICOSsum.dat";

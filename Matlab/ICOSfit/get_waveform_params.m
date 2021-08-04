@@ -41,7 +41,7 @@ else
 end
 fname = findinpath( [ waveform '_etln.mat' ], { '.', '..', '../..' } );
 if ~isempty(fname)
-  fprintf(1, 'Reading waveform configuration from %s\n', fname );
+  % fprintf(1, 'Reading waveform configuration fromS %s\n', fname );
   vals = load(fname);
 else
   vals = struct( varargin{argi}, varargin{argi+1} );

@@ -130,7 +130,7 @@ classdef baseline_optimizer < icosfit_optimizer
       value = length(OptB.survey)+1;
       OptB.iterate(newname, value, ...
         'BaselineFile', ...
-          [ OptB.opt.mnemonic '/sbase.' newname '.ptb' self.input]);
+          [ OptB.opt.mnemonic '/sbase.' newname '.ptb' OptB.input]);
     end
 
     function update_menus(self, f)

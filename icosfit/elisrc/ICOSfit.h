@@ -7,8 +7,8 @@
 #include "levmar_func.h"
 #include "ptread.h"
 
-#define ICOSFIT_VERSION "4.2.6" FLOAT_STYLE
-#define ICOSFIT_VERSION_DATE "7/5/2021"
+#define ICOSFIT_VERSION "4.2.7" FLOAT_STYLE
+#define ICOSFIT_VERSION_DATE "8/3/2021"
 
 class fitdata {
   public:

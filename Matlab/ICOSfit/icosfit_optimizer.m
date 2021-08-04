@@ -21,6 +21,7 @@ classdef icosfit_optimizer < handle
       self.opt.cygwin_root = 'c:\cygwin64';
       self.opt.save_var = '';
       self.cfg_map = { 'Verbosity', '35', 'epsilon2', '5e-4' };
+      PTEFile_specd = false;
       for i=1:2:length(varargin)-1
         if isfield(self.opt, varargin{i})
           self.opt.(varargin{i}) = varargin{i+1};
@@ -29,6 +30,7 @@ classdef icosfit_optimizer < handle
         else
           self.cfg_map = [ self.cfg_map(:)' {varargin{i}} {varargin{i+1}} ];
           fprintf(1,'Assuming %s is a cfg_map item\n', varargin{i});
+          if strcmp(varargin{i},'PTEFile'); PTEFile_specd = true; end
         end
       end
       if isempty(self.opt.mnemonic)
@@ -36,6 +38,9 @@ classdef icosfit_optimizer < handle
       end
       if isempty(self.opt.save_var)
         self.opt.save_var = self.opt.mnemonic;
+      end
+      if ~isempty(self.opt.nscans) && ~PTEFile_specd
+        error('PTEFile option is required when nscans is specified');
       end
       if exist(self.opt.mnemonic, 'dir')
         error('Subdirectory "%s" already exists', self.opt.mnemonic);
@@ -115,7 +120,6 @@ classdef icosfit_optimizer < handle
         if isempty(self.ScanNumRange)
           self.get_scanregion;
         end
-        % Complain if PTEFile is not specified
         PTE = load(varargs.PTEFile);
         scans = PTE(:,1);
         V = scans >= self.ScanNumRange(1) & ...

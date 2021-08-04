@@ -60,13 +60,17 @@ if maxf > 0
   max_freq = min(max_freq, maxf);
 end
 f = linspace(min_freq,max_freq,1024);
-DFT = zeros(length(f),n_scans);
+% DFT = zeros(length(f),n_scans);
+DFT = zeros(length(f),1);
 for i=1:n_scans
   D = load(mlf_path(base,S.scannum(i)));
-  DFT(:,i) = abs(dft(D(:,2),(D(:,4)-D(:,3)),f));
+  % DFT(:,i) = abs(dft(D(:,2),(D(:,4)-D(:,3)),f));
+  DFT = DFT + abs(dft(D(:,2),(D(:,4)-D(:,3)),f));
 end
 
-mDFT = mean(DFT,2);
+% mDFT = mean(DFT,2);
+DFT = DFT/n_scans;
+mDFT = DFT;
 fmax = f(find(mDFT==max(mDFT),1));
 pmax = 1/fmax;
 if isempty(oname)

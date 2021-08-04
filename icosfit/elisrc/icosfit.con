@@ -38,6 +38,7 @@ ConfigCmd :
   FixLineParam /
   'Binary' / 'ASCII' /
   'ICOSdir' '=' Path /
+  'FineTuned' /
   'PandTFile' '=' Path /
   'PTFile' '=' Path /
   'PTEFile' '=' Path PTE_opts /

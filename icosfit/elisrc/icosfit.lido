@@ -43,6 +43,10 @@ RULE: opt_preserve ::= 'PreserveOutput' COMPUTE
   SetGlobal( PreserveOutput, 1 );
 END;
 
+RULE: ConfigCmd ::= 'FineTuned' COMPUTE
+  SetGlobal( ICOSdirFineTuned, 1 );
+END;
+
 RULE: ConfigCmd ::= 'DSFRLimits' '=' '[' FloatVal ',' FloatVal ']' COMPUTE
   message(ERROR, "DSFRLimits is no longer supported",0,COORDREF);
 END;

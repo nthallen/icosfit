@@ -47,6 +47,7 @@ class GlobalData_t {
     const char *QTdir;
     int Verbosity;
     int N_Passes;
+    int ICOSdirFineTuned; //  non-zero if column 2 is nu_rel
     int BaselineInput; // non-zero if column 3 is  a baseline vector
     func_abs_p absorb;
     struct {
