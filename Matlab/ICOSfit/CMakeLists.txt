@@ -5,6 +5,7 @@ install(FILES
   Contents.m
   ICOS_setup.m
   ICOSsetup.m
+  PTE_add_nu_F0.m
   PTE_gen.m
   PTE_hack.m
   PTEfixskips.m
@@ -39,6 +40,7 @@ install(FILES
   fitfringe.m
   fitlin.m
   fitline.m
+  get_dnu.m
   get_line_position.m
   get_nu.m
   get_sigma_from_fit.m
