@@ -29,6 +29,7 @@ install(FILES
   eng2PT.m
   epsilon2_optimizer.m
   etln_evalJ.m
+  etln_fine_tune.m
   etln_fit.fig etln_fit.m
   etlnfb_evalJ.m
   feedback_analysis.m
@@ -65,6 +66,7 @@ install(FILES
   loadscanhdrs.m
   loadscans.m
   logchi.m
+  map_vectors.m
   matchline.m
   maxiterations_optimizer.m
   mixlines.m
