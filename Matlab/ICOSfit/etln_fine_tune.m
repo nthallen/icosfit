@@ -21,6 +21,8 @@ classdef etln_fine_tune < handle
       eft.obase = [ eft.ibase 'f' ];
       if nargin < 2
         scans = eft.PTE(:,1);
+      else
+        if isrow(scans); scans = scans'; end
       end
       eft.scans = scans;
       wvs = waves_used(eft.scans);
@@ -48,9 +50,13 @@ classdef etln_fine_tune < handle
           po = mlf_path(eft.obase,scan);
           etln = fi(:,2);
           fi(:,2) = NaN;
-          fi(eft.x,2) = eft.tune_scan(etln,Y,scan);
-          mlf_mkdir(eft.obase,scan);
-          writebin( po, fi, hdr );
+          try
+            fi(eft.x,2) = eft.tune_scan(etln,Y,scan);
+            mlf_mkdir(eft.obase,scan);
+            writebin( po, fi, hdr );
+          catch
+            fprintf(1,'tune_scan(%d) error: %s\n', scan, except.message);
+          end
         end
       end
     end
