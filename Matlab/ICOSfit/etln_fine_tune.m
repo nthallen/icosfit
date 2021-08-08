@@ -193,5 +193,65 @@ classdef etln_fine_tune < handle
         etln2 = P./D;
       end
     end
+    
+    function view_tune(eft)
+      AppData.base = eft.obase;
+
+      AppData.Axes_1 = [
+          60    45    60     1    20    30    60     1    0
+          ];
+      AppData.Axes_2 = [
+          60    45    60     1    20    30     0     1    0
+          60    45    60     1     0    30    60     1    0
+          ];
+      AppData.Axes_3 = [
+          60    45    60     1    20    30     0     1    0
+          60    45    60     1     0    30     0     1    0
+          60    45    60     1     0    30    60     1    0
+          ];
+      AppData.eft = eft;
+      scan_viewer('Scans', eft.scans, 'Axes', AppData.Axes_1, 'Name', 'Fine Tune View', ...
+          'Callback', @etln_fine_tune.tuneview_callback, 'AppData', AppData);
+    end
+    
+    function callback(eft, handles, sv_axes)
+      scan = handles.data.Scans(handles.data.Index);
+      path = mlf_path( handles.data.AppData.base, scan, '.dat');
+      fe = loadbin( path );
+      data_ok = (~isempty(fe)) && size(fe,2) >= 2;
+      if data_ok
+        nsamples = size(fe,1);
+        Y = eft.Y(handles.data.Index);
+        nu_rel_0 = -etln_evalJ(Y(1:5),eft.xx)*eft.fsr;
+        nu_rel_tune = fe(eft.x,2);
+        dnu = nu_rel_tune - nu_rel_0;
+        plot(sv_axes(1),eft.x,dnu);
+        grid(sv_axes(1),'on');
+        title(sv_axes(1),sprintf('Scan %d: %s %s', scan, ...
+          getrunaxis(handles.scan_viewer), ...
+          getrun(0,handles.scan_viewer)));
+        
+%         if ncols >= 2
+%           set(sv_axes(1),'xticklabel',[]);
+%           plot(sv_axes(2), 1:nsamples, fe(:,2));
+%           set(sv_axes(2),'YAxisLocation','right');
+%           if ncols >= 3
+%             set(sv_axes(2),'xticklabel',[]);
+%             plot(sv_axes(3), 1:nsamples, fe(:,3));
+%           end
+%         end
+        xlabel(sv_axes(1),'Sample');
+      end
+    end
+    
+  end
+  
+  methods(Static)
+    function tuneview_callback(handles, sv_axes)
+      if nargin < 2
+        sv_axes = handles.Axes;
+      end
+      handles.data.AppData.eft.callback(handles, sv_axes);
+    end
   end
 end
