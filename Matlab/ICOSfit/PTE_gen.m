@@ -1,4 +1,4 @@
-function PTE_gen( scannums, PTEfile, PTparams );
+function PTE_gen( scannums, PTEfile, PTparams )
 % PTE_gen( [ scannums [, PTEfile [, PTparams ] ] ] );
 %  Make up numbers for a tuning rate in the absence of an etalon
 %  If we don't have P and T, make them up too.
@@ -7,8 +7,12 @@ function PTE_gen( scannums, PTEfile, PTparams );
 if nargin < 3
   PTparams = ...
     [200 17.91724 34.33037 1.489716 -9.231663 0.09478366 -14.00556 0.2113355 ];
-elseif any(size(PTparams) ~= [1 8])
-  error('PTparams input must be 1x8');
+elseif ~isrow(PTparams)
+  error('PTparams input must be a row');
+end
+n_params = length(PTparams);
+if n_params ~= 8 && n_params ~= 9 && n_params ~= 16
+  error('PTparams length %d not supported', n_params);
 end
 if nargin < 2
   PTEfile = 'PTE.txt';
@@ -23,7 +27,7 @@ else
   PT = [];
 end
 if isfield(PT,'ScanNum')
-  if min(scannums) < min(PT.ScanNum) | max(scannums) > max(PT.ScanNum)
+  if min(scannums) < min(PT.ScanNum) || max(scannums) > max(PT.ScanNum)
     warning('ScanNum files exceed PT file indices');
   end
   v = find(diff(PT.ScanNum)>0)+1;
@@ -44,9 +48,18 @@ ofp = fopen(PTEfile, 'a');
 %fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
 %  0, P(1), T(1), PTparams );
 for i=1:length(scannums)
-  fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
-    scannums(i), P(i), T(i), PTparams );
+  switch n_params
+    case 8
+      fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
+        scannums(i), P(i), T(i), PTparams );
+    case 9
+      fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
+        scannums(i), P(i), T(i), PTparams );
+    case 16
+      fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
+        scannums(i), P(i), T(i), PTparams );
+    OTHERWISE
+      error('Should not have reached this line');
+  end
 end
 fclose(ofp);
-
-      
