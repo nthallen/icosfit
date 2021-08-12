@@ -12,14 +12,20 @@ classdef etln_fine_tune < handle
     x0
     fsr
     verbose
+    Nsmooth
   end
   methods
-    function eft = etln_fine_tune(PTEfile, scans)
+    function eft = etln_fine_tune(PTEfile, scans, obase_suffix)
+      % eft = etln_fine_tune(PTEfile[, scans[, obase_suffix]])
+      % scans defaults to all scans in PTEfile
+      % obase_suffix defaults to 'f'
+      % scans can be empty in order to specify obase_suffix
+      if nargin < 3; obase_suffix = 'f'; end
       eft.verbose = false;
       eft.PTE = load(PTEfile);
       eft.ibase = find_scans_dir;
-      eft.obase = [ eft.ibase 'f' ];
-      if nargin < 2
+      eft.obase = [ eft.ibase obase_suffix ];
+      if nargin < 2 || isempty(scans)
         scans = eft.PTE(:,1);
       else
         if isrow(scans); scans = scans'; end
@@ -36,10 +42,14 @@ classdef etln_fine_tune < handle
       eft.x0 = get_waveform_params(wvs.Name, 'BackgroundRegion', 5:wvs.TzSamples);
       cell_cfg = load_cell_cfg;
       eft.fsr = cell_cfg.fsr;
+      eft.Nsmooth  = 100;
     end
     
-    function tune_scans(eft)
-      for i=1:length(eft.scans)
+    function tune_scans(eft, nscans)
+      % eft.tune_scans([nscans])
+      % nscans defaults to all scans in the PTE file.
+      if nargin < 2; nscans = length(eft.scans); end
+      for i=1:nscans
         scan = eft.scans(i);
         Y = eft.Y(i);
         pi = mlf_path(eft.ibase,scan);
@@ -51,11 +61,13 @@ classdef etln_fine_tune < handle
           etln = fi(:,2);
           fi(:,2) = NaN;
           try
-            fi(eft.x,2) = eft.tune_scan(etln,Y,scan);
+            fi(eft.x,2) = eft.tune_scan(etln,Y);
             mlf_mkdir(eft.obase,scan);
             writebin( po, fi, hdr );
-          catch
-            fprintf(1,'tune_scan(%d) error: %s\n', scan, except.message);
+          catch except
+            [~,name,ext] = fileparts(except.stack(1).file);
+            fprintf(1,'tune_scan(%d) error: %s\n  %s%s line %d\n', ...
+              scan, except.message, name, ext, except.stack(1).line);
           end
         end
       end
@@ -65,7 +77,53 @@ classdef etln_fine_tune < handle
       Yout = eft.PTE(eft.si(index),[5:11 13:17]);
     end
     
-    function [ nu_rel2, nu_rel_out, etln1, etln2 ] = tune_scan(eft,etln,Y,scan)
+    function dPhase = zero_crossings(eft, xss, sigf, dsign, dPhase)
+      % eft.zero_crossing(sigf,dsign)
+      % xss: sample numbers that correspond to rows of sigf and dsign
+      %   that we want to consider for this analysis
+      % sigf: [length(etln) x 2] The high-pass filtered raw etalon and
+      %   etln_fit signals.
+      % dsign: [length(xss) x 2] non-zero points mark zero crossings
+      % dPhase: length(eft.x)
+      %
+      % We need to compare positive zero crossings to positive,
+      % so this function will only consider one direction at a time.
+      %
+      % We will fill in the precise zero crossing differences into dPhase
+      Across = find(dsign(:,1) > 0);
+      Bcross = find(dsign(:,2) > 0);
+      % zero crossing in the positive direction at integer indices
+      % Across for column 1, Bcross for column 2
+      if length(Across) ~= length(Bcross)
+        N = min(length(Across),length(Bcross));
+        d1 = abs(mean(Across(1:N)-Bcross(1:N)));
+        d2 = abs(mean(Across((end-N+1):end)-Bcross((end-N+1):N)));
+        if d1 < d2
+          Across = Across(1:N);
+          Bcross = Bcross(1:N);
+          where = 'end';
+        else
+          Across = Across((end-N+1):end);
+          Bcross = Bcross((end-N+1):end);
+          where = 'beginning';
+        end
+        if eft.verbose
+          warning('Scan %d: cross phase error near %s', scan, where);
+        end
+      end
+      %Acrossf = Across;
+      %Bcrossf = Bcross;
+      for i = 1:length(Across)
+        Ai = xss(Across(i));
+        Acrossf = interp1(sigf(eft.x([Ai-1,Ai]),1),[Ai-1,Ai],0);
+        Bi = xss(Bcross(i));
+        Bcrossf = interp1(sigf(eft.x([Bi-1,Bi]),2),[Bi-1,Bi],0);
+        dPhase(Ai) = Acrossf-Bcrossf;
+        dPhase(Bi) = Acrossf-Bcrossf;
+      end
+    end
+    
+    function [ nu_rel2, nu_rel_out, etln1, etln2 ] = tune_scan(eft,etln,Y)
       % eft.tune_scan(etln,Y)
       % etln is the entire raw etalon signal. The zero offset
       % will be calculated and subtracted, and the fitting
@@ -77,14 +135,18 @@ classdef etln_fine_tune < handle
       % etln1, if reqested
       % etln2, if requested, is the tweaked full etalon function.
       etln = etln - mean(etln(eft.x0));
-      efit = etln_evalJ(Y,eft.xx)';
-      efitx = zeros(size(etln));
-      efitx(eft.x) = efit;
+      sig = [etln etln];
+      sig(eft.x,2) = etln_evalJ(Y,eft.xx)';
+      efit = etln_evalJ(Y,eft.xx)'; %
+      efitx = zeros(size(etln)); %
+      efitx(eft.x) = efit; %
       Wn = 1/10;
       xr = (1:length(etln))';
       [b,a] = singlepole(Wn,'highpass');
-      etlnfilt = sign(filter(b,a,etln));
-      efitfilt = sign(filter(b,a,efitx));
+      sigf = filter(b,a,sig);
+      etlnfilt = sign(filter(b,a,etln)); %
+      efitfilt = sign(filter(b,a,efitx)); %
+      signf = sign(sigf);
       % prod = etlnfilt(eft.x).*efitfilt(eft.x);
       % Start with a range of values starting and ending where the
       %   raw signal and the fit agree, nominally assuring that the
@@ -94,77 +156,30 @@ classdef etln_fine_tune < handle
       % Do same for falling edges
       % Interpolate phase for all other values
       % Apply a low pass filter
+      % xi_first = find(etlnfilt(eft.x) == efitfilt(eft.x),1,'first');
+      % xi_last = find(etlnfilt(eft.x) == efitfilt(eft.x),1,'last');
+      xi_first = find(signf(eft.x,1) == signf(eft.x,2),1,'first');
+      xi_last = find(signf(eft.x,1) == signf(eft.x,2),1,'last');
+      % xsubset is indices within eft.x
+      xsubset = xi_first:xi_last;
+      dsign = [ 0 0; diff(signf(eft.x(xsubset),:)) ];
       dPhase = nan * zeros(size(eft.x));
-      xi_first = find(etlnfilt(eft.x) == efitfilt(eft.x),1,'first');
-      xi_last = find(etlnfilt(eft.x) == efitfilt(eft.x),1,'last');
-      xsubset=eft.x(xi_first:xi_last);
-      dA = [ 0; diff(etlnfilt(xsubset))];
-      dB = [ 0; diff(efitfilt(xsubset))];
-      Arising = find(dA > 0);
-      Brising = find(dB > 0);
-      if length(Arising) ~= length(Brising)
-%         figure;
-%         plot(eft.x(Arising(1:N)), Arising(1:N)-Brising(1:N),'.');
-%         hold  on
-%         plot(eft.x(Arising((end-N+1):end)), ...
-%           Arising((end-N+1):end)-Brising((end-N+1):end),'o');
-        N = min(length(Arising),length(Brising));
-        d1 = abs(mean(Arising(1:N)-Brising(1:N)));
-        d2 = abs(mean(Arising((end-N+1):end)-Brising((end-N+1):N)));
-        if d1 < d2
-          Arising = Arising(1:N);
-          Brising = Brising(1:N);
-          where = 'end';
-        else
-          Arising = Arising((end-N+1):end);
-          Brising = Brising((end-N+1):end);
-          where = 'beginning';
-        end
-        if eft.verbose
-          warning('Scan %d: Rising phase error near %s', scan, where);
-        end
-      end
-%       Br2 = interp1(Brising,Brising,Arising,'nearest','extrap');
-%       if ~all(Br2 == Brising)
-%         error('Sanity check failed');
-%       end
-      dPhase(Arising) = Arising-Brising;
-      dPhase(Brising) = Arising-Brising;
-      
-      Afalling = find(dA < 0);
-      Bfalling = find(dB < 0);
-      if length(Afalling) ~= length(Bfalling)
-        N = min(length(Afalling),length(Bfalling));
-        d1 = abs(mean(Afalling(1:N)-Bfalling(1:N)));
-        d2 = abs(mean(Afalling((end-N+1):end)-Bfalling((end-N+1):N)));
-        if d1 < d2
-          Afalling = Afalling(1:N);
-          Bfalling = Bfalling(1:N);
-          where = 'end';
-        else
-          Afalling = Afalling((end-N+1):end);
-          Bfalling = Bfalling((end-N+1):end);
-          where = 'beginning';
-        end
-        if eft.verbose
-          warning('Scan %d: Falling phase error near %s', scan, where);
-        end
-      end
-%       Bf2 = interp1(Bfalling,Bfalling,Afalling,'nearest','extrap');
-%       if ~all(Bf2 == Bfalling)
-%         error('Sanity check failed');
-%       end
-      dPhase(Afalling) = Afalling-Bfalling;
-      dPhase(Bfalling) = Afalling-Bfalling;
+      dPhase = eft.zero_crossings(xsubset, sigf, dsign, dPhase);
+      dPhase = eft.zero_crossings(xsubset, sigf, -dsign, dPhase);
       
       % Interpolate between values
       missing = isnan(dPhase);
       dPhase(missing) = interp1(eft.x(~missing),dPhase(~missing),eft.x(missing));
       missing = isnan(dPhase);
-      dPhase(missing) = interp1(eft.x(~missing),dPhase(~missing),eft.x(missing),'nearest','extrap');
+      if any(missing)
+        dPhase(missing) = ...
+          interp1(eft.x(~missing),dPhase(~missing),eft.x(missing), ...
+            'nearest','extrap');
+      end
+      
       %
       % Create a gaussian distribution over N samples with unity sum
-      N = 40;
+      N = eft.Nsmooth;
       R = 3;
       xg = linspace(-R,R,N);
       gxg = exp(-xg.^2);
@@ -194,7 +209,8 @@ classdef etln_fine_tune < handle
       end
     end
     
-    function view_tune(eft)
+    function view_tune(eft, ref)
+      if nargin < 2; ref = []; end
       AppData.base = eft.obase;
 
       AppData.Axes_1 = [
@@ -210,6 +226,7 @@ classdef etln_fine_tune < handle
           60    45    60     1     0    30    60     1    0
           ];
       AppData.eft = eft;
+      AppData.ref = ref;
       scan_viewer('Scans', eft.scans, 'Axes', AppData.Axes_1, 'Name', 'Fine Tune View', ...
           'Callback', @etln_fine_tune.tuneview_callback, 'AppData', AppData);
     end
@@ -225,22 +242,37 @@ classdef etln_fine_tune < handle
         nu_rel_0 = -etln_evalJ(Y(1:5),eft.xx)*eft.fsr;
         nu_rel_tune = fe(eft.x,2);
         dnu = nu_rel_tune - nu_rel_0;
-        plot(sv_axes(1),eft.x,dnu);
+        ref = handles.data.AppData.ref;
+        if isempty(ref)
+          plot(sv_axes(1),eft.x,dnu);
+        else
+          plot(sv_axes(1),eft.x,ref(:,handles.data.Index),eft.x,dnu);
+        end
         grid(sv_axes(1),'on');
         title(sv_axes(1),sprintf('Scan %d: %s %s', scan, ...
           getrunaxis(handles.scan_viewer), ...
           getrun(0,handles.scan_viewer)));
-        
-%         if ncols >= 2
-%           set(sv_axes(1),'xticklabel',[]);
-%           plot(sv_axes(2), 1:nsamples, fe(:,2));
-%           set(sv_axes(2),'YAxisLocation','right');
-%           if ncols >= 3
-%             set(sv_axes(2),'xticklabel',[]);
-%             plot(sv_axes(3), 1:nsamples, fe(:,3));
-%           end
-%         end
         xlabel(sv_axes(1),'Sample');
+      end
+    end
+    
+    function [dnu, nu] = extract(eft)
+      dnu = zeros(length(eft.x),length(eft.scans));
+      if nargout > 1; nu = zeros(length(eft.x),length(eft.scans)); end
+      for i=1:length(eft.scans)
+        scan = eft.scans(i);
+        Y = eft.Y(i);
+        pi = mlf_path(eft.obase,scan);
+        fi = loadbin(pi);
+        if isempty(fi)
+          warning('File not found: %d => %s', scan, eft.ibase);
+        else
+          Y = eft.Y(i);
+          nu_rel_0 = -etln_evalJ(Y(1:5),eft.xx)*eft.fsr;
+          nu_rel_tune = fi(eft.x,2);
+          dnu(:,i) = nu_rel_tune - nu_rel_0;
+          if nargout > 1; nu(:,i) = nu_rel_tune; end
+        end
       end
     end
     
