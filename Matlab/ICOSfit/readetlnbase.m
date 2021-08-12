@@ -35,6 +35,7 @@ if fid > 0
     poly_init_param = fread( fid, p_coeffs, 'real*4' );
     PV = flipud(poly_init_param);
     vectors = fread( fid, [npts,n_vectors], 'real*4' );
+    fclose(fid);
     
     nu = nu0 + (0:npts-1)'*dnu;
 else
