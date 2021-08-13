@@ -26,6 +26,10 @@ while true
 end
 fclose(ifp);
 for i=1:length(flds)
-  fprintf(ofp, '%s = %s;\n', flds{i}, opts.(flds{i}));
+  if isempty(opts.(flds{i}))
+    fprintf(ofp, '%s;\n', flds{i});
+  else
+    fprintf(ofp, '%s = %s;\n', flds{i}, opts.(flds{i}));
+  end
 end
 fclose(ofp);
