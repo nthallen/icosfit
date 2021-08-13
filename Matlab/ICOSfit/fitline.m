@@ -202,18 +202,23 @@ if nargin == 0 || load_only
   Regions = { line_obj.Regions.name };
   uicontrol(f,'style','popupmenu','string',Regions,'value',line_obj.CurRegion, ...
     'tag','region','position', [br_xx height-90 150 20]);
+  
+  uicontrol(f,'style','checkbox','tag','grpiso','position',[br_x height-120 20 20],'value',1);
+  uitext(f,'Group by Isotopologue',br_x+20, height-120,'fontweight','bold');
+  
   uicontrol(f,'style','pushbutton','string','Edit Regions', ...
-    'Callback','fitline(''editregions'')', 'position', [br_xx height-130 150 20]);
+    'Callback','fitline(''editregions'')', 'position', [br_xx height-160 150 20]);
   uicontrol(f,'style','pushbutton','string','Add Suffix', ...
-    'Callback','fitline(''addsuffix'')', 'position', [br_xx height-160 150 20]);
+    'Callback','fitline(''addsuffix'')', 'position', [br_xx height-190 150 20]);
   uicontrol(f,'style','pushbutton','string','Matchline', ...
-    'Callback','fitline(''matchline'')', 'position', [br_xx height-190 150 20]);
-  % height = height - 220;
+    'Callback','fitline(''matchline'')', 'position', [br_xx height-220 150 20]);
+  % height = height - 250;
   pos = get(f,'position');
   pos(3) = br_xx + 170;
   pos(4) = maxheight + 10;
   set(f,'position', pos, 'resize', 'off', 'Menubar','none',...
     'UserData',line_obj,'visible','on');
+  movegui(f,'north');
   
 elseif strcmp(varargin{1},'enable')
   f = get(gcbo,'parent');
@@ -786,6 +791,8 @@ for i = 1:length(h)
 end
 line_obj.PTEFile = get_popup_val(f,'pte');
 line_obj.Baseline = get_popup_val(f,'base');
+h = findobj(f,'tag','grpiso');
+line_obj.GrpIso = h.Value;
 set(f, 'UserData', line_obj );
 return;
 

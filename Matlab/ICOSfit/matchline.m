@@ -343,6 +343,7 @@ else
   linesample = floor(interp1(ml_obj.wvno+ml_obj.cvx(pk),ml_obj.x,ml_obj.linewvno)+.5);
 end
 
+GrpIso = ml_obj.line_obj.GrpIso;
 ScanNum = ml_obj.ScanNum;
 reg_name = ml_obj.line_obj.Regions(ml_obj.line_obj.CurRegion).name;
 suffix = ml_obj.line_obj.Suffix;
@@ -390,6 +391,12 @@ for i=1:size(lines,1)
   end
   fprintf(fid, ...
     '%2d %d %12.6f %10.3e %5.4f %10.4f %4.2f %9.6f %d', ldefs(i).hitran );
+  if GrpIso
+    ht = ldefs(i).hitran;
+    txt = isovals(ht(1)*10+ht(2),'text');
+    txt = strrep(txt{1},' ','');
+    fprintf(fid, ', Group %s', txt);
+  end
   if ml(i) && ~isnan(linesample(lsidx(i)))
     fprintf(fid, ', Position=%d', linesample(lsidx(i)) );
   end
