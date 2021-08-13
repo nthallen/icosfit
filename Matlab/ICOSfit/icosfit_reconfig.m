@@ -7,7 +7,9 @@ for i = 1:2:(length(varargin)-1)
 end
 flds = fields(opts);
 ifp = fopen(ifile,'r');
+if ifp < 0; error('Unable to read file "%s"', ifile); end
 ofp = fopen(ofile,'w');
+if ofp < 0; error('Unable to write to file "%s"', ofile); end
 while true
   tline = fgets(ifp);
   if isempty(tline) || isnumeric(tline)
