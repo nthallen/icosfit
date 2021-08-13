@@ -1,14 +1,21 @@
 #! /bin/bash
+# ./cygwin_release.sh <VERSION> [<branch>]
+# VERSION is always required
+# branch defaults to master, which is appropriate for
+# a formal release. branch can be specified for a beta
+# release.
 function nl_error {
   echo "cygwin_release.sh: $*" >&2
   exit 1
 }
 VERSION=$1
+branch=master
+[ -n "$2" ] && branch=$2
 [ -n "$VERSION" ] ||
   nl_error "Must specify VERSION as first argument"
 
 archive=../icosfit-$VERSION.tar.xz
-git archive master --prefix=icosfit-$VERSION/ --format=tar |
+git archive $branch --prefix=icosfit-$VERSION/ --format=tar |
   xz  >$archive
 
 cur_dir=/usr/src/icosfit-$VERSION
