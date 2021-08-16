@@ -677,7 +677,9 @@ function str = set_popup_val(f, tag, str)
 h = findobj(f,'tag',tag);
 strs = get(h,'string');
 val = find(strcmp(strs,str));
-set(h,'value',val);
+if ~isempty(val)
+  set(h,'value',val);
+end
 return
 
 function width = uitext(f,str,x,y,varargin)
@@ -825,19 +827,19 @@ end
 sfx = findobj( f, 'tag', 'suffix' );
 sfxs = get(sfx,'String');
 sfxn = find(strcmp(sfxs,lo.Suffix));
-set(sfx,'value',sfxn);
+if ~isempty(sfxn); set(sfx,'value',sfxn); end
 
 % Update PTEFile screen object
 ptex = findobj( f, 'tag', 'pte' );
 ptes = get(ptex,'String');
 pten = find(strcmp(ptes,lo.PTEFile));
-set(ptex,'value',pten);
+if ~isempty(pten); set(ptex,'value',pten); end
 
 % Update Baseline screen object
 bsx = findobj( f, 'tag', 'base' );
 bss = get(bsx,'String');
 bsn = find(strcmp(bss,lo.Baseline));
-set(bsx,'value',bsn);
+if ~isempty(bsn); set(bsx,'value',bsn); end
 
 % Update Region on Screen
 regx = findobj( f, 'tag', 'region' );

@@ -58,7 +58,7 @@ for i=1:length(scannums)
     case 16
       fprintf( ofp, '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.7g\n', ...
         scannums(i), P(i), T(i), PTparams );
-    OTHERWISE
+    otherwise
       error('Should not have reached this line');
   end
 end
