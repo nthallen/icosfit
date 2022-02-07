@@ -1,4 +1,4 @@
-function [ K, DKDX, DKDY, Reg ] = HUMDEV( X, Y );
+function [ K, DKDX, DKDY, Reg ] = humdev( X, Y )
 % [ K, DKDX, DKDY ] = HUMDEV( X, Y );
 % X is an array, Y is the Voigt Parameter
 
