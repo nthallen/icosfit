@@ -1,7 +1,7 @@
 # levmar CMake file; see http://www.cmake.org and 
 #                        http://www.insightsoftwareconsortium.org/wiki/index.php/CMake_Tutorial
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6...3.20.0)
 cmake_policy(SET CMP0048 NEW)
 PROJECT(LEVMAR VERSION 2.6)
 

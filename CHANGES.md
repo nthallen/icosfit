@@ -1,5 +1,10 @@
 # Version History for icosfit.
 
+### V4.2.7 February 7, 2022
+
+  * Added etln_fine_tune to address some types of laser feedback
+  * Matchline: Optionally group lines by isotopologue
+
 ### V4.2.6 July 5, 2021
 
   * Fixed improper handling of PTEfile options

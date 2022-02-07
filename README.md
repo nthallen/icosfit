@@ -5,7 +5,7 @@ ICOSfit is a non-linear least-squares fit algorithm originally developed for pro
 data from the [Anderson Group](https://www.arp.harvard.edu/)'s ICOS instruments. It has
 since been extended to support other optical configurations, such as Herriott Cells.
 
-The current version of ICOSfit is V4.2.6, released July 5, 2021.
+The current version of ICOSfit is V4.2.7, released February 7, 2022.
 [![DOI](https://zenodo.org/badge/202190942.svg)](https://zenodo.org/badge/latestdoi/202190942)
 
 This archive consists of the following:
@@ -29,6 +29,9 @@ V4.0.0 represents a significant rewrite from earlier versions in order to take
 advantage of a more sophisticated Levenberg-Marquardt library. This version uses
 the [levmar](http://users.ics.forth.gr/~lourakis/levmar/) library, developed by
 M.I.A. Lourakis ([bibtex entry](http://users.ics.forth.gr/~lourakis/levmar/bibentry.html)).
+
+If you use ICOSfit in your published work, please reference/acknowledge the DOI  at
+the top of this document as well as the levmar library.
 
 ## Matlab/ICOSfit
 The Matlab/ICOSfit routines provide tools for interactively viewing scan data,
