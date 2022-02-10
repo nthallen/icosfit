@@ -1,5 +1,8 @@
 #ifndef HEAD_H1
 #define HEAD_H1
+
+#include "config.h"
+
 /*
  * Header file for CLP
  */

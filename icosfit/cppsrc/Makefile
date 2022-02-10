@@ -3,9 +3,12 @@ SHELL   = /bin/sh
 CC	= g++
 CFLAGS	= -g \
 	-I../../levmar-2.6 \
-	-DQTDIR_DEFAULT=$(QTDIR)
-LIBS	= -L../../../build-levmar -lm -llevmar -llapack \
-	-lblas
+	-DQTDIR_DEFAULT=$(QTDIR) \
+	-include config.h
+#LEVMARBUILDDIR=../../../build-levmar
+LEVMARBUILDDIR=../../levmar-2.6
+LIBS	= -L$(LEVMARBUILDDIR) -L/usr/pkg/lib -lm -llevmar -llapack \
+	-lblas -lf2c
 
 OBJS	= driver.o clpintf.o clp.o csm.o obstack.o obsave.o deftbl.o \
 	err.o source.o coord.o pdl_gen.o VoidPtrList.o clplib.o \

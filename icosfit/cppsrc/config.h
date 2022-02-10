@@ -5,6 +5,9 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
+#define HAVE_MALLOC_G_MALLOC_H 1
+#define BYTE_ORDER LITTLE_ENDIAN
+
 #ifdef _MALLOC_H_INCLUDED
   #error Wrong malloc.c included
 #endif
@@ -45,10 +48,12 @@ typedef float ICOS_Float;
 #define FMT_G "g"
 #endif
 
+#ifndef BYTE_ORDER
 #if __APPLE__
   #include <machine/endian.h>
 #else
   #include <endian.h>
+#endif
 #endif
 #if BYTE_ORDER == BIG_ENDIAN
   #define USE_BIG_ENDIAN
