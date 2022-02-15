@@ -40,16 +40,15 @@ while T0 <= T(end)
     [icos,etln] = loadscans(base,binscans);
     icos = mean(icos,2);
     etln = mean(etln,2);
-    mlf_mkdir(obase, binscans(1));
-    writebin(mlf_path(obase,binscans(1)),[icos,etln]);
-    PTEnew = PTE(find(V,1),:);
+    new_scannum = round(mean(binscans));
+    mlf_mkdir(obase, new_scannum);
+    writebin(mlf_path(obase,new_scannum),[icos,etln]);
+    nearest_scan_index = interp1(binscans, find(V), new_scannum,'nearest');
+    PTEnew = PTE(nearest_scan_index,2:12);
     fprintf(PTEo, ...
         '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.6g %d\n', ...
-        PTEnew(1,1:12), n_avg);
+        new_scannum, PTEnew, n_avg);
   end
   T0 = T0+secs_avg;
 end
 fclose(PTEo);
-
-
-

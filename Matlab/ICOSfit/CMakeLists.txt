@@ -11,9 +11,11 @@ install(FILES
   PTEfixskips.m
   PTEfixtemp.m
   PTEtrackline.m
+  TuningRateAnalysis.m
   allan_var_plot.m
   archiveICOSdata.m
   average_spectra.m
+  average_spectra2.m
   basefile.m
   basefilefromresid.m
   baseline_add_etalon.m
