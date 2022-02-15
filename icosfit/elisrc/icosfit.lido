@@ -137,6 +137,9 @@ END;
 RULE: ConfigCmd ::= 'ASCII' COMPUTE
   SetGlobal(binary, 0 );
 END;
+RULE: ConfigCmd ::= 'NoTee' COMPUTE
+  SetGlobal(NoTee, 1);
+END;
 
 RULE: ConfigCmd ::= 'FitFunction' '=' Ident COMPUTE
   message(ERROR, "FitFunction keyword is currently non-functional",0,COORDREF);

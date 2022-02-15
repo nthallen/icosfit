@@ -49,6 +49,7 @@ class GlobalData_t {
     int N_Passes;
     int ICOSdirFineTuned; //  non-zero if column 2 is nu_rel
     int BaselineInput; // non-zero if column 3 is  a baseline vector
+    int NoTee;
     func_abs_p absorb;
     struct {
       ICOS_Float nu_F0;
