@@ -1,4 +1,4 @@
-function scanview( scans, base )
+function H_out = scanview( scans, base )
 % scanview( scans [, base] );
 % Display raw scan with etalon, optionally limited to a range
 % of Scan values.
@@ -22,8 +22,13 @@ AppData.Axes_3 = [
     60    45    60     1     0    30     0     1    0
     60    45    60     1     0    30    60     1    0
     ];
-scan_viewer('Scans', scans, 'Axes', AppData.Axes_2, 'Name', 'Scan View', ...
+H = scan_viewer('Scans', scans, 'Axes', AppData.Axes_2, 'Name', 'Scan View', ...
     'Callback', @scanview_callback, 'AppData', AppData);
+m = uimenu(H,'Text','Exit');
+m.MenuSelectedFcn = @(x,y)close(H);
+if nargout > 0
+  H_out = H;
+end
 
 function scanview_callback(handles, sv_axes)
 if nargin < 2
