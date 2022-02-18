@@ -125,6 +125,8 @@ if nargin == 0 || load_only
   f = figure('visible','off');
   set(f,'UserData',line_obj,'tag','fitline');
   set(f, 'Name', [ 'fitline' line_obj.Suffix ], 'Numbertitle', 'off');
+  exitmenu = uimenu(f,'Tag','ExitMenu','Label','Exit');
+  exitmenu.MenuSelectedFcn = @(x,y)close(f);
   h = zeros(length(lines),1);
   height = 100; % Height of the buttons at the bottom
   width = 0;
