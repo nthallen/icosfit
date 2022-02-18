@@ -1,5 +1,5 @@
-function average_spectra2(secs_avg, PTEfile)
-% average_spectra2(secs_avg[, PTEfile])
+function average_spectra2(secs_avg, PTEfile, PTEofile)
+% average_spectra2(secs_avg[, PTEfile[, PTEofile])
 % Average scans for the specified number of seconds
 % Output goes in the same directory as the current scans directory.
 % This differs from average_spectra(), which is based on the
@@ -14,7 +14,9 @@ base = find_scans_dir;
 suffix = [ '.average' num2str(secs_avg) ];
 obase = fullfile(path, [name ext suffix]);
 [path,name,ext] = fileparts(PTEfile);
-PTEofile = fullfile(path, [name suffix ext]);
+if nargin < 3
+  PTEofile = fullfile(path, [name suffix ext]);
+end
 
 PTE=load(PTEfile);
 scans = PTE(:,1);
