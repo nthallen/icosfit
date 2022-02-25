@@ -6,6 +6,8 @@ function TuningRateAnalysis(PTEfile,scan_stride,sample_stride)
 % sample_stride is the factor by which to reduce the number of samples.
 % If the product of scans * samples exceeds 5e6, system performance
 % can seriously degrade.
+% Selects the scan with the minimum standard deviation of the percent
+% difference from the mean tuning rate, and writes that out to PTEref.txt
 if nargin < 1
   PTEfile = 'PTE.txt';
 end
@@ -70,3 +72,15 @@ mesh(S,PTE(scans_idx,1),ddFNdx);
 xlabel('Sample Number');
 ylabel('Scan Number');
 title('Percent deviation from Mean');
+%%
+stds = std(ddFNdx,0,2);
+stdsmini = find(stds == min(stds),1);
+ref = PTE(scans_idx(stdsmini),:);
+save PTEref.txt ref -ASCII
+fprintf(1, ...
+  'PTEref.txt chosen from scan %d having standard deviation of the\n', ...
+  ref(1));
+fprintf(1,'percent difference from the mean tuning rate of %.3f\n', min(stds));
+%%
+% figure;
+% plot(S,ddFNdx,'k',S,ddFNdx(stdsmini,:),'r');
