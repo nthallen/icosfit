@@ -13,9 +13,7 @@ PT = load_mat_files('PT');
 dcpi = find(diff(PT.ScanNum)>0)+1; % index of new scan numbers
 if nargin > 0
   dcpi = dcpi(max(1,ceil(interp1(PT.ScanNum(dcpi),1:length(dcpi),ScanNum,'linear','extrap'))));
-  dcpi = dcpi(find(~isnan(dcpi)));
-else
-  ScanNum = PT.ScanNum;
+  dcpi = dcpi(~isnan(dcpi));
 end
 wvs = PT.QCLI_Wave(dcpi);
 wvnos = unique(wvs)';

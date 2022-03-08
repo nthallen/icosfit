@@ -90,7 +90,9 @@ void func_parameter::set_param_limits(ICOS_Float lb_in, ICOS_Float ub_in) {
 }
 
 void func_parameter::set_param_scale(ICOS_Float scl) {
-  dscl[index] = scl;
+  if (scl != 0) {
+    dscl[index] = fabs(scl);
+  }
 }
 
 void func_parameter::evaluate(ICOS_Float x, ICOS_Float *p){

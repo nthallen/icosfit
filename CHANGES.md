@@ -1,5 +1,11 @@
 # Version History for icosfit.
 
+### V4.2.8 March 1-8, 2022
+
+  * Added average_spectra2, TuningRateAnalysis
+  * PTE_add_nu_F0: added syntax for interpolation
+  * Added explicit exit menues for scanview, etln_fit and fitline to run smoothly on the cluster
+
 ### V4.2.7 February 7, 2022
 
   * Added etln_fine_tune to address some types of laser feedback
