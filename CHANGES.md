@@ -4,7 +4,7 @@
 
   * Added average_spectra2, TuningRateAnalysis
   * PTE_add_nu_F0: added syntax for interpolation
-  * Added explicit exit menues for scanview, etln_fit and fitline to run smoothly on the cluster
+  * Added explicit exit menus for scanview, etln_fit and fitline to run smoothly on the cluster
 
 ### V4.2.7 February 7, 2022
 
