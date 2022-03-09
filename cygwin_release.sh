@@ -14,9 +14,9 @@ branch=master
 [ -n "$VERSION" ] ||
   nl_error "Must specify VERSION as first argument"
 
-archive=../icosfit-$VERSION.tar.xz
-git archive $branch --prefix=icosfit-$VERSION/ --format=tar |
-  xz  >$archive
+#archive=../icosfit-$VERSION.tar.xz
+#git archive $branch --prefix=icosfit-$VERSION/ --format=tar |
+#  xz  >$archive
 
 cur_dir=/usr/src/icosfit-$VERSION
 
@@ -38,5 +38,4 @@ else
     echo "No obvious earlier version of icosfit.cygport found"
   fi
 fi
-cp $archive $cur_dir/
-
+#cp $archive $cur_dir/

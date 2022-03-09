@@ -1,5 +1,5 @@
-function average_spectra2(secs_avg, PTEfile)
-% average_spectra2(secs_avg[, PTEfile])
+function average_spectra2(secs_avg, PTEfile, PTEofile)
+% average_spectra2(secs_avg[, PTEfile[, PTEofile])
 % Average scans for the specified number of seconds
 % Output goes in the same directory as the current scans directory.
 % This differs from average_spectra(), which is based on the
@@ -14,7 +14,9 @@ base = find_scans_dir;
 suffix = [ '.average' num2str(secs_avg) ];
 obase = fullfile(path, [name ext suffix]);
 [path,name,ext] = fileparts(PTEfile);
-PTEofile = fullfile(path, [name suffix ext]);
+if nargin < 3
+  PTEofile = fullfile(path, [name suffix ext]);
+end
 
 PTE=load(PTEfile);
 scans = PTE(:,1);
@@ -44,10 +46,12 @@ while T0 <= T(end)
     mlf_mkdir(obase, new_scannum);
     writebin(mlf_path(obase,new_scannum),[icos,etln]);
     nearest_scan_index = interp1(binscans, find(V), new_scannum,'nearest');
-    PTEnew = PTE(nearest_scan_index,2:12);
+    Pavg = mean(PTE(V,2));
+    Tavg = mean(PTE(V,3));
+    PTEnew = PTE(nearest_scan_index,4:12);
     fprintf(PTEo, ...
         '%d %.2f %.1f %d %.7g %.7g %.7g %.7g %.7g %.7g %.7g %.6g %d\n', ...
-        new_scannum, PTEnew, n_avg);
+        new_scannum, Pavg, Tavg, PTEnew, n_avg);
   end
   T0 = T0+secs_avg;
 end

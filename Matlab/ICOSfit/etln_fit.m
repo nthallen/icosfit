@@ -155,6 +155,8 @@ if handles.data.X(6) == 0
 else
     set(handles.dblexp,'Value',1);
 end
+handles.top_menu = uimenu(handles.figure1,'Tag','ExitMenu','Label','Exit');
+handles.top_menu.MenuSelectedFcn = @(x,y)close(handles.figure1);
 handles.top_menu = uimenu(handles.figure1,'Tag','TopMenu','Label','Properties');
 uimenu(handles.top_menu,'Tag','TauLimits','Label','Tau Limits', ...
     'Callback', @Set_Tau_Limits_Callback);

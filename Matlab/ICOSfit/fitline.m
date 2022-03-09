@@ -1,5 +1,6 @@
 function lo_out = fitline( varargin )
 % fitline; start up the gui
+% f = figline; start up the gui and return figure
 % line_obj = fitline('load'); 
 % fitline('update_regions', name, scan[, ...]);
 % fitline('show_regions');
@@ -125,6 +126,8 @@ if nargin == 0 || load_only
   f = figure('visible','off');
   set(f,'UserData',line_obj,'tag','fitline');
   set(f, 'Name', [ 'fitline' line_obj.Suffix ], 'Numbertitle', 'off');
+  exitmenu = uimenu(f,'Tag','ExitMenu','Label','Exit');
+  exitmenu.MenuSelectedFcn = @(x,y)close(f);
   h = zeros(length(lines),1);
   height = 100; % Height of the buttons at the bottom
   width = 0;
@@ -219,6 +222,9 @@ if nargin == 0 || load_only
   set(f,'position', pos, 'resize', 'off', 'Menubar','none',...
     'UserData',line_obj,'visible','on');
   movegui(f,'north');
+  if nargout > 0
+    lo_out = f;
+  end
   
 elseif strcmp(varargin{1},'enable')
   f = get(gcbo,'parent');
