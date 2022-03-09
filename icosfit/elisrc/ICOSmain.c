@@ -42,8 +42,13 @@ static const char *output_filename( const char *name ) {
 void ICOS_main() {
   fitdata *fitspecs;
 
-  if (mkdir(GlobalData.OutputDir,0775)!=0)
-    nl_error(3, "Unable to create OutputDir %s", GlobalData.OutputDir);
+  { struct stat buf;
+    if ( stat(GlobalData.OutputDir, &buf) || ! S_ISDIR(buf.st_mode) ) {
+      if (mkdir(GlobalData.OutputDir,0775)!=0)
+        nl_error(3, "Unable to create OutputDir %s: %d %s",
+          GlobalData.OutputDir, errno, strerror(errno));
+    }
+  }
   if ( GlobalData.LogFile != 0 ) {
     const char *fname;
     char pipename[PATH_MAX+14];
