@@ -2,10 +2,12 @@
 use strict;
 my $mol;
 my $molname;
-my $isonum;
-my $isoname;
+#my $isonum;
+#my $isoname;
 my $fldno;
-my $global;
+#my $global;
+my %params;
+my @cols = qw(global isonum isoname AFGL Abundance Mass);
 
 while (<>) {
   if ( m|^<h4>(\d+): (.*)</h4>|) {
@@ -14,24 +16,24 @@ while (<>) {
     $molname =~ s/<[^>]*>//g;
   } elsif ($mol) {
     if (m/^<tr>/) {
-      $fldno = 1;
-    } elsif (m/^<td>/) {
-      if (m|^<td>(\d+)</td>|) {
-        if ($fldno == 1) {
-          $global = $1;
-        } elsif ($fldno == 2) {
-          $isonum = $1;
-        }
-      } elsif ($fldno == 3 && m|<td>(.*)</td>|) {
-        $isoname = $1;
-        $isoname =~ s/<sup>/^/g;
-        $isoname =~ s/<[^>]*>//g;
-        my $localfile = "QT_$mol$isonum.dat";
-        if ( -f $localfile ) {
-          print "$mol$isonum $global $molname $isoname\n";
-        }
+      $fldno = 0;
+    } elsif (m|^<td[^>]*>(.*)</td>|) {
+      if ($fldno < @cols) {
+        my $val = $1;
+        $val =~ s|&nbsp;&times;&nbsp;10<sup>([^<]*)</sup>|E$1|;
+        $val =~ s|<sup>([^<]*)</sup>|^{$1}|g;
+        $val =~ s|<sub>([^<]*)</sub>|_{$1}|g;
+        $params{$cols[$fldno]} = $val;
       }
       ++$fldno;
+    } elsif (m|^</tr>| && $fldno >= @cols) {
+      my $isoname = $params{isoname};
+      $isoname =~ s/<sup>/^/g;
+      $isoname =~ s/<[^>]*>//g;
+      my $localfile = "QT_$mol$params{isonum}.dat";
+      if ( -f $localfile ) {
+        print "$mol$params{isonum} $params{global} $molname $isoname $params{Abundance} $params{Mass}\n";
+      }
     } elsif (m|^</table>|) {
       $mol = 0;
     }

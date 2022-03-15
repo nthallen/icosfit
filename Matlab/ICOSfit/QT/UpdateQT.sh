@@ -1,9 +1,10 @@
 #! /bin/bash
 # UpdateQT.sh
+rm -f index.html
 wget https://hitran.org/docs/iso-meta/
 ./parse_iso_meta.pl index.html >iso-map.txt
 cat iso-map.txt |
-  while read lcl glbl molname isoname; do
+  while read lcl glbl molname isoname abundance molwt; do
     qfile=q$glbl.txt
     QTfile=QT_$lcl.dat
     isonum=`echo $lcl | sed -e 's/^.*\(.\)$/\1/'`
@@ -30,4 +31,4 @@ EOF
       rm $qfile
     fi
   done
-rm -f iso-map.txt index.html
+# rm -f iso-map.txt index.html
