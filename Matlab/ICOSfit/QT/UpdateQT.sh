@@ -31,4 +31,5 @@ EOF
       rm $qfile
     fi
   done
-# rm -f iso-map.txt index.html
+./Update_isovals.pl iso-map.txt
+rm -f iso-map.txt index.html
