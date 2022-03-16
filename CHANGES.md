@@ -1,5 +1,10 @@
 # Version History for icosfit.
 
+### V4.3.0 March 16, 2022
+
+  * Updated Q(T) values from HITRAN and automated the update process, making it much easier to add new isotopologues
+  * Added NoTee keyword to write directly to LogFile, suppressing output to the console
+
 ### V4.2.8 March 1-8, 2022
 
   * Added average_spectra2, TuningRateAnalysis

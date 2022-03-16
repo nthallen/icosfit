@@ -1,16 +1,16 @@
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_src VERSION 4.2.8)
+project(icosfit_src VERSION 4.3.0)
 
 SET(FITSRCS  BitSet.c CScope.c Ccomment.c Cint.c ICOSmain.c QTdata.c
   VoidPtrList.c attrmain.c auxEOF.c auxNUL.c auxScanEOL.c clp.c
   clpintf.c clplib.c coord.c csm.c deftbl.c dflteot.c dfltrepar.c
   driver.c envmod.c err.c evalorder.c f_vector.c fitfunc.c funcabs.c
   funcbase.c funceval.c funcline.c funcnoskew.c funcparam.c funcskew.c
-  glahead.c global.c humdev.c idn.c levmar_func.c mlf.c newmem.c
-  nl_error.c nl_verr.c nldbg.c nlresp.c nodecode.c obsave.c obstack.c
-  parser.c pdl_gen.c pgs_gen.c ptread.c source.c str.c strdup.c
-  tabsize.c treebuild.c treecon.c treestack.c vector.c visitmap.c
-  visitprocs.c)
+  glahead.c global.c humdev.c idn.c levmar_func.c mlf.c molwt.c
+  newmem.c nl_error.c nl_verr.c nldbg.c nlresp.c nodecode.c obsave.c
+  obstack.c parser.c pdl_gen.c pgs_gen.c ptread.c source.c str.c
+  strdup.c tabsize.c treebuild.c treecon.c treestack.c vector.c
+  visitmap.c visitprocs.c)
 
 add_executable(icosfit ${FITSRCS})
 set_source_files_properties(${FITSRCS} PROPERTIES LANGUAGE CXX )

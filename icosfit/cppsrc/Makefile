@@ -12,12 +12,12 @@ OBJS	= driver.o clpintf.o clp.o csm.o obstack.o obsave.o deftbl.o \
 	envmod.o BitSet.o treecon.o nodecode.o ICOSmain.o ptread.o \
 	f_vector.o nl_error.o nl_verr.o nldbg.o mlf.o newmem.o \
 	nlresp.o strdup.o global.o fitfunc.o vector.o evalorder.o \
-	funceval.o funcline.o funcparam.o QTdata.o levmar_func.o \
-	funcbase.o funcnoskew.o funcskew.o treebuild.o parser.o \
-	glahead.o auxNUL.o auxEOF.o dflteot.o tabsize.o idn.o \
-	Cint.o auxScanEOL.o str.o Ccomment.o pgs_gen.o treestack.o \
-	dfltrepar.o attrmain.o visitprocs.o funcabs.o humdev.o \
-	visitmap.o CScope.o
+	funceval.o funcline.o funcparam.o molwt.o QTdata.o \
+	levmar_func.o funcbase.o funcnoskew.o funcskew.o \
+	treebuild.o parser.o glahead.o auxNUL.o auxEOF.o dflteot.o \
+	tabsize.o idn.o Cint.o auxScanEOL.o str.o Ccomment.o \
+	pgs_gen.o treestack.o dfltrepar.o attrmain.o visitprocs.o \
+	funcabs.o humdev.o visitmap.o CScope.o
 
 EXE	= icosfit.exe
 
@@ -125,6 +125,8 @@ funcline.o:	funcline.c config.h nl.h funceval.h global.h ptread.h mlf.h \
 
 funcparam.o:	funcparam.c config.h nl.h funceval.h global.h ptread.h \
 		nl_assert.h mlf.h f_vector.h
+
+molwt.o:	molwt.c funceval.h nl.h config.h
 
 QTdata.o:	QTdata.c ICOSfit.h global.h nl_assert.h config.h nl.h \
 		funceval.h levmar_func.h ptread.h mlf.h f_vector.h
