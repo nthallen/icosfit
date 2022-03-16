@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/stat.h>
 #include "clp.h"
 #include "mlf.h"
 #include "global.h"
