@@ -43,6 +43,7 @@ GlobalData_t::GlobalData_t() {
   OutputDir = "ICOSout";
   OutputFile = "ICOSsum.dat";
   LogFile = "ICOSfit.log";
+  NoTee = 0;
   MFile = "ICOSconfig.m";
   QTdir = QTDIR_DEFAULT_STR;
   Verbosity = 0;

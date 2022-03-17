@@ -369,6 +369,7 @@ class func_line : public func_evaluator {
             ICOS_Float P, ICOS_Float T);
     void print_config(FILE *fp);
     void print_intermediates(FILE *fp);
+    ICOS_Float get_molwt(int isotopomer);
     //--------------------------------------------------
     int isotopomer;
     double nu;

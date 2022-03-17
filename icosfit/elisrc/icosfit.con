@@ -46,6 +46,7 @@ ConfigCmd :
   'OutputDir' '=' Path /
   'OutputFile' '=' Path /
   'LogFile' '=' Path /
+  'NoTee' /
   'MFile' '=' Path /
   'QTdir' '=' Path /
   'Verbosity' '=' Integer /

@@ -1,5 +1,16 @@
 # Version History for icosfit.
 
+### V4.3.0 March 16, 2022
+
+  * Updated Q(T) values from HITRAN and automated the update process, making it much easier to add new isotopologues
+  * Added NoTee keyword to write directly to LogFile, suppressing output to the console
+
+### V4.2.8 March 1-8, 2022
+
+  * Added average_spectra2, TuningRateAnalysis
+  * PTE_add_nu_F0: added syntax for interpolation
+  * Added explicit exit menus for scanview, etln_fit and fitline to run smoothly on the cluster
+
 ### V4.2.7 February 7, 2022
 
   * Added etln_fine_tune to address some types of laser feedback

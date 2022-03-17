@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/stat.h>
 #include "clp.h"
 #include "mlf.h"
 #include "global.h"
@@ -41,6 +42,42 @@ static const char *output_filename( const char *name ) {
 
 void ICOS_main() {
   fitdata *fitspecs;
+
+  { struct stat buf;
+    if ( stat(GlobalData.OutputDir, &buf) || ! S_ISDIR(buf.st_mode) ) {
+      if (mkdir(GlobalData.OutputDir,0775)!=0)
+        nl_error(3, "Unable to create OutputDir %s: %d %s",
+          GlobalData.OutputDir, errno, strerror(errno));
+    }
+  }
+  if ( GlobalData.LogFile != 0 ) {
+    const char *fname;
+    char pipename[PATH_MAX+14];
+    FILE *fp;
+
+    fname = output_filename( GlobalData.LogFile );
+    if (GlobalData.NoTee) {
+      fp = fopen(fname, "a");
+      if (fp == 0) nl_error( 3, "Unable to write to log file %s", fname);
+    } else {
+      snprintf( pipename, PATH_MAX+13, "/usr/bin/tee -a %s", fname );
+      pipename[PATH_MAX+13] = '\0';
+      fp = popen( pipename, "w" );
+      if ( fp == 0 ) nl_error( 3, "Unable to create pipe to %s", pipename );
+    }
+    if ( dup2( fileno(fp), 1 ) == -1 )
+       nl_error( 3, "Unable to dup2: %s", strerror(errno) );
+    if ( dup2( fileno(fp), 2 ) == -1 )
+      nl_error( 3, "Unable to dup stderr to stderr: %s", strerror(errno) );
+    // fclose(fp);
+  }
+  if ( GlobalData.RestartAt <= 0 )
+    fprintf( stderr, "ICOSfit Version %s (%s) Start\n",
+      ICOSFIT_VERSION, ICOSFIT_VERSION_DATE );
+  else fprintf( stderr, "\nICOSfit Version %s (%s) Restart at %d\n",
+     ICOSFIT_VERSION, ICOSFIT_VERSION_DATE,
+     GlobalData.RestartAt );
+
   if (GlobalData.ConvergenceStep <= 0 ||
       GlobalData.ConvergenceStep >= 1) {
     nl_error(3, "ConvergenceStep must be between 0 and 1");
@@ -49,28 +86,7 @@ void ICOS_main() {
     nl_error(3, "ConvergenceCount must be greater than zero");
   if (GlobalData.MaxIterations <= 0)
     nl_error(3, "MaxIterations must be greater than zero");
-  if ( GlobalData.LogFile != 0 ) {
-    const char *fname;
-    char pipename[PATH_MAX+14];
-    FILE *fp;
 
-    fname = output_filename( GlobalData.LogFile );
-    snprintf( pipename, PATH_MAX+13, "/usr/bin/tee -a %s", fname );
-    pipename[PATH_MAX+13] = '\0';
-    fp = popen( pipename, "w" );
-    if ( fp == 0 ) nl_error( 3, "Unable to create pipe to %s", pipename );
-    if ( dup2( fileno(fp), 1 ) == -1 )
-       nl_error( 3, "Unable to dup2: %s", strerror(errno) );
-    if ( dup2( fileno(fp), 2 ) == -1 )
-      nl_error( 3, "Unable to dup stderr to stderr: %s", strerror(errno) );
-    // fclose(fp);
-    if ( GlobalData.RestartAt <= 0 )
-      fprintf( stderr, "ICOSfit Version %s (%s) Start\n",
-        ICOSFIT_VERSION, ICOSFIT_VERSION_DATE );
-    else fprintf( stderr, "\nICOSfit Version %s (%s) Restart at %d\n",
-       ICOSFIT_VERSION, ICOSFIT_VERSION_DATE,
-       GlobalData.RestartAt );
-  }
   fitspecs = build_func();
   while ( fitspecs->PTf->readline() != 0 ) {
     if ( ( GlobalData.ScanNumRange[0] == 0 ||

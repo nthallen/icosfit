@@ -101,7 +101,7 @@ _TPPrule_1 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _currn->_desc1->_ATLineKey=(* _IG_incl1);
-/*SPC(337)*/
+/*SPC(340)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 
 _VisitExit();
@@ -120,7 +120,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS2MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _AVGroupName_DefCond=EQ(NoBinding, BindingInEnv((* _IG_incl0), _AVGroupName_Sym));
-/*SPC(442)*/
+/*SPC(445)*/
 (*(_CALL_VS_((NODEPTR )) (VS3MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 
 _VisitExit();
@@ -138,7 +138,7 @@ _TPPrule_2 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGroupRefUnique(_currn->_ATLineKey, 1, 0);
-/*SPC(514)*/
+/*SPC(517)*/
 
 _VisitExit();
 }
@@ -155,7 +155,7 @@ _TPPrule_2 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVGroupName_Sym=_currn->_ATTERM_1;
-/*SPC(330)*/
+/*SPC(333)*/
 
 _VisitExit();
 }
@@ -176,9 +176,9 @@ _AVGroupName_Bind=
 ) ? (BindIdn((* _IG_incl0), _AVGroupName_Sym)
 ) : (BindingInEnv((* _IG_incl0), _AVGroupName_Sym)))
 ;
-/*SPC(446)*/
+/*SPC(449)*/
 _AVGroupName_Key=KeyOf(_AVGroupName_Bind);
-/*SPC(451)*/
+/*SPC(454)*/
 
 if (_AVGroupName_DefCond) {
 SetNparameter(_AVGroupName_Key, Nparameter(StringTable(_AVGroupName_Sym)), 0);
@@ -188,9 +188,9 @@ SetNparameter(_AVGroupName_Key, Nparameter(StringTable(_AVGroupName_Sym)), 0);
 ;
 SetNparameter(_currn->_ATLineKey, GetNparameter(_AVGroupName_Key, 0), 0);
 ;
-/*SPC(341)*/
+/*SPC(344)*/
 _AVGroupName_GroupRefUnique=GetGroupRefUnique(_currn->_ATLineKey, 0);
-/*SPC(517)*/
+/*SPC(520)*/
 
 if (NOT(_AVGroupName_GroupRefUnique)) {
 message(ERROR, "Group name is multiply defined", 0, (&( _currn->_AT_pos)));
@@ -198,7 +198,7 @@ message(ERROR, "Group name is multiply defined", 0, (&( _currn->_AT_pos)));
 } else {
 }
 ;
-/*SPC(340)*/
+/*SPC(343)*/
 
 _VisitExit();
 }
@@ -215,7 +215,7 @@ _TPPrule_3 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(BaselineInput, 1);
-/*SPC(325)*/
+/*SPC(328)*/
 
 _VisitExit();
 }
@@ -232,7 +232,7 @@ _TPPrule_4 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFrequency_FVal=100000.;
-/*SPC(324)*/
+/*SPC(327)*/
 
 _VisitExit();
 }
@@ -249,7 +249,7 @@ _TPPrule_5 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFrequency_FVal=1000.;
-/*SPC(323)*/
+/*SPC(326)*/
 
 _VisitExit();
 }
@@ -266,7 +266,7 @@ _TPPrule_6 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFrequency_FVal=1;
-/*SPC(322)*/
+/*SPC(325)*/
 
 _VisitExit();
 }
@@ -283,7 +283,7 @@ _TPPrule_7 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFrequency_FVal=1;
-/*SPC(321)*/
+/*SPC(324)*/
 
 _VisitExit();
 }
@@ -300,7 +300,7 @@ _TPPrule_8 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVopt_ppm_FVal=.000001;
-/*SPC(320)*/
+/*SPC(323)*/
 
 _VisitExit();
 }
@@ -317,7 +317,7 @@ _TPPrule_9 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVopt_ppm_FVal=.01;
-/*SPC(319)*/
+/*SPC(322)*/
 
 _VisitExit();
 }
@@ -334,7 +334,7 @@ _TPPrule_10 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVopt_ppm_FVal=1.;
-/*SPC(318)*/
+/*SPC(321)*/
 
 _VisitExit();
 }
@@ -361,7 +361,7 @@ _IL_incl1=_IG_incl1;_IG_incl1= &(_currn->_ATKey);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc5->_prod])))((NODEPTR) _currn->_desc5);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc6->_prod])))((NODEPTR) _currn->_desc6);
 _currn->_ATKey=NewKey();
-/*SPC(279)*/
+/*SPC(282)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc7->_prod])))((NODEPTR) _currn->_desc7);
 _IG_incl5=_IL_incl5;
 _IG_incl1=_IL_incl1;
@@ -407,35 +407,35 @@ _VisitEntry();
 _IL_incl5=_IG_incl5;_IG_incl5= &(_currn->_ATKey);
 _IL_incl1=_IG_incl1;_IG_incl1= &(_currn->_ATKey);
 _AVLine_fixfinepos=GetFixFinePosition(_currn->_ATKey, GetFixFinePosition((* _IG_incl3), 1));
-/*SPC(299)*/
+/*SPC(302)*/
 _AVLine_fixlorentz=GetFixLorentz(_currn->_ATKey, GetFixLorentz((* _IG_incl3), 0));
-/*SPC(296)*/
+/*SPC(299)*/
 _AVLine_fixdoppler=GetFixDoppler(_currn->_ATKey, GetFixDoppler((* _IG_incl3), 0));
-/*SPC(293)*/
+/*SPC(296)*/
 _AVLine_threshold=GetThreshold(_currn->_ATKey, GetThreshold((* _IG_incl3), 0.0001));
-/*SPC(290)*/
+/*SPC(293)*/
 _AVLine_ipos=GetPosition(_currn->_ATKey, 0);
-/*SPC(289)*/
+/*SPC(292)*/
 _AVLine_ierr=_currn->_ATTERM_3;
-/*SPC(288)*/
+/*SPC(291)*/
 _AVLine_delta=_currn->_desc6->_ATFVal;
-/*SPC(287)*/
+/*SPC(290)*/
 _AVLine_n=_currn->_desc5->_ATFVal;
-/*SPC(286)*/
+/*SPC(289)*/
 _AVLine_E=_currn->_desc4->_ATFVal;
-/*SPC(285)*/
+/*SPC(288)*/
 _AVLine_Gair=_currn->_desc3->_ATFVal;
-/*SPC(284)*/
+/*SPC(287)*/
 _AVLine_S=_currn->_desc2->_ATFVal;
-/*SPC(283)*/
+/*SPC(286)*/
 _AVLine_nu=_currn->_desc1->_ATFVal;
-/*SPC(282)*/
+/*SPC(285)*/
 _AVLine_iso=_currn->_ATTERM_2;
-/*SPC(281)*/
+/*SPC(284)*/
 _AVLine_mol=_currn->_ATTERM_1;
-/*SPC(280)*/
+/*SPC(283)*/
 _AVConfigLineAbsorb_post=abs_append(_AVConfigLineAbsorb_post, new_voigt(_AVLine_mol, _AVLine_iso, _AVLine_nu, _AVLine_S, _AVLine_Gair, _AVLine_E, _AVLine_n, _AVLine_delta, _AVLine_ipos, _AVLine_threshold, _AVLine_fixdoppler, _AVLine_fixlorentz, _AVLine_fixfinepos, GetNparameter(_currn->_ATKey, 0)));
-/*SPC(310)*/
+/*SPC(313)*/
 _IG_incl5=_IL_incl5;
 _IG_incl1=_IL_incl1;
 
@@ -454,7 +454,7 @@ _TPPrule_12 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVLineParam_Key=(* _IG_incl5);
-/*SPC(270)*/
+/*SPC(273)*/
 
 if (HasFixFinePosition(_AVLineParam_Key)) {
 message(ERROR, "Multiple Fix/Float FinePosition definitions", 0, (&( _currn->_AT_pos)));
@@ -463,7 +463,7 @@ message(ERROR, "Multiple Fix/Float FinePosition definitions", 0, (&( _currn->_AT
 SetFixFinePosition(_AVLineParam_Key, (* _IG_incl6), 0);
 }
 ;
-/*SPC(271)*/
+/*SPC(274)*/
 
 _VisitExit();
 }
@@ -480,7 +480,7 @@ _TPPrule_13 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVLineParam_Key=(* _IG_incl5);
-/*SPC(264)*/
+/*SPC(267)*/
 
 if (HasFixLorentz(_AVLineParam_Key)) {
 message(ERROR, "Multiple Fix/Float Lorentz definitions", 0, (&( _currn->_AT_pos)));
@@ -489,7 +489,7 @@ message(ERROR, "Multiple Fix/Float Lorentz definitions", 0, (&( _currn->_AT_pos)
 SetFixLorentz(_AVLineParam_Key, (* _IG_incl6), 0);
 }
 ;
-/*SPC(265)*/
+/*SPC(268)*/
 
 _VisitExit();
 }
@@ -506,7 +506,7 @@ _TPPrule_14 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVLineParam_Key=(* _IG_incl5);
-/*SPC(258)*/
+/*SPC(261)*/
 
 if (HasFixDoppler(_AVLineParam_Key)) {
 message(ERROR, "Multiple Fix/Float Doppler definitions", 0, (&( _currn->_AT_pos)));
@@ -515,7 +515,7 @@ message(ERROR, "Multiple Fix/Float Doppler definitions", 0, (&( _currn->_AT_pos)
 SetFixDoppler(_AVLineParam_Key, (* _IG_incl6), 0);
 }
 ;
-/*SPC(259)*/
+/*SPC(262)*/
 
 _VisitExit();
 }
@@ -532,7 +532,7 @@ _TPPrule_15 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFixFloat_fixfloat=0;
-/*SPC(255)*/
+/*SPC(258)*/
 
 _VisitExit();
 }
@@ -549,7 +549,7 @@ _TPPrule_16 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVFixFloat_fixfloat=1;
-/*SPC(252)*/
+/*SPC(255)*/
 
 _VisitExit();
 }
@@ -569,7 +569,7 @@ _VisitEntry();
 _IL_incl6=_IG_incl6;_IG_incl6= &(_currn->_ATfixfloat);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _currn->_ATfixfloat=_AVFixFloat_fixfloat;
-/*SPC(249)*/
+/*SPC(252)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 _IG_incl6=_IL_incl6;
 
@@ -588,9 +588,9 @@ _TPPrule_18 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPosition_ipos=_currn->_ATTERM_1;
-/*SPC(241)*/
+/*SPC(244)*/
 _AVPosition_Key=(* _IG_incl1);
-/*SPC(240)*/
+/*SPC(243)*/
 
 if (HasPosition(_AVPosition_Key)) {
 message(ERROR, "Multiple Position definitions", 0, (&( _currn->_AT_pos)));
@@ -599,7 +599,7 @@ message(ERROR, "Multiple Position definitions", 0, (&( _currn->_AT_pos)));
 SetPosition(_AVPosition_Key, _AVPosition_ipos, 0);
 }
 ;
-/*SPC(242)*/
+/*SPC(245)*/
 
 _VisitExit();
 }
@@ -617,9 +617,9 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _AVThreshold_Key=(* _IG_incl5);
-/*SPC(234)*/
+/*SPC(237)*/
 _AVThreshold_threshold=_currn->_desc1->_ATFVal;
-/*SPC(233)*/
+/*SPC(236)*/
 
 if (HasThreshold(_AVThreshold_Key)) {
 message(ERROR, "Multiple threshold definitions", 0, (&( _currn->_AT_pos)));
@@ -628,7 +628,7 @@ message(ERROR, "Multiple threshold definitions", 0, (&( _currn->_AT_pos)));
 SetThreshold(_AVThreshold_Key, _AVThreshold_threshold, 0.);
 }
 ;
-/*SPC(235)*/
+/*SPC(238)*/
 
 _VisitExit();
 }
@@ -645,7 +645,7 @@ _TPPrule_20 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(N_Passes, _currn->_ATTERM_1);
-/*SPC(222)*/
+/*SPC(225)*/
 
 _VisitExit();
 }
@@ -662,7 +662,7 @@ _TPPrule_21 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(QCLI_Wave, _currn->_ATTERM_1);
-/*SPC(219)*/
+/*SPC(222)*/
 
 _VisitExit();
 }
@@ -679,7 +679,7 @@ _TPPrule_22 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(Verbosity, _currn->_ATTERM_1);
-/*SPC(216)*/
+/*SPC(219)*/
 
 _VisitExit();
 }
@@ -697,7 +697,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(QTdir, StringTable(_AVPath_String));
-/*SPC(213)*/
+/*SPC(216)*/
 
 _VisitExit();
 }
@@ -715,7 +715,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(MFile, StringTable(_AVPath_String));
-/*SPC(210)*/
+/*SPC(213)*/
 
 _VisitExit();
 }
@@ -733,7 +733,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(LogFile, StringTable(_AVPath_String));
-/*SPC(207)*/
+/*SPC(210)*/
 
 _VisitExit();
 }
@@ -751,7 +751,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(OutputFile, StringTable(_AVPath_String));
-/*SPC(204)*/
+/*SPC(207)*/
 
 _VisitExit();
 }
@@ -769,7 +769,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(OutputDir, StringTable(_AVPath_String));
-/*SPC(201)*/
+/*SPC(204)*/
 
 _VisitExit();
 }
@@ -787,7 +787,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(BaselineFile, StringTable(_AVPath_String));
-/*SPC(198)*/
+/*SPC(201)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
@@ -805,9 +805,9 @@ _TPPrule_29 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_opt_PTE_ncols=1;
-/*SPC(194)*/
+/*SPC(197)*/
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
-/*SPC(171)*/
+/*SPC(174)*/
 
 _VisitExit();
 }
@@ -824,9 +824,9 @@ _TPPrule_30 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_opt_PTE_ncols=1;
-/*SPC(189)*/
+/*SPC(192)*/
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
-/*SPC(171)*/
+/*SPC(174)*/
 
 if (SetGlobalOnce(PTE_Feedback_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ Feedback' more than once", 0, (&( _currn->_AT_pos)));
@@ -834,7 +834,7 @@ message(ERROR, "Cannot specify '+ Feedback' more than once", 0, (&( _currn->_AT_
 } else {
 }
 ;
-/*SPC(191)*/
+/*SPC(194)*/
 
 _VisitExit();
 }
@@ -851,9 +851,9 @@ _TPPrule_31 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_opt_PTE_ncols=7;
-/*SPC(184)*/
+/*SPC(187)*/
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
-/*SPC(171)*/
+/*SPC(174)*/
 
 if (SetGlobalOnce(PTE_PowerParams_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ PowerParams' more than once", 0, (&( _currn->_AT_pos)));
@@ -861,7 +861,7 @@ message(ERROR, "Cannot specify '+ PowerParams' more than once", 0, (&( _currn->_
 } else {
 }
 ;
-/*SPC(186)*/
+/*SPC(189)*/
 
 _VisitExit();
 }
@@ -878,9 +878,9 @@ _TPPrule_32 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_opt_PTE_ncols=1;
-/*SPC(179)*/
+/*SPC(182)*/
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
-/*SPC(171)*/
+/*SPC(174)*/
 
 if (SetGlobalOnce(PTE_MirrorLoss_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ MirrorLoss' more than once", 0, (&( _currn->_AT_pos)));
@@ -888,7 +888,7 @@ message(ERROR, "Cannot specify '+ MirrorLoss' more than once", 0, (&( _currn->_A
 } else {
 }
 ;
-/*SPC(181)*/
+/*SPC(184)*/
 
 _VisitExit();
 }
@@ -905,9 +905,9 @@ _TPPrule_33 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_opt_PTE_ncols=1;
-/*SPC(174)*/
+/*SPC(177)*/
 _AVPTE_optPTE_column_post=ADD(_AVPTE_optPTE_column_pre, _AVPTE_opt_PTE_ncols);
-/*SPC(171)*/
+/*SPC(174)*/
 
 if (SetGlobalOnce(PTE_nu_F0_col, _AVPTE_optPTE_column_pre)) {
 message(ERROR, "Cannot specify '+ nu_F0' more than once", 0, (&( _currn->_AT_pos)));
@@ -915,7 +915,7 @@ message(ERROR, "Cannot specify '+ nu_F0' more than once", 0, (&( _currn->_AT_pos
 } else {
 }
 ;
-/*SPC(176)*/
+/*SPC(179)*/
 
 _VisitExit();
 }
@@ -932,7 +932,7 @@ _TPPrule_34 _currn;
 _VisitVarDecl()
 _VisitEntry();
 _AVPTE_optPTE_column_post=11;
-/*SPC(168)*/
+/*SPC(171)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 
 _VisitExit();
@@ -950,10 +950,10 @@ _TPPrule_35 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(PTformat, 2);
-/*SPC(161)*/
+/*SPC(164)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(PTFile, StringTable(_AVPath_String));
-/*SPC(160)*/
+/*SPC(163)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
@@ -971,12 +971,12 @@ _TPPrule_36 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(PTformat, 1);
-/*SPC(157)*/
+/*SPC(160)*/
 message(ERROR, "PTFile format is obsolete", 0, (&( _currn->_AT_pos)));
-/*SPC(156)*/
+/*SPC(159)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(PTFile, StringTable(_AVPath_String));
-/*SPC(155)*/
+/*SPC(158)*/
 
 _VisitExit();
 }
@@ -993,12 +993,12 @@ _TPPrule_37 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(PTformat, 0);
-/*SPC(152)*/
+/*SPC(155)*/
 message(ERROR, "PandTFile format is obsolete", 0, (&( _currn->_AT_pos)));
-/*SPC(151)*/
+/*SPC(154)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(PTFile, StringTable(_AVPath_String));
-/*SPC(150)*/
+/*SPC(153)*/
 
 _VisitExit();
 }
@@ -1016,7 +1016,7 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(ICOSdir, StringTable(_AVPath_String));
-/*SPC(147)*/
+/*SPC(150)*/
 
 _VisitExit();
 }
@@ -1033,9 +1033,9 @@ _TPPrule_39 _currn;
 _VisitVarDecl()
 _VisitEntry();
 SetGlobal(FitFunction, StringTable(_currn->_ATTERM_1));
-/*SPC(144)*/
+/*SPC(147)*/
 message(ERROR, "FitFunction keyword is currently non-functional", 0, (&( _currn->_AT_pos)));
-/*SPC(143)*/
+/*SPC(146)*/
 
 _VisitExit();
 }
@@ -1051,8 +1051,8 @@ _TPPrule_40 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(binary, 0);
-/*SPC(139)*/
+SetGlobal(NoTee, 1);
+/*SPC(142)*/
 
 _VisitExit();
 }
@@ -1068,8 +1068,8 @@ _TPPrule_41 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(binary, 1);
-/*SPC(136)*/
+SetGlobal(binary, 0);
+/*SPC(139)*/
 
 _VisitExit();
 }
@@ -1079,6 +1079,23 @@ void _VS1rule_42(_TPPrule_42 _currn)
 #else
 void _VS1rule_42(_currn )
 _TPPrule_42 _currn;
+
+#endif
+{
+
+_VisitVarDecl()
+_VisitEntry();
+SetGlobal(binary, 1);
+/*SPC(136)*/
+
+_VisitExit();
+}
+
+#if defined(__STDC__) || defined(__cplusplus)
+void _VS1rule_43(_TPPrule_43 _currn)
+#else
+void _VS1rule_43(_currn )
+_TPPrule_43 _currn;
 
 #endif
 {
@@ -1099,23 +1116,6 @@ _VisitExit();
 }
 
 #if defined(__STDC__) || defined(__cplusplus)
-void _VS1rule_43(_TPPrule_43 _currn)
-#else
-void _VS1rule_43(_currn )
-_TPPrule_43 _currn;
-
-#endif
-{
-
-_VisitVarDecl()
-_VisitEntry();
-SetGlobal(MaxIterations, _currn->_ATTERM_1);
-/*SPC(126)*/
-
-_VisitExit();
-}
-
-#if defined(__STDC__) || defined(__cplusplus)
 void _VS1rule_44(_TPPrule_44 _currn)
 #else
 void _VS1rule_44(_currn )
@@ -1126,8 +1126,8 @@ _TPPrule_44 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(ConvergenceCount, _currn->_ATTERM_1);
-/*SPC(123)*/
+SetGlobal(MaxIterations, _currn->_ATTERM_1);
+/*SPC(126)*/
 
 _VisitExit();
 }
@@ -1143,9 +1143,8 @@ _TPPrule_45 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(ConvergenceStep, _currn->_desc1->_ATFVal);
-/*SPC(120)*/
+SetGlobal(ConvergenceCount, _currn->_ATTERM_1);
+/*SPC(123)*/
 
 _VisitExit();
 }
@@ -1162,8 +1161,8 @@ _TPPrule_46 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(epsilon3, _currn->_desc1->_ATFVal);
-/*SPC(117)*/
+SetGlobal(ConvergenceStep, _currn->_desc1->_ATFVal);
+/*SPC(120)*/
 
 _VisitExit();
 }
@@ -1180,8 +1179,8 @@ _TPPrule_47 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(epsilon2, _currn->_desc1->_ATFVal);
-/*SPC(114)*/
+SetGlobal(epsilon3, _currn->_desc1->_ATFVal);
+/*SPC(117)*/
 
 _VisitExit();
 }
@@ -1198,8 +1197,8 @@ _TPPrule_48 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(epsilon1, _currn->_desc1->_ATFVal);
-/*SPC(111)*/
+SetGlobal(epsilon2, _currn->_desc1->_ATFVal);
+/*SPC(114)*/
 
 _VisitExit();
 }
@@ -1216,8 +1215,8 @@ _TPPrule_49 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(mu_scale, _currn->_desc1->_ATFVal);
-/*SPC(108)*/
+SetGlobal(epsilon1, _currn->_desc1->_ATFVal);
+/*SPC(111)*/
 
 _VisitExit();
 }
@@ -1234,9 +1233,8 @@ _TPPrule_50 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
-SetGlobal(SkewTolerance, MUL(_currn->_desc1->_ATFVal, _AVopt_ppm_FVal));
-/*SPC(105)*/
+SetGlobal(mu_scale, _currn->_desc1->_ATFVal);
+/*SPC(108)*/
 
 _VisitExit();
 }
@@ -1254,8 +1252,8 @@ _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
-SetGlobal(SampleRate, MUL(_currn->_desc1->_ATFVal, _AVFrequency_FVal));
-/*SPC(102)*/
+SetGlobal(SkewTolerance, MUL(_currn->_desc1->_ATFVal, _AVopt_ppm_FVal));
+/*SPC(105)*/
 
 _VisitExit();
 }
@@ -1271,10 +1269,10 @@ _TPPrule_52 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-message(ERROR, "TuningRate is no longer supported", 0, (&( _currn->_AT_pos)));
-/*SPC(99)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(SampleRate, MUL(_currn->_desc1->_ATFVal, _AVFrequency_FVal));
+/*SPC(102)*/
 
 _VisitExit();
 }
@@ -1290,9 +1288,10 @@ _TPPrule_53 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
+message(ERROR, "TuningRate is no longer supported", 0, (&( _currn->_AT_pos)));
+/*SPC(99)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(Sigma, _currn->_desc1->_ATFVal);
-/*SPC(96)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1309,9 +1308,8 @@ _TPPrule_54 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(CavityFixedLength, _currn->_desc1->_ATFVal);
-/*SPC(93)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(Sigma, _currn->_desc1->_ATFVal);
+/*SPC(96)*/
 
 _VisitExit();
 }
@@ -1328,8 +1326,8 @@ _TPPrule_55 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(CavityLength, _currn->_desc1->_ATFVal);
-/*SPC(90)*/
+SetGlobal(CavityFixedLength, _currn->_desc1->_ATFVal);
+/*SPC(93)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
@@ -1347,8 +1345,9 @@ _TPPrule_56 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(RightLineMarginMultiplier, _currn->_desc1->_ATFVal);
-/*SPC(87)*/
+SetGlobal(CavityLength, _currn->_desc1->_ATFVal);
+/*SPC(90)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1365,9 +1364,8 @@ _TPPrule_57 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(RightLineMargin, _currn->_desc1->_ATFVal);
-/*SPC(84)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(RightLineMarginMultiplier, _currn->_desc1->_ATFVal);
+/*SPC(87)*/
 
 _VisitExit();
 }
@@ -1384,8 +1382,9 @@ _TPPrule_58 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(LeftLineMarginMultiplier, _currn->_desc1->_ATFVal);
-/*SPC(81)*/
+SetGlobal(RightLineMargin, _currn->_desc1->_ATFVal);
+/*SPC(84)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1402,9 +1401,8 @@ _TPPrule_59 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(LeftLineMargin, _currn->_desc1->_ATFVal);
-/*SPC(78)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(LeftLineMarginMultiplier, _currn->_desc1->_ATFVal);
+/*SPC(81)*/
 
 _VisitExit();
 }
@@ -1421,10 +1419,9 @@ _TPPrule_60 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(LeftLineMarginMultiplier, _currn->_desc1->_ATFVal);
-/*SPC(74)*/
-SetGlobal(RightLineMarginMultiplier, _currn->_desc1->_ATFVal);
-/*SPC(75)*/
+SetGlobal(LeftLineMargin, _currn->_desc1->_ATFVal);
+/*SPC(78)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1434,6 +1431,26 @@ void _VS1rule_61(_TPPrule_61 _currn)
 #else
 void _VS1rule_61(_currn )
 _TPPrule_61 _currn;
+
+#endif
+{
+
+_VisitVarDecl()
+_VisitEntry();
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+SetGlobal(LeftLineMarginMultiplier, _currn->_desc1->_ATFVal);
+/*SPC(74)*/
+SetGlobal(RightLineMarginMultiplier, _currn->_desc1->_ATFVal);
+/*SPC(75)*/
+
+_VisitExit();
+}
+
+#if defined(__STDC__) || defined(__cplusplus)
+void _VS1rule_62(_TPPrule_62 _currn)
+#else
+void _VS1rule_62(_currn )
+_TPPrule_62 _currn;
 
 #endif
 {
@@ -1451,25 +1468,6 @@ _VisitExit();
 }
 
 #if defined(__STDC__) || defined(__cplusplus)
-void _VS1rule_62(_TPPrule_62 _currn)
-#else
-void _VS1rule_62(_currn )
-_TPPrule_62 _currn;
-
-#endif
-{
-
-_VisitVarDecl()
-_VisitEntry();
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(MaxEnsembleDriftPerScan, _currn->_desc1->_ATFVal);
-/*SPC(67)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
-
-_VisitExit();
-}
-
-#if defined(__STDC__) || defined(__cplusplus)
 void _VS1rule_63(_TPPrule_63 _currn)
 #else
 void _VS1rule_63(_currn )
@@ -1481,8 +1479,8 @@ _TPPrule_63 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(MaxFinePositionOffset, _currn->_desc1->_ATFVal);
-/*SPC(64)*/
+SetGlobal(MaxEnsembleDriftPerScan, _currn->_desc1->_ATFVal);
+/*SPC(67)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
@@ -1499,9 +1497,10 @@ _TPPrule_64 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-message(ERROR, "MinimumFringeSpacing is no longer supported", 0, (&( _currn->_AT_pos)));
-/*SPC(61)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+SetGlobal(MaxFinePositionOffset, _currn->_desc1->_ATFVal);
+/*SPC(64)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1517,9 +1516,9 @@ _TPPrule_65 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
+message(ERROR, "MinimumFringeSpacing is no longer supported", 0, (&( _currn->_AT_pos)));
+/*SPC(61)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(EtalonFeedback, _currn->_desc1->_ATFVal);
-/*SPC(58)*/
 
 _VisitExit();
 }
@@ -1536,9 +1535,8 @@ _TPPrule_66 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobal(EtalonFSR, _currn->_desc1->_ATFVal);
-/*SPC(55)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(EtalonFeedback, _currn->_desc1->_ATFVal);
+/*SPC(58)*/
 
 _VisitExit();
 }
@@ -1554,9 +1552,9 @@ _TPPrule_67 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-message(ERROR, "DSFRLimits is no longer supported", 0, (&( _currn->_AT_pos)));
-/*SPC(52)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+SetGlobal(EtalonFSR, _currn->_desc1->_ATFVal);
+/*SPC(55)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
@@ -1573,8 +1571,10 @@ _TPPrule_68 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(ICOSdirFineTuned, 1);
-/*SPC(48)*/
+message(ERROR, "DSFRLimits is no longer supported", 0, (&( _currn->_AT_pos)));
+/*SPC(52)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 
 _VisitExit();
 }
@@ -1590,8 +1590,8 @@ _TPPrule_69 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(PreserveOutput, 1);
-/*SPC(44)*/
+SetGlobal(ICOSdirFineTuned, 1);
+/*SPC(48)*/
 
 _VisitExit();
 }
@@ -1607,9 +1607,8 @@ _TPPrule_70 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-SetGlobal(RestartAt, _currn->_ATTERM_1);
-/*SPC(41)*/
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+SetGlobal(PreserveOutput, 1);
+/*SPC(44)*/
 
 _VisitExit();
 }
@@ -1625,10 +1624,9 @@ _TPPrule_71 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
+SetGlobal(RestartAt, _currn->_ATTERM_1);
+/*SPC(41)*/
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
-SetGlobalPair(ScanNumRange, _AVIntegerPair_Low, _AVIntegerPair_High);
-/*SPC(37)*/
 
 _VisitExit();
 }
@@ -1645,8 +1643,9 @@ _TPPrule_72 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobalPair(SignalRegion, _AVIntegerPair_Low, _AVIntegerPair_High);
-/*SPC(33)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobalPair(ScanNumRange, _AVIntegerPair_Low, _AVIntegerPair_High);
+/*SPC(37)*/
 
 _VisitExit();
 }
@@ -1663,8 +1662,8 @@ _TPPrule_73 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-SetGlobalPair(BackgroundRegion, _AVIntegerPair_Low, _AVIntegerPair_High);
-/*SPC(29)*/
+SetGlobalPair(SignalRegion, _AVIntegerPair_Low, _AVIntegerPair_High);
+/*SPC(33)*/
 
 _VisitExit();
 }
@@ -1681,9 +1680,8 @@ _TPPrule_74 _currn;
 _VisitVarDecl()
 _VisitEntry();
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
-SetGlobal(MirrorLoss, MUL(_currn->_desc1->_ATFVal, _AVopt_ppm_FVal));
-/*SPC(25)*/
+SetGlobalPair(BackgroundRegion, _AVIntegerPair_Low, _AVIntegerPair_High);
+/*SPC(29)*/
 
 _VisitExit();
 }
@@ -1699,10 +1697,10 @@ _TPPrule_75 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-_AVIntegerPair_High=_currn->_ATTERM_2;
-/*SPC(22)*/
-_AVIntegerPair_Low=_currn->_ATTERM_1;
-/*SPC(21)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
+SetGlobal(MirrorLoss, MUL(_currn->_desc1->_ATFVal, _AVopt_ppm_FVal));
+/*SPC(25)*/
 
 _VisitExit();
 }
@@ -1718,9 +1716,10 @@ _TPPrule_76 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
-_currn->_ATFVal=SUB(ZERO(), _currn->_desc1->_ATFVal);
-/*SPC(16)*/
+_AVIntegerPair_High=_currn->_ATTERM_2;
+/*SPC(22)*/
+_AVIntegerPair_Low=_currn->_ATTERM_1;
+/*SPC(21)*/
 
 _VisitExit();
 }
@@ -1736,8 +1735,9 @@ _TPPrule_77 _currn;
 
 _VisitVarDecl()
 _VisitEntry();
-_currn->_ATFVal=CAST(double, _currn->_ATTERM_1);
-/*SPC(13)*/
+(*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
+_currn->_ATFVal=SUB(ZERO(), _currn->_desc1->_ATFVal);
+/*SPC(16)*/
 
 _VisitExit();
 }
@@ -1747,6 +1747,23 @@ void _VS1rule_78(_TPPrule_78 _currn)
 #else
 void _VS1rule_78(_currn )
 _TPPrule_78 _currn;
+
+#endif
+{
+
+_VisitVarDecl()
+_VisitEntry();
+_currn->_ATFVal=CAST(double, _currn->_ATTERM_1);
+/*SPC(13)*/
+
+_VisitExit();
+}
+
+#if defined(__STDC__) || defined(__cplusplus)
+void _VS1rule_79(_TPPrule_79 _currn)
+#else
+void _VS1rule_79(_currn )
+_TPPrule_79 _currn;
 
 #endif
 {
@@ -1844,7 +1861,7 @@ _VisitEntry();
 _IL_incl0=_IG_incl0;_IG_incl0= &(_currn->_ATEnv);
 (*(_CALL_VS_((NODEPTR )) (VS2MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _currn->_ATEnv=RootEnv;
-/*SPC(363)*/
+/*SPC(366)*/
 (*(_CALL_VS_((NODEPTR )) (VS3MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 (*(_CALL_VS_((NODEPTR )) (VS2MAP[_currn->_desc2->_prod])))((NODEPTR) _currn->_desc2);
 _IG_incl0=_IL_incl0;
@@ -1904,7 +1921,7 @@ _VisitVarDecl()
 _VisitEntry();
 _IL_incl0=_IG_incl0;_IG_incl0= &(_currn->_ATEnv);
 _currn->_ATEnv=RootEnv;
-/*SPC(363)*/
+/*SPC(366)*/
 _IG_incl0=_IL_incl0;
 
 _VisitExit();
@@ -2081,15 +2098,15 @@ _IL_incl3=_IG_incl3;_IG_incl3= &(_currn->_ATKey);
 _IL_incl0=_IG_incl0;_IG_incl0= &(_currn->_ATEnv);
 (*(_CALL_VS_((NODEPTR )) (VS1MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _currn->_ATKey=NewKey();
-/*SPC(228)*/
+/*SPC(231)*/
 (*(_CALL_VS_((NODEPTR )) (VS2MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 _currn->_ATEnv=RootEnv;
-/*SPC(363)*/
+/*SPC(366)*/
 _AVConfigLineAbsorb_post=new_func_abs();
-/*SPC(306)*/
+/*SPC(309)*/
 (*(_CALL_VS_((NODEPTR )) (VS3MAP[_currn->_desc1->_prod])))((NODEPTR) _currn->_desc1);
 SetGlobal(absorb, _AVConfigLineAbsorb_post);
-/*SPC(307)*/
+/*SPC(310)*/
 _IG_incl5=_IL_incl5;
 _IG_incl3=_IL_incl3;
 _IG_incl0=_IL_incl0;
