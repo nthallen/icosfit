@@ -158,9 +158,12 @@ RULE: ConfigCmd ::= 'PTFile' '=' Path COMPUTE
   message(ERROR, "PTFile format is obsolete",0,COORDREF);
   SetGlobal(PTformat, 1);
 END;
-RULE: ConfigCmd ::= 'PTEFile' '=' Path PTE_options COMPUTE
+RULE: ConfigCmd ::= 'PTEFile' '=' Path opt_coadd PTE_options COMPUTE
   SetGlobal(PTFile, StringTable(Path.String));
   SetGlobal(PTformat, 2);
+END;
+RULE: opt_coadd ::= 'coadd' COMPUTE
+  SetGlobal( PTE_coadd, 1 );
 END;
 RULE: PTE_options ::= PTE_opts END;
 

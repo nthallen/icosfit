@@ -35,6 +35,7 @@ class GlobalData_t {
     const char *ICOSdir;
     const char *PTFile;
     int PTformat;
+    int PTE_coadd; // true if coadding
     int PTE_nu_F0_col;
     int PTE_MirrorLoss_col;
     int PTE_PowerParams_col;
