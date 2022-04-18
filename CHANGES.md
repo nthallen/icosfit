@@ -1,5 +1,9 @@
 # Version History for icosfit.
 
+### V4.3.1 April 18, 2022
+
+  * Adding coadd capability
+
 ### V4.3.0 March 16, 2022
 
   * Updated Q(T) values from HITRAN and automated the update process, making it much easier to add new isotopologues
