@@ -38,6 +38,7 @@ typedef struct _TSopt_BaselineInput* _TSPopt_BaselineInput;
 typedef struct _TSPTE_opt* _TSPPTE_opt;
 typedef struct _TSPTE_opts* _TSPPTE_opts;
 typedef struct _TSPTE_options* _TSPPTE_options;
+typedef struct _TSopt_coadd* _TSPopt_coadd;
 typedef struct _TSFrequency* _TSPFrequency;
 typedef struct _TSopt_tunerate* _TSPopt_tunerate;
 typedef struct _TSopt_cm* _TSPopt_cm;
@@ -128,6 +129,8 @@ typedef struct _TPrule_76* _TPPrule_76;
 typedef struct _TPrule_77* _TPPrule_77;
 typedef struct _TPrule_78* _TPPrule_78;
 typedef struct _TPrule_79* _TPPrule_79;
+typedef struct _TPrule_80* _TPPrule_80;
+typedef struct _TPrule_031* _TPPrule_031;
 typedef struct _TPrule_030* _TPPrule_030;
 typedef struct _TPrule_029* _TPPrule_029;
 typedef struct _TPrule_028* _TPPrule_028;
@@ -328,6 +331,15 @@ _NODECOMMON
 };
 
 struct _TSPTE_options
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
+};
+
+struct _TSopt_coadd
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -789,8 +801,6 @@ struct _TPrule_35
 {
 _NODECOMMON
 #endif
-_TSPPath _desc1;
-_TSPPTE_options _desc2;
 };
 
 struct _TPrule_36
@@ -801,7 +811,8 @@ struct _TPrule_36
 _NODECOMMON
 #endif
 _TSPPath _desc1;
-POSITION _AT_pos;
+_TSPopt_coadd _desc2;
+_TSPPTE_options _desc3;
 };
 
 struct _TPrule_37
@@ -823,6 +834,7 @@ struct _TPrule_38
 _NODECOMMON
 #endif
 _TSPPath _desc1;
+POSITION _AT_pos;
 };
 
 struct _TPrule_39
@@ -832,8 +844,7 @@ struct _TPrule_39
 {
 _NODECOMMON
 #endif
-POSITION _AT_pos;
-int _ATTERM_1;
+_TSPPath _desc1;
 };
 
 struct _TPrule_40
@@ -843,6 +854,8 @@ struct _TPrule_40
 {
 _NODECOMMON
 #endif
+POSITION _AT_pos;
+int _ATTERM_1;
 };
 
 struct _TPrule_41
@@ -870,8 +883,6 @@ struct _TPrule_43
 {
 _NODECOMMON
 #endif
-POSITION _AT_pos;
-int _ATTERM_1;
 };
 
 struct _TPrule_44
@@ -881,6 +892,7 @@ struct _TPrule_44
 {
 _NODECOMMON
 #endif
+POSITION _AT_pos;
 int _ATTERM_1;
 };
 
@@ -901,7 +913,7 @@ struct _TPrule_46
 {
 _NODECOMMON
 #endif
-_TSPFloatVal _desc1;
+int _ATTERM_1;
 };
 
 struct _TPrule_47
@@ -952,7 +964,6 @@ struct _TPrule_51
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_ppm _desc2;
 };
 
 struct _TPrule_52
@@ -963,10 +974,21 @@ struct _TPrule_52
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPFrequency _desc2;
+_TSPopt_ppm _desc2;
 };
 
 struct _TPrule_53
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
+_TSPFloatVal _desc1;
+_TSPFrequency _desc2;
+};
+
+struct _TPrule_54
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -978,16 +1000,6 @@ _TSPopt_tunerate _desc2;
 POSITION _AT_pos;
 };
 
-struct _TPrule_54
-#ifdef __cplusplus
-	: public NODEPTR_struct {
-#else
-{
-_NODECOMMON
-#endif
-_TSPFloatVal _desc1;
-};
-
 struct _TPrule_55
 #ifdef __cplusplus
 	: public NODEPTR_struct {
@@ -996,7 +1008,6 @@ struct _TPrule_55
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_cm _desc2;
 };
 
 struct _TPrule_56
@@ -1018,6 +1029,7 @@ struct _TPrule_57
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
+_TSPopt_cm _desc2;
 };
 
 struct _TPrule_58
@@ -1028,7 +1040,6 @@ struct _TPrule_58
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_wn _desc2;
 };
 
 struct _TPrule_59
@@ -1039,6 +1050,7 @@ struct _TPrule_59
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
+_TSPopt_wn _desc2;
 };
 
 struct _TPrule_60
@@ -1049,7 +1061,6 @@ struct _TPrule_60
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_wn _desc2;
 };
 
 struct _TPrule_61
@@ -1060,6 +1071,7 @@ struct _TPrule_61
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
+_TSPopt_wn _desc2;
 };
 
 struct _TPrule_62
@@ -1070,7 +1082,6 @@ struct _TPrule_62
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_wn _desc2;
 };
 
 struct _TPrule_63
@@ -1103,7 +1114,7 @@ struct _TPrule_65
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-POSITION _AT_pos;
+_TSPopt_wn _desc2;
 };
 
 struct _TPrule_66
@@ -1114,6 +1125,7 @@ struct _TPrule_66
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
+POSITION _AT_pos;
 };
 
 struct _TPrule_67
@@ -1124,7 +1136,6 @@ struct _TPrule_67
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPopt_wn _desc2;
 };
 
 struct _TPrule_68
@@ -1135,8 +1146,7 @@ struct _TPrule_68
 _NODECOMMON
 #endif
 _TSPFloatVal _desc1;
-_TSPFloatVal _desc2;
-POSITION _AT_pos;
+_TSPopt_wn _desc2;
 };
 
 struct _TPrule_69
@@ -1146,6 +1156,9 @@ struct _TPrule_69
 {
 _NODECOMMON
 #endif
+_TSPFloatVal _desc1;
+_TSPFloatVal _desc2;
+POSITION _AT_pos;
 };
 
 struct _TPrule_70
@@ -1164,8 +1177,6 @@ struct _TPrule_71
 {
 _NODECOMMON
 #endif
-_TSPopt_preserve _desc1;
-int _ATTERM_1;
 };
 
 struct _TPrule_72
@@ -1175,8 +1186,8 @@ struct _TPrule_72
 {
 _NODECOMMON
 #endif
-_TSPScanNumRangeName _desc1;
-_TSPIntegerPair _desc2;
+_TSPopt_preserve _desc1;
+int _ATTERM_1;
 };
 
 struct _TPrule_73
@@ -1186,7 +1197,8 @@ struct _TPrule_73
 {
 _NODECOMMON
 #endif
-_TSPIntegerPair _desc1;
+_TSPScanNumRangeName _desc1;
+_TSPIntegerPair _desc2;
 };
 
 struct _TPrule_74
@@ -1206,11 +1218,21 @@ struct _TPrule_75
 {
 _NODECOMMON
 #endif
+_TSPIntegerPair _desc1;
+};
+
+struct _TPrule_76
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
 _TSPFloatVal _desc1;
 _TSPopt_ppm _desc2;
 };
 
-struct _TPrule_76
+struct _TPrule_77
 #ifdef __cplusplus
 	: public NODEPTR_struct {
 #else
@@ -1221,17 +1243,6 @@ int _ATTERM_2;
 int _ATTERM_1;
 };
 
-struct _TPrule_77
-#ifdef __cplusplus
-	: public NODEPTR_struct {
-#else
-{
-_NODECOMMON
-#endif
-double _ATFVal;
-_TSPFloatVal _desc1;
-};
-
 struct _TPrule_78
 #ifdef __cplusplus
 	: public NODEPTR_struct {
@@ -1240,7 +1251,7 @@ struct _TPrule_78
 _NODECOMMON
 #endif
 double _ATFVal;
-int _ATTERM_1;
+_TSPFloatVal _desc1;
 };
 
 struct _TPrule_79
@@ -1252,6 +1263,26 @@ _NODECOMMON
 #endif
 double _ATFVal;
 int _ATTERM_1;
+};
+
+struct _TPrule_80
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
+double _ATFVal;
+int _ATTERM_1;
+};
+
+struct _TPrule_031
+#ifdef __cplusplus
+	: public NODEPTR_struct {
+#else
+{
+_NODECOMMON
+#endif
 };
 
 struct _TPrule_030

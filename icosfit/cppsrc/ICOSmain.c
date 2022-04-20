@@ -93,8 +93,11 @@ void ICOS_main() {
            fitspecs->PTf->ScanNum >= GlobalData.ScanNumRange[0] ) &&
          ( GlobalData.ScanNumRange[1] == 0 ||
            fitspecs->PTf->ScanNum <= GlobalData.ScanNumRange[1] ) ) {
-      if ( fitspecs->IFile->read( fitspecs->PTf->ScanNum ) ) {
-        if ( GlobalData.PTformat == 2 ) fitspecs->PTf->calc_wndata();
+      if ( GlobalData.PTformat == 2 ) fitspecs->PTf->calc_wndata();
+      if ( GlobalData.PTE_coadd ?
+              fitspecs->IFile->coadd(fitspecs->PTf->ScanNum,
+                fitspecs->PTf->LastScan) :
+              fitspecs->IFile->read(fitspecs->PTf->ScanNum)) {
         if ( fitspecs->fit() != 0 ) {
           fitspecs->write();
           fprintf(stderr, "Successfully fit %lu: chisq = %" FMT_G "\n",
@@ -157,6 +160,28 @@ fitdata *build_func() {
 
   { const char *fnamep;
     FILE *fp;
+    struct {
+      int Scan0;
+      int Scan1;
+      int P;
+      int T;
+      int chi2;
+      int SignalRegion;
+      int info;
+    } input_cols;
+
+    input_cols.Scan0 = 1;
+    input_cols.Scan1 = GlobalData.PTE_coadd ? 2 : 0;
+    int output_col = GlobalData.PTE_coadd ? 3 : 2;
+    input_cols.P = output_col++;
+    input_cols.T = output_col++;
+    input_cols.chi2 = output_col++;
+    input_cols.SignalRegion = output_col;
+    output_col += 2;
+    if (fd->verbose & V_INFO) {
+      input_cols.info = output_col;
+      output_col += 9;
+    } else input_cols.info = 0;
 
     assert( GlobalData.MFile != 0 );
     fnamep = output_filename( GlobalData.MFile );
@@ -165,7 +190,7 @@ fitdata *build_func() {
     assert( abs != 0 && abs->args.size() != 0 && abs->args[0].arg->params.size() != 0 );
     fprintf( fp,
       "%% ICOS configuration data\n"
-      "ICOSfit_format_ver = 4;\n"
+      "ICOSfit_format_ver = 5;\n"
       "n_input_params = %d;\n"
       "n_base_params = %ld;\n"
       "binary = %d;\n"
@@ -192,7 +217,24 @@ fitdata *build_func() {
     fprintf(fp, "BackgroundRegion = [ %d %d ];\n",
       GlobalData.BackgroundRegion[0], GlobalData.BackgroundRegion[1]);
     abs->print_config( fp );
-    int output_col = 7;
+    
+    fprintf(fp,
+      "\n"
+      "%% Map Input parameter to output column\n"
+      "%% zero or empty value means optional element is not present\n"
+      "input_cols = struct('Scan0',%d,'Scan1',%d,'P',%d, ...\n"
+      "  'T',%d,'chi2',%d, ...\n"
+      "  'SignalRegion',[%d,%d],",
+      input_cols.Scan0, input_cols.Scan1, input_cols.P,
+      input_cols.T, input_cols.chi2,
+      input_cols.SignalRegion, input_cols.SignalRegion+1);
+    if (input_cols.info) {
+      fprintf(fp,
+        "'info', [%d:%d]);\n", input_cols.info, input_cols.info+8);
+    } else {
+      fprintf(fp, "'info',[]);\n");
+    }
+    
     fprintf(fp,
       "\n"
       "%% Output file column definitions\n"
@@ -203,7 +245,8 @@ fitdata *build_func() {
       "  'chisq (or something like it)' %% col 4\n"
       "  'Starting sample for fit region' %% col 5\n"
       "  'Ending sample for fit region' %% col 6\n");
-    if (fd->verbose & V_INFO) {
+    if (input_cols.info) {
+      int col = input_cols.info;
       fprintf(fp,
         "  'info[1]: ||e||_2' %% col %d\n"
         "  'info[2]: ||J^T e||_inf' %% col %d\n"
@@ -214,10 +257,9 @@ fitdata *build_func() {
         "  'info[7]: # of function evaluations' %% col %d\n"
         "  'info[8]: # of Jacobian evaluations' %% col %d\n"
         "  'info[9]: # of linear systems solved' %% col %d\n",
-        output_col, output_col+1, output_col+2, output_col+3,
-        output_col+4, output_col+5, output_col+6, output_col+7,
-        output_col+8);
-      output_col += 9;
+        col, col+1, col+2, col+3,
+        col+4, col+5, col+6, col+7,
+        col+8);
     }
     { std::vector<argref>::iterator child;
       for (child = fd->absorb->args.begin();

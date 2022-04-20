@@ -33,6 +33,7 @@ GlobalData_t::GlobalData_t() {
   ICOSdir = "Scans";
   PTFile = "PTE.txt";
   PTformat = 2;
+  PTE_coadd = 0;
   PTE_nu_F0_col = 0;
   PTE_MirrorLoss_col = 0;
   PTE_PowerParams_col = 0;

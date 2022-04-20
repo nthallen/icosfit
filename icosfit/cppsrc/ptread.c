@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <math.h>
 #include <ctype.h>
-#include <assert.h>
+#include "nl_assert.h"
 #include "ptread.h"
 #include "nl.h"
 #include "global.h"
@@ -26,6 +26,7 @@ PTfile::PTfile( const char *fname )
     : fname(fname),
       linenum(0),
       ScanNum(0),
+      LastScan(0),
       next_ScanNum(0) {
   fp = fopen( fname, "r" );
   if ( fp == 0 )
@@ -111,24 +112,29 @@ int PTfile::readline() {
       p = ep;
     }
     if ( format == 2 ) {
+      int cooff = 0; // offset for coadding
       time = 0.;
       ScanNum = int(data[0]);
-      P = data[1];
-      T = data[2];
-      for ( i = 0; i < 8; i++ ) Etln_params[i] = data[i+3];
+      if (GlobalData.PTE_coadd) {
+        LastScan = int(data[1]);
+        cooff = 1;
+      }
+      P = data[1+cooff];
+      T = data[2+cooff];
+      for ( i = 0; i < 8; i++ ) Etln_params[i] = data[i+3+cooff];
       if (GlobalData.PTE_nu_F0_col) {
-        GlobalData.input.nu_F0 = data[GlobalData.PTE_nu_F0_col];
+        GlobalData.input.nu_F0 = data[GlobalData.PTE_nu_F0_col+cooff];
       }
       if (GlobalData.PTE_MirrorLoss_col) {
-        GlobalData.input.MirrorLoss = data[GlobalData.PTE_MirrorLoss_col];
+        GlobalData.input.MirrorLoss = data[GlobalData.PTE_MirrorLoss_col+cooff];
       }
       if (GlobalData.PTE_Feedback_col) {
-        Etln_params[GlobalData.PTE_Feedback_col-3] = data[GlobalData.PTE_Feedback_col];
+        Etln_params[GlobalData.PTE_Feedback_col-3] = data[GlobalData.PTE_Feedback_col+cooff];
       }
       if (GlobalData.PTE_PowerParams_col) {
         for (i = 0; i < 4; ++i) {
           Etln_params[GlobalData.PTE_PowerParams_col + i - 3] =
-            data[GlobalData.PTE_PowerParams_col + i];
+            data[GlobalData.PTE_PowerParams_col + i + cooff];
         }
       }
       return 1;
@@ -210,34 +216,96 @@ void PTfile::calc_wndata() {
 
 const int ICOSfile::mindatasize = 1024;
 
-ICOSfile::ICOSfile( const char *fbase, const char *obase, int bin ) {
-  binary = bin;
-  mlf = mlf_init( 3, 60, 0, fbase, "dat", NULL );
-  omlf = mlf_init( 3, 60, 1, obase, "dat", NULL );
-  ofp = 0;
-  sdata = new f_vector(mindatasize, 0);
+ICOSfile::ICOSfile( const char *fbase, const char *obase, int bin )
+    : mlf(mlf_init( 3, 60, 0, fbase, "dat", NULL )),
+      omlf(mlf_init( 3, 60, 1, obase, "dat", NULL )),
+      ofp(0),
+      sdata(new f_vector(mindatasize, 0)),
+      ssdata(0),
+      sbdata(0),
+      binary(bin)
+{
   bdata = new f_vector(mindatasize, 0);
-  // fdata = new f_vector(100, 0);
 }
 
 f_vector *ICOSfile::bdata;
 f_vector *ICOSfile::wndata;
-f_vector *wndebug;
 
-#ifdef NOT_IMPLEMENTED
-  static void err_throw( int except, int level, char *fmt, ... ) {
-    va_list arg;
-
-    va_start(arg, fmt);
-    nl_verror(stderr, level, fmt, arg);
-    va_end(arg);
-    throw except;
+/**
+ * @param firstscan Input file index for multi-level-file routines
+ * @param lastscan Input file index for last file if coadding
+ * @return 1 on success, 0 if there was an error
+ * If lastfile is zero or less than or equal to fileno,
+ *  then only a single file is read.
+ */
+int ICOSfile::coadd(uint32_t firstscan, uint32_t lastscan) {
+  if (lastscan <= firstscan)
+    return read(firstscan);
+  uint32_t n_scans =  0;
+  for (uint32_t scan = firstscan; scan <= lastscan; ++scan) {
+    if (read(scan)) {
+      if (n_scans == 0) {
+        if (!ssdata)
+          ssdata = new f_vector(mindatasize, 0);
+        ssdata->check(sdata->n_data);
+        if (GlobalData.BaselineInput) {
+          if (!sbdata)
+            sbdata = new  f_vector(mindatasize, 0);
+          sbdata->check(bdata->n_data);
+          nl_assert(sdata->n_data == bdata->n_data);
+        }
+        ++n_scans;
+        // initialize from sdata
+        for (int i = 0; i < sdata->n_data; ++i) {
+          ssdata->data[i] = sdata->data[i];
+        }
+        if (GlobalData.BaselineInput) {
+          for (int i = 0; i < bdata->n_data; ++i) {
+            sbdata->data[i] = bdata->data[i];
+          }
+        }
+      } else {
+        if (sdata->n_data != ssdata->n_data) {
+          nl_error(2, "Scan length changed during cooadd");
+        } else {
+          ++n_scans;
+          // coadd from sdata into ssdata
+          for (int i = 0; i < sdata->n_data; ++i) {
+            ssdata->data[i] += sdata->data[i];
+          }
+          if (GlobalData.BaselineInput) {
+            // coadd from bdata into sbdata
+            nl_assert(sdata->n_data == bdata->n_data);
+            for (int i = 0; i < bdata->n_data; ++i) {
+              sbdata->data[i] += bdata->data[i];
+            }
+          }
+        }
+      }
+    }
   }
-#endif
+  if (n_scans) {
+    // average back from ssdata into sdata
+    for (int i = 0; i < sdata->n_data; ++i) {
+      sdata->data[i] = ssdata->data[i]/n_scans;
+    }
+    if (GlobalData.BaselineInput) {
+      // average back from sbdata into bdata
+      for (int i = 0; i < bdata->n_data; ++i) {
+        bdata->data[i] = sbdata->data[i]/n_scans;
+      }
+    }
+    return 1;
+  }
+  return 0;
+}
 
 /**
  * @param fileno Input file index for multi-level-file routines
+ * @param lastfile Input file index for last file if coadding
  * @return 1 on success, 0 if there was an error
+ * If lastfile is zero or less than or equal to fileno,
+ *  then only a single file is read.
  * For ASCII Processing:
  *  fgets() reads in the line including the newline
  *  strtod() updates the endptr (ep) to point to the char
@@ -251,7 +319,7 @@ f_vector *wndebug;
  *  to make this determination once per file and avoid
  *  testing each line.
  */
-int ICOSfile::read( unsigned long int fileno ) {
+int ICOSfile::read(unsigned long int fileno) {
   FILE *fp;
   mlf_set_index( mlf, fileno );
   fp = mlf_next_file(mlf);
@@ -405,8 +473,7 @@ int ICOSfile::read( unsigned long int fileno ) {
  * for direct lookup in wndata.
  */
 int ICOSfile::wn_sample( ICOS_Float wn ) {
-  // assert( nu_F0 > 0 );
-  assert( wndata->n_data >= (int)GlobalData.SignalRegion[1] );
+  nl_assert( wndata->n_data >= (int)GlobalData.SignalRegion[1] );
   // Note that wavenumber decreases with sample, so I use 'low'
   // to identify the lower wavenumber value, although it is the
   // higher index number
@@ -419,7 +486,7 @@ int ICOSfile::wn_sample( ICOS_Float wn ) {
   if ( wn >= wnhigh ) return high;
   while ( low > high ) {
     int mid = floor(0.5+low + (wn-wnlow)*(high-low)/(wnhigh-wnlow));
-    assert( high <= mid && mid <= low );
+    nl_assert( high <= mid && mid <= low );
     if ( mid == low ) return low;
     if ( mid == high ) return high;
     ICOS_Float wnmid = wndata->data[mid];

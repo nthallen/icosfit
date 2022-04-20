@@ -87,8 +87,8 @@ ICOSmain.o:	ICOSmain.c ICOSfit.h clp.h mlf.h global.h config.h nl.h \
 		pdl_gen.h DefTableKeyList.h eliproto.h deftbl.h \
 		VoidPtrList.h VoidPtr.h VoidPtrFunctionTypes.h
 
-ptread.o:	ptread.c config.h ptread.h nl.h global.h mlf.h f_vector.h \
-		funceval.h
+ptread.o:	ptread.c config.h nl_assert.h ptread.h nl.h global.h mlf.h \
+		f_vector.h funceval.h
 
 f_vector.o:	f_vector.c f_vector.h nl.h config.h
 
