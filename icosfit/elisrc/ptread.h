@@ -10,7 +10,7 @@ class PTfile {
     double time;
     double P, T;
     double cal_flow, inlet_flow;
-    unsigned long ScanNum;
+    unsigned long ScanNum, LastScan;
     int RORIS, RateS;
     unsigned long next_ScanNum;
 
@@ -30,6 +30,7 @@ class PTfile {
 class ICOSfile {
   public:
     ICOSfile(const char *fbase, const char *obase, int bin );
+    int coadd(uint32_t firstscan, uint32_t lastscan);
     int read(unsigned long int fileno);
     FILE *writefp();
     int wn_sample( ICOS_Float wn );
@@ -39,14 +40,15 @@ class ICOSfile {
     FILE *ofp;
     /** Scan data vector */
     f_vector *sdata;
-    /* Apparently unused */
-    // f_vector *fdata;
+    f_vector *ssdata; // for coadding sdata
     /** Baseline input data from column 3 of scan file, indicated
         by '+ Input' in BaselineFile definition. */
     static f_vector *bdata;
+    f_vector *sbdata; // for coadding bdata
     /** Lookup table mapping sample number to wavenumber based on
      * etln_fit parameterization from the PTEfile */
     static f_vector *wndata;
+    // f_vector *swndata; // we won't coadd wndata for now
     static ICOS_Float nu_F0;
     static int dFN;
     int binary;

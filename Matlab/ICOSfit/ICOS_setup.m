@@ -62,7 +62,7 @@ if exist( [ base '/ICOSconfig.m' ], 'file' )
       S.MirrorLoss = MirrorLoss;
       S.SampleRate = SampleRate;
       S.SkewTolerance = SkewTolerance;
-      S.SignalRegion = S.fitdata(:,[5 6]);
+      % S.SignalRegion = S.fitdata(:,[5 6]);
   end
   if exist('Verbosity','var')
     S.Verbosity = Verbosity;
@@ -121,6 +121,7 @@ end
 S.n_extra_cols = size(S.fitdata,2) - S.n_cols;
 S.n_cols = size(S.fitdata,2);
 
+% S.scannum, S.lastscan, S.chi2, S.nu_F0, S.dFN
 if S.ICOSfit_format_ver <= 1
   if S.n_input_params == 4
     S.scannum = S.fitdata(:,1);
@@ -138,12 +139,23 @@ if S.ICOSfit_format_ver <= 1
     S.dFN = S.fitdata(:,10);
   end
 else % S.ICOSfit_format_ver > 1 (2 for now)
-  S.scannum = S.fitdata(:,1);
-  S.chi2 = S.fitdata(:,4);
   S.nu_F0 = S.fitdata(:,S.n_input_params+S.n_base_params+1);
-  if S.ICOSfit_format_ver >= 3
-    if bitand(S.Verbosity,2)
-      S.info = S.fitdata(:,6+(1:9));
+  if S.ICOSfit_format_ver >= 5
+    S.scannum = S.fitdata(:,input_cols.Scan0);
+    if input_cols.Scan1
+      S.lastscan = S.fitdata(:,input_cols.Scan1);
+    end
+    S.chi2 = S.fitdata(:,input_cols.chi2);
+    if ~isempty(input_cols.info)
+      S.info = S.fitdata(:,input_cols.info);
+    end
+  else
+    S.scannum = S.fitdata(:,1);
+    S.chi2 = S.fitdata(:,4);
+    if S.ICOSfit_format_ver >= 3
+      if bitand(S.Verbosity,2)
+        S.info = S.fitdata(:,6+(1:9));
+      end
     end
   end
   if S.ICOSfit_format_ver >= 4
@@ -155,14 +167,21 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
   end
 end
 
+% S.P_vec, S.T_vec
+if S.ICOSfit_format_ver >= 5
+  S.P_vec = S.fitdata(:,input_cols.P);
+  S.T_vec = S.fitdata(:,input_cols.T);
+else
+  S.P_vec = S.fitdata(:,2);
+  S.T_vec = S.fitdata(:,3);
+end
+
 S.v = ((1:S.n_lines)-1)*(S.n_line_params+S.n_abs_line_params) + ...
   S.n_input_params + S.n_base_params + S.n_abs_params + S.n_abs_line_params + 1;
 S.row = ones(1,length(S.v));
 S.col = ones( size(S.fitdata,1), 1 );
 S.Nfit = S.fitdata(:,S.v+2);
-S.P_vec = S.fitdata(:,2);
 S.P = S.P_vec * S.row; % P in torr
-S.T_vec = S.fitdata(:,3);
 S.T = S.T_vec * S.row;
 % C = 2.68675e19 * (P / 760.) ./ (T / 273.15); % [M]
 S.C = 2.685e19 * (S.P / 760.) ./ (S.T / 273.15); % [M] Sayres' number

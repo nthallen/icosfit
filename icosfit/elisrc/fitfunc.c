@@ -370,8 +370,14 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
     // Write line of output to ICOSsum.dat
     int n_i_p = 6;
     nl_assert( ScanNum_col == 1 );
-    fprintf( ofp, "%6d %6.2lf %6.2lf %12.5le %d %d",
-      fileno, PTf->P, PTf->T, chisq, Start+MLBASE, End+MLBASE);
+    if (GlobalData.PTE_coadd) {
+      fprintf(ofp, "%6d %6d", PTf->ScanNum, PTf->LastScan);
+    } else {
+      fprintf(ofp, "%d", PTf->ScanNum);
+    }
+        
+    fprintf( ofp, " %6.2lf %6.2lf %12.5le %d %d",
+      PTf->P, PTf->T, chisq, Start+MLBASE, End+MLBASE);
     if (verbose & V_INFO) {
       n_i_p += 9;
       fprintf(ofp,
