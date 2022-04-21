@@ -372,6 +372,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
     nl_assert( ScanNum_col == 1 );
     if (GlobalData.PTE_coadd) {
       fprintf(ofp, "%6d %6d", PTf->ScanNum, PTf->LastScan);
+      ++n_i_p;
     } else {
       fprintf(ofp, "%d", PTf->ScanNum);
     }
@@ -422,7 +423,7 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
 }
 
 void fitdata::write() {
-  FILE *fp = (verbose&1) ? IFile->writefp() : 0;
+  FILE *fp = (verbose&1) ? IFile->writefp(PTf->ScanNum) : 0;
   this->lwrite(IFile->ofp, fp, PTf->ScanNum, p);
 }
 

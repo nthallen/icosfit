@@ -141,6 +141,8 @@ fitdata *build_func() {
     nl_error( 0, "Using func_skew()" );
   }
   fitdata::n_input_params = fitdata::n_base_input_params;
+  if (GlobalData.PTE_coadd)
+    fitdata::n_input_params++;
   if (GlobalData.Verbosity & V_INFO)
     fitdata::n_input_params += 9;
   std::vector<argref>::iterator child;
@@ -239,12 +241,21 @@ fitdata *build_func() {
       "\n"
       "%% Output file column definitions\n"
       "output_cols = {\n"
-      "  'ScanNum' %% col 1\n"
-      "  'Pressure Torr' %% col 2\n"
-      "  'Temperature K' %% col 3\n"
-      "  'chisq (or something like it)' %% col 4\n"
-      "  'Starting sample for fit region' %% col 5\n"
-      "  'Ending sample for fit region' %% col 6\n");
+      "  'ScanNum' %% col 1\n");
+    { int col = 2;
+      if (GlobalData.PTE_coadd) {
+        fprintf(fp,
+          "  'LastScan' %% col 2\n");
+        ++col;
+      }
+      fprintf(fp,
+        "  'Pressure Torr' %% col %d\n"
+        "  'Temperature K' %% col %d\n"
+        "  'chisq (or something like it)' %% col %d\n"
+        "  'Starting sample for fit region' %% col %d\n"
+        "  'Ending sample for fit region' %% col %d\n",
+        col, col+1, col+2, col+3, col+4);
+    }
     if (input_cols.info) {
       int col = input_cols.info;
       fprintf(fp,

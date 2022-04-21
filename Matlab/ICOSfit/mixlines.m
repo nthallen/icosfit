@@ -1,4 +1,4 @@
-function [ Chiout, xout, Pout, lines_out ] = mixlines( base, by_molecule );
+function [ Chiout, xout, Pout, lines_out ] = mixlines( base, by_molecule )
 % Chi = mixlines( [base [, by_molecule ] );
 % [ Chi, scannum ] = mixlines( [base [, by_molecule ] );
 % [ Chi, scannum, P ] = mixlines( ... );
@@ -40,11 +40,6 @@ end
 if by_molecule >= 2
   return;
 end
-% T = T * row;
-% P = P * row; % P in Torr
-% Nfit = fitdata(:,v+2);
-% C = 2.68675e19 * (P/760.) ./ (T / 273.15); % [M]
-% C = C * row;
 col = ones( size(fitdata,1), 1 );
 
 if by_time

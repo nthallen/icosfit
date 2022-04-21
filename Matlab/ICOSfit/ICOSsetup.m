@@ -13,6 +13,7 @@
 % Gvcalc          by_molecule     n_cols
 %%%%%
 % v identifies the columns of fitdata corresponding to each line
+warning('ICOSsetup is deprecated and will be removed in a future release. ICOS_setup is the preferred replacement.');
 if ~exist( 'base', 'var') || isempty(base)
   base = 'ICOSout';
 end
@@ -41,6 +42,8 @@ if exist( [ base '/ICOSconfig.m' ], 'file' )
   n_line_params = lines(:,9);
   if ~exist('ICOSfit_format_ver','var')
     ICOSfit_format_ver = 1;
+  elseif ICOSfit_format_ver >= 5
+    error('ICOSfit_format_ver >= 5 not supported in ICOSsetup: Use  ICOS_setup instead');
   end
   if any(n_line_params ~= n_line_params(1))
     error('Cannot handle different line types!');
@@ -166,7 +169,8 @@ Cfact = 1.438789;
 Boltzfact = exp(Cfact*(col*En).*(T-T0)./(T0*T));
 StimEmis = (1-exp(-Cfact*(col*nu)./T))./(1-exp(-Cfact*(col*nu)/T0));
 % StimEmis = 1;
-Qfact = (T0./T).^1.5;
+Qfact = load_QT(T(:,1),iso);
+% Qfact = (T0./T).^1.5;
 Scorr = (col*S0) .* Qfact .* Boltzfact .* StimEmis; % correct line strength
 if isempty(iso)
   molwts = zeros(size(iso));

@@ -247,26 +247,30 @@ int ICOSfile::coadd(uint32_t firstscan, uint32_t lastscan) {
       if (n_scans == 0) {
         if (!ssdata)
           ssdata = new f_vector(mindatasize, 0);
+        ssdata->clear();
         ssdata->check(sdata->n_data);
         if (GlobalData.BaselineInput) {
           if (!sbdata)
             sbdata = new  f_vector(mindatasize, 0);
+          sbdata->clear();
           sbdata->check(bdata->n_data);
           nl_assert(sdata->n_data == bdata->n_data);
         }
         ++n_scans;
         // initialize from sdata
         for (int i = 0; i < sdata->n_data; ++i) {
-          ssdata->data[i] = sdata->data[i];
+          ssdata->append(sdata->data[i]);
+          // ssdata->data[i] = sdata->data[i];
         }
         if (GlobalData.BaselineInput) {
           for (int i = 0; i < bdata->n_data; ++i) {
-            sbdata->data[i] = bdata->data[i];
+            sbdata->append(bdata->data[i]);
+            // sbdata->data[i] = bdata->data[i];
           }
         }
       } else {
         if (sdata->n_data != ssdata->n_data) {
-          nl_error(2, "Scan length changed during cooadd");
+          nl_error(2, "Scan length changed during coadd");
         } else {
           ++n_scans;
           // coadd from sdata into ssdata
@@ -502,9 +506,9 @@ int ICOSfile::wn_sample( ICOS_Float wn ) {
   return 0;
 }
 
-FILE *ICOSfile::writefp() {
+FILE *ICOSfile::writefp(uint32_t index) {
   FILE *fp;
-  mlf_set_index( omlf, mlf->index );
+  mlf_set_index( omlf, index );
   fp = mlf_next_file(omlf);
   return fp;
 }

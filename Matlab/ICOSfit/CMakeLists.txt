@@ -1,5 +1,5 @@
 cmake_policy(SET CMP0048 NEW)
-project(icosfit_matlab VERSION 4.3.0)
+project(icosfit_matlab VERSION 4.3.1)
 
 install(FILES
   Contents.m

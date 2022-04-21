@@ -32,7 +32,7 @@ class ICOSfile {
     ICOSfile(const char *fbase, const char *obase, int bin );
     int coadd(uint32_t firstscan, uint32_t lastscan);
     int read(unsigned long int fileno);
-    FILE *writefp();
+    FILE *writefp(uint32_t index);
     int wn_sample( ICOS_Float wn );
 
     mlf_def_t *mlf;
