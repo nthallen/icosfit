@@ -1,8 +1,16 @@
 # Version History for icosfit.
 
-### V4.3.1 April 18, 2022
+### V4.3.1 April 21, 2022
 
-  * Adding coadd capability
+  * Added coadd capability:
+    * New coadd modifier to PTEFile statement:
+      * example: PTEFile = PTE.txt coadd;
+      * An additional column is added to the PTEFile format after the first column:
+        * Column 1: first scan number
+        * Column 2: last  scan number
+        * Column 3: Pressure
+        * etc.
+      * Assumes raw scans are increasing by one, but  tolerates missing scans
 
 ### V4.3.0 March 16, 2022
 
