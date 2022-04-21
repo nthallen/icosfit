@@ -443,6 +443,7 @@ FILE *ICOSfile::writefp() {
 }
 
 #ifdef USE_BIG_ENDIAN
+ #error This should not be compiled here!
  int fread_swap32( void *buf, size_t size, size_t count, FILE *fp ) {
    int rv = fread( buf, size, count, fp );
    icos_hdr_t *bptr = (icos_hdr_t *)buf;

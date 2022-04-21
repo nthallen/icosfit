@@ -6,7 +6,7 @@
 #define CONFIG_H_INCLUDED
 
 #define HAVE_MALLOC_G_MALLOC_H 1
-#define BYTE_ORDER LITTLE_ENDIAN
+#include "endian.h"
 
 #ifdef _MALLOC_H_INCLUDED
   #error Wrong malloc.c included
