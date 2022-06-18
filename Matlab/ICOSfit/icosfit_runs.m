@@ -335,6 +335,7 @@ classdef icosfit_runs < handle
       end
       self.ax = [];
       self.survey = survey;
+      self.inp_idx = length(survey);
       self.setup_survey;
       self.show_params();
     end

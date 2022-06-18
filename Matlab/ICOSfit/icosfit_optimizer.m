@@ -159,7 +159,7 @@ classdef icosfit_optimizer < handle
       % Adds the specified output directory to the survey
       % using the given value and name.
       new_svy = ...
-        struct('base',odir,'value',value,'text',name);
+        struct('base',odir,'value',value,'text',name,'User',[]);
       if isempty(self.survey)
         self.survey = new_svy;
       else

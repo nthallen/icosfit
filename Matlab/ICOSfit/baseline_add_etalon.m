@@ -123,6 +123,8 @@ if isempty(oname)
   xlabel('cm');
 else
   if ~isempty(vectors)
+    % This is necessary because writeetlnbase divides by k, but
+    % readetlnbase does not multiply by k.
     vectors = vectors*k;
   end
   writeetlnbase(oname,PV,nu,vectors, pmax, [], outputdir);

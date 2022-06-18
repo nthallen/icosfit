@@ -1,11 +1,12 @@
 classdef baseline_optimizer < icosfit_optimizer
   properties
-    n_etalons
-    n_rescale
-    etalon_periods
+    %n_etalons
+    %n_rescale
+    %etalon_periods
     etalon_maxf
     k
     input
+    basenames % struct recording number of instances
   end
   methods
     function self = baseline_optimizer(varargin)
@@ -19,12 +20,13 @@ classdef baseline_optimizer < icosfit_optimizer
         'mnemonic','optb','criteria','Baseline', 'sopt', bopt, ...
         varargin{:});
         % 'sopt', bopt, ...
-      self.n_etalons = 0;
-      self.n_rescale = 0;
-      self.etalon_periods = [];
+      %self.n_etalons = 0;
+      %self.n_rescale = 0;
+      %self.etalon_periods = [];
       self.etalon_maxf = 0;
       self.k = 1;
       self.get_scanregion;
+      self.basenames = [];
       self.input = '';
       if self.opt.sopt.uses_input
         self.input = ' + Input';
@@ -42,14 +44,20 @@ classdef baseline_optimizer < icosfit_optimizer
       % Create a new baseline file using the specified number of
       % polynomial coefficients.
       % self.opt.sopt.n_coeffs = n_pcoeffs;
-      name = sprintf('%dp', n_pcoeffs);
-      writeetlnbase(name, n_pcoeffs, [], [], [], self.ScanNumRange(1), ...
+
+      User = struct( ...
+        'basename', '', 'fullname', '', 'n_poly_coeffs', n_pcoeffs, ...
+        'periods', [], 'rescaled', 0);
+      User = self.update_user_names(User);
+      if isempty(User); return; end
+      writeetlnbase(User.fullname, n_pcoeffs, [], [], [], self.ScanNumRange(1), ...
         self.opt.mnemonic);
       % create new config file, run the fit and add to the survey
       value = length(self.survey)+1;
       self.iterate(name, value, ...
         'BaselineFile', ...
           [ self.opt.mnemonic '/' 'sbase.' name '.ptb' self.input ]);
+      self.survey(end).User = User;
     end
     
     function period_out = analyze_etalons(self, maxf, oname)
@@ -76,8 +84,9 @@ classdef baseline_optimizer < icosfit_optimizer
       else
         self.etalon_maxf = maxf;
       end
+      User = self.survey(self.IR.inp_idx).User;
       period = baseline_add_etalon(self.survey(end).base, oname, ...
-        [], self.etalon_periods, maxf, self.opt.mnemonic, self.k);
+        [], User.periods, maxf, self.opt.mnemonic, self.k);
       if nargout > 0
         period_out = period;
       end
@@ -91,46 +100,98 @@ classdef baseline_optimizer < icosfit_optimizer
         return;
       end
       if nargin < 2, maxf = 0; end
-      name = self.survey(end).text;
-      t = regexp(name,'^(.*[^0-9er])','tokens');
-      t = t{1};
-      newname = sprintf('%s%de',t{1},self.n_etalons+1);
+      User = self.survey(self.IR.inp_idx).User;
+      %name = self.survey(end).text;
+      %t = regexp(name,'^(.*[^0-9er])','tokens');
+      %t = t{1};
+      User.periods = [ User.periods 0 ];
+      User.rescaled = 0;
+      User = self.update_user_names(User);
       % fprintf(1,'name=%s newname=%s\n', name, newname);
-      period = self.analyze_etalons(maxf, newname);
-      self.n_etalons = self.n_etalons+1;
-      self.etalon_periods(self.n_etalons) = period;
+      period = self.analyze_etalons(maxf, User.fullname);
+      User.periods(end) = period;
+
+      %self.n_etalons = self.n_etalons+1;
+      %self.etalon_periods(self.n_etalons) = period;
       value = length(self.survey)+1;
-      self.iterate(newname, value, ...
+      self.iterate(User.fullname, value, ...
         'BaselineFile', ...
-          [ self.opt.mnemonic '/sbase.' newname '.ptb' self.input ]);
+          [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input ]);
+      self.survey(end).User = User;
     end
     
-    function rescale_baseline(OptB)
+    function rescale_baseline(self)
       % OptB.rescale_baseline()
       %
       % Analyzes the scaling of baseline parameters and
       % creates a new appropriately scaled baseline file.
-      name = OptB.survey(end).text;
-      t = regexp(name,'^(.*[^0-9r])([0-9]*)(r?)$','tokens');
-      t = t{1};
-      if strcmp(t{3},'r')
-        if isempty(t{2})
-          nr = 1;
-        else
-          nr = str2double(t{2});
-        end
-        newname = sprintf('%s%dr',t{1},nr+1);
-      else
-        if ~isempty(t{2})
-          error('Run name "%s" ends in digits', name);
-        end
-        newname = [ name 'r' ];
+      
+      if isempty(self.survey) || isempty(self.IR)
+        fprintf(1,'No data to analyze\n');
+        return;
       end
-      baseline_rescale(OptB.survey(end).base, newname, [], OptB.opt.mnemonic);
-      value = length(OptB.survey)+1;
-      OptB.iterate(newname, value, ...
+      User = self.survey(self.IR.inp_idx).User;
+      User.recaled = User.rescaled+1;
+      User = self.update_user_names(User);
+
+      %name = OptB.survey(end).text;
+      %t = regexp(name,'^(.*[^0-9r])([0-9]*)(r?)$','tokens');
+      %t = t{1};
+%       if strcmp(t{3},'r')
+%         if isempty(t{2})
+%           nr = 1;
+%         else
+%           nr = str2double(t{2});
+%         end
+%         newname = sprintf('%s%dr',t{1},nr+1);
+%       else
+%         if ~isempty(t{2})
+%           error('Run name "%s" ends in digits', name);
+%         end
+%         newname = [ name 'r' ];
+%       end
+      baseline_rescale(User.base, User.fullname, [], self.opt.mnemonic);
+      value = length(self.survey)+1;
+      self.iterate(User.fullname, value, ...
         'BaselineFile', ...
-          [ OptB.opt.mnemonic '/sbase.' newname '.ptb' OptB.input]);
+          [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input]);
+      self.survey(end).User = User;
+    end
+
+    function User = update_user_names(self, User)
+      pnm = sprintf('%dp',User.n_poly_coeffs);
+      nperiods = length(User.periods);
+      if nperiods > 0
+        enm = sprintf('%de', nperiods);
+      else
+        enm = '';
+      end
+      if User.rescaled > 0
+        if User.rescaled == 1
+          rnm = 'r';
+        else
+          rnm = sprintf('%dr', User.rescaled);
+        end
+      else
+        rnm = '';
+      end
+      User.basename = [pnm enm rnm];
+      mnc = ['B' User.basename];
+      if isfield(self.basenames,mnc)
+        if isempty(enm) && isempty(rnm)
+          errordlg(sprintf( ...
+            'new_polynomial(%d) already processed, skipping',n_pcoeffs), ...
+            'Duplicate Baseline');
+          User = [];
+          return;
+        end
+        inst = self.basenames.(mnc);
+        User.fullname = sprintf('%s_%s',User.basename,char('a'+inst));
+        self.basenames.(mnc) = inst+1;
+      else
+        User.fullname = User.basename;
+        self.basenames.(mnc) = 0;
+      end
     end
 
     function update_menus(self, f)
