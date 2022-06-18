@@ -149,6 +149,7 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
     if ~isempty(input_cols.info)
       S.info = S.fitdata(:,input_cols.info);
     end
+    S.input_cols = input_cols;
   else
     S.scannum = S.fitdata(:,1);
     S.chi2 = S.fitdata(:,4);

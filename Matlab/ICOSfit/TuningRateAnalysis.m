@@ -1,4 +1,4 @@
-function TuningRateAnalysis(PTEfile,scan_stride,sample_stride)
+function A = TuningRateAnalysis(PTEfile,scan_stride,sample_stride)
 % TuningRateAnalysis(PTEfile);
 % TuningRateAnalysis(PTEfile,scan_stride);
 % TuningRateAnalysis(PTEfile,scan_stride,sample_stride);
@@ -27,11 +27,11 @@ S1 = wvs.NetSamples - wvs.TzSamples;
 S = S0:sample_stride:S1;
 scans_idx = 1:scan_stride:size(PTE,1);
 scans = PTE(scans_idx,1);
-if length(scans)*length(S) > 5e6
-  fprintf(1,'Requested scans*samples = %d*%d = %.2e.\nConsider increasing the scan_stride or sample_stride\n', ...
-    length(scans),length(S),length(scans)*length(S));
-  return;
-end
+% if length(scans)*length(S) > 5e6
+%   fprintf(1,'Requested scans*samples = %d*%d = %.2e.\nConsider increasing the scan_stride or sample_stride\n', ...
+%     length(scans),length(S),length(scans)*length(S));
+%   return;
+% end
 x = (S - S0)/1000;
 x1 = ones(1,length(x));
 dFNdx = PTE(scans_idx,6)*x1 + ...
@@ -67,11 +67,16 @@ ddFNdx = 100*(dFNdx - mean_dFNdx)./mean_dFNdx;
 % c.Label.String = 'Percent Deviation from Mean';
 % shg;
 %%
-figure;
-mesh(S,PTE(scans_idx,1),ddFNdx);
-xlabel('Sample Number');
-ylabel('Scan Number');
-title('Percent deviation from Mean');
+% figure;
+% mesh(S,PTE(scans_idx,1),ddFNdx);
+% xlabel('Sample Number');
+% ylabel('Scan Number');
+% title('Percent deviation from Mean');
+if nargout > 0
+  A.Sample = S;
+  A.ScanNum = PTE(scans_idx,1);
+  A.ddFNdx = ddFNdx;
+end
 %%
 stds = std(ddFNdx,0,2);
 stdsmini = find(stds == min(stds),1);
