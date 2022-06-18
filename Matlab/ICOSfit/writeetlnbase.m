@@ -1,8 +1,8 @@
 function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
-   c_vector, periods, scannum, outputdir )
+   c_vector, periods, scannum, outputdir, margin )
 % [ nu_out, Vout ] = ...
 %    writeetlnbase( name, poly_coeffs, c_nu, c_vector ...
-%        [, periods[,scannum[,outputdir]]] );
+%        [, periods[,scannum[,outputdir[,margin]]]] );
 %
 % Creates sbase.<name>.ptb specifying a baseline
 % function containing a polynomial of sample number, an arbitrary
@@ -35,13 +35,18 @@ function [ nu_out, Vout ] = writeetlnbase( name, p_coeffs, c_nu, ...
 %
 % I will use the fitline lines to determine a
 % suitably large range for nu in the fit.
+% 
+% margins, if specified define the margin outside the fitline line centers.
+% The value is in wavenumbers.
 lo = fitline('load');
 lines = lo.lines; % depends on fitline update
 nuc = zeros(length(lines),1);
 for i=1:length(lines)
   nuc(i) = lines(i).hitran(1,3);
 end
-margin = .4; % Long enough? Should probably be based on width
+if nargin < 8
+  margin = .7; % Long enough? Should probably be based on width
+end
 res = 5e-4;
 nu_min = min(nuc)-margin;
 nu_max = max(nuc)+margin+res;
