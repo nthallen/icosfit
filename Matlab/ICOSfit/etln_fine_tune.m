@@ -23,6 +23,9 @@ classdef etln_fine_tune < handle
       if nargin < 3; obase_suffix = 'f'; end
       eft.verbose = false;
       eft.PTE = load(PTEfile);
+      if size(eft.PTE,2) <= 17
+        error('PTE file does not include power parameters.')
+      end
       eft.ibase = find_scans_dir;
       eft.obase = [ eft.ibase obase_suffix ];
       if nargin < 2 || isempty(scans)
