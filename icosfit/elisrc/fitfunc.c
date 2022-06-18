@@ -307,13 +307,15 @@ int fitdata::n_input_params = fitdata::n_base_input_params;
 /**
   @param ofp Output FILE pointer for ICOSsum.dat
   @param vofp Output FILE pointer for verbose scan data if requested
-  @param fileno The scan number
+  @param fileno The (first) scan number
+  @param last The last scan number (relevant when coadding)
+  @param pv The parameter vector
   Write the fit results. This function is used for the final fit
   as well as intermediate results (verbose & 8). It writes a single
   line to the ICOSsum.dat file and, if verbose & 1,
   also generates a separate verbose scan fit file.
  */
-void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
+void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, int last, ICOS_Float *pv) {
   int i;
   if ( vofp != 0 ) {
     // Write verbose output file
@@ -371,10 +373,10 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
     int n_i_p = 6;
     nl_assert( ScanNum_col == 1 );
     if (GlobalData.PTE_coadd) {
-      fprintf(ofp, "%6d %6d", PTf->ScanNum, PTf->LastScan);
+      fprintf(ofp, "%6d %6d", fileno, last);
       ++n_i_p;
     } else {
-      fprintf(ofp, "%d", PTf->ScanNum);
+      fprintf(ofp, "%d", fileno);
     }
         
     fprintf( ofp, " %6.2lf %6.2lf %12.5le %d %d",
@@ -424,13 +426,13 @@ void fitdata::lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv) {
 
 void fitdata::write() {
   FILE *fp = (verbose&1) ? IFile->writefp(PTf->ScanNum) : 0;
-  this->lwrite(IFile->ofp, fp, PTf->ScanNum, p);
+  this->lwrite(IFile->ofp, fp, PTf->ScanNum, PTf->LastScan, p);
 }
 
 void fitdata::vwrite(ICOS_Float *pv, ICOS_Float *J) {
   if (verbose & 8) {
     FILE *vvfp = pathopen( vmlf->fpath, "%04d.dat", vctr );
-    lwrite(vfp, vvfp, vctr, pv);
+    lwrite(vfp, vvfp, vctr, vctr, pv);
     if ( verbose & 0x10 ) {
       FILE *vvfp = pathopen( vmlf->fpath, "%04d.jac", vctr );
       int i, j;
