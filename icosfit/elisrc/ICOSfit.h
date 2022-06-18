@@ -7,8 +7,8 @@
 #include "levmar_func.h"
 #include "ptread.h"
 
-#define ICOSFIT_VERSION "4.3.1" FLOAT_STYLE
-#define ICOSFIT_VERSION_DATE "4/21/2022"
+#define ICOSFIT_VERSION "4.3.2" FLOAT_STYLE
+#define ICOSFIT_VERSION_DATE "5/8/2022"
 
 class fitdata {
   public:
@@ -17,7 +17,7 @@ class fitdata {
     void handle_restart( const char *ofname );
     int fit();
     void write();
-    void lwrite(FILE *ofp, FILE *vofp, int fileno, ICOS_Float *pv);
+    void lwrite(FILE *ofp, FILE *vofp, int fileno, int last, ICOS_Float *pv);
     void vwrite(ICOS_Float *pv, ICOS_Float *J);
     FILE *pathopen( const char *path, const char *format, int fileno );
     int adjust_params(adjust_event when);
