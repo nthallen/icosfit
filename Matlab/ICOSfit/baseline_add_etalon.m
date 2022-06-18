@@ -1,5 +1,10 @@
 function pmax_out = baseline_add_etalon(base, oname, scans, periods, maxf, outputdir, k)
 % baseline_add_etalon(base, oname[, scans[,periods[,maxf[,outputdir]]]])
+% Analyzes the fit specified by base, performing a DFT on the fit residuals
+% and generating a plot to help identify key frequencies that should be
+% fit. Optionally generates a new baseline file incorporating the largest
+% frequency component.
+%
 % base is the output directory of an icosfit run
 % oname is the baseline name fragment. Output is written to
 %   'sbase.oname.ptb'.
@@ -10,8 +15,23 @@ function pmax_out = baseline_add_etalon(base, oname, scans, periods, maxf, outpu
 % The scans in the icosfit run must be numbered monitonically, either
 % increasing or decreasing.
 %
-% The 'frequency' is in cm and the period is in cm-1. The cm-1 values are
-% most readily 'readable' in an rrfit plot, so that is what I will return.
+% periods is empty or a vector of etalon periods in cm-1. These are used to
+% indicate in the DFT plot where etalons have previously been added. Note
+% that the 'frequency' is in cm and the period is in cm-1. The cm-1 values
+% are most readily 'readable' in an rrfit plot, so that is what I will
+% use.
+%
+% maxf is an optional limit on the maximum frequency for the DFT. This
+% could be informed by the minimum line widths, although I don't yet know
+% what the exact relations ship should be. Presumably 1/(4*min(HWHM)) would
+% be the frequency that most closely matches the narrowest line, but
+% somewhat higher frequencies are still likely to affect a line. Perhaps 5X
+% or 10X higher would be a good guess.
+%
+% outputdir is used when the baseline is being written to another
+% directory, as is true in baseline_optimizer.
+%
+% k is the skew matrix scale factor.
 S = ICOS_setup(base);
 n_scans = length(S.scannum);
 scani = 1:n_scans;
@@ -51,6 +71,13 @@ if n_base_params ~= S.n_base_params
   error('n_base_params do not agree');
 end
 
+% Identify line widths and consider limiting the maxf to an order of
+% magnitude beyond the minimum width. (That is only a valid limitation if
+% the run explores the full range of pressures.)
+lfreq =  1./(4*[max(S.Gvcalc);min(S.Gvcalc)]);
+mfreq = mean(lfreq);
+dfreq = diff(lfreq)/2;
+
 n_scans = length(scani);
 D = load(mlf_path(base,S.scannum(1)));
 min_freq = 1/abs(D(1,2)-D(end,2));
@@ -84,6 +111,13 @@ if isempty(oname)
     hold on;
     plot(x,y,'g');
   end
+  % Display line widths
+  Yvals = linspace(yrange(2),0,length(lfreq)+2);
+  hold on;
+  errorbar(mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
+  hold off;
+  grid on;
+
   title(sprintf('%s: Largest etalon at %.1f cm (%.2f cm^{-1})', ...
     base, fmax, 1/fmax));
   xlabel('cm');
