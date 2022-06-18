@@ -117,7 +117,7 @@ classdef baseline_optimizer < icosfit_optimizer
         if isempty(t{2})
           nr = 1;
         else
-          nr = str2num(t{2});
+          nr = str2double(t{2});
         end
         newname = sprintf('%s%dr',t{1},nr+1);
       else
