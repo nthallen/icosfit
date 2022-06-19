@@ -90,7 +90,7 @@ classdef icosfit_optimizer < handle
       end
     end
     
-    function iterate(self, name, value, varargin)
+    function iterate(self, name, value, User, varargin)
       % create new config file with given parameters
       cfgfile = [ self.opt.mnemonic '/' 'icosfit.' name ];
       odir = [ self.opt.mnemonic '/' 'ICOSout.' name ];
@@ -132,8 +132,11 @@ classdef icosfit_optimizer < handle
           ssix = round(linspace(1, length(scans), self.opt.nscans));
           scans = scans(ssix);
         end
-        BaselineMnc = [ self.opt.mnemonic '_ss' ];
-        BaselineFile = [ 'sbase.' BaselineMnc '.ptb' ];
+        % BaselineMnc = [ self.opt.mnemonic '_ss' ];
+        % BaselineFile = [ 'sbase.' BaselineMnc '.ptb' ];
+        BaselineMnc = regexp(varargs.BaselineFile,'sbase\.(.*)\.ptb','tokens');
+        BaselineMnc = [BaselineMnc{1}{1} '_ss'];
+        BaselineFile = [self.opt.mnemonic '/sbase.' BaselineMnc '.ptb'];
         PTEFile = [ varargs.PTEFile ' + nu_F0' ];
         for i=1:length(scans)
           scan = scans(i);
@@ -144,22 +147,22 @@ classdef icosfit_optimizer < handle
             allopts{:}, ...
             'PTEFile', PTEFile, ...
             'ScanNumRange', SR, ...
-            'BaselineFile', [ self.opt.mnemonic '/' BaselineFile], ...
+            'BaselineFile', BaselineFile, ...
             'Threshold', '1e-3', ...
             'OutputDir', odir);
           self.run_icosfit(cfgfile);
         end
       end
       % add the fit to the survey
-      self.add_run_to_survey(odir, value, name);
+      self.add_run_to_survey(odir, value, name, User);
     end
     
-    function add_run_to_survey(self, odir, value, name)
+    function add_run_to_survey(self, odir, value, name, User)
       % IO.add_run_to_survey(odir, value, name);
       % Adds the specified output directory to the survey
       % using the given value and name.
       new_svy = ...
-        struct('base',odir,'value',value,'text',name,'User',[]);
+        struct('base',odir,'value',value,'text',name,'User',User);
       if isempty(self.survey)
         self.survey = new_svy;
       else

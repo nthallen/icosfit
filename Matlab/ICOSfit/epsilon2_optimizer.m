@@ -18,7 +18,7 @@ classdef epsilon2_optimizer < icosfit_optimizer
     function add_values(eps2, values)
       for i = 1:length(values)
         text = sprintf('%.0e',values(i));
-        eps2.iterate(text, values(i), 'epsilon2', text);
+        eps2.iterate(text, values(i), 'epsilon2', text, []);
       end
     end
     

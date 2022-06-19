@@ -18,7 +18,7 @@ classdef maxiterations_optimizer < icosfit_optimizer
     function add_values(maxi, values)
       for i = 1:length(values)
         text = sprintf('%d',values(i));
-        maxi.iterate(text, values(i), 'MaxIterations', text);
+        maxi.iterate(text, values(i), 'MaxIterations', text, []);
       end
     end
     

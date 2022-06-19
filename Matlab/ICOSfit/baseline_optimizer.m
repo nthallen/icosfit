@@ -54,10 +54,9 @@ classdef baseline_optimizer < icosfit_optimizer
         self.opt.mnemonic);
       % create new config file, run the fit and add to the survey
       value = length(self.survey)+1;
-      self.iterate(name, value, ...
+      self.iterate(User.fullname, value, User, ...
         'BaselineFile', ...
-          [ self.opt.mnemonic '/' 'sbase.' name '.ptb' self.input ]);
-      self.survey(end).User = User;
+          [ self.opt.mnemonic '/' 'sbase.' User.fullname '.ptb' self.input ]);
     end
     
     function period_out = analyze_etalons(self, maxf, oname)
@@ -85,7 +84,8 @@ classdef baseline_optimizer < icosfit_optimizer
         self.etalon_maxf = maxf;
       end
       User = self.survey(self.IR.inp_idx).User;
-      period = baseline_add_etalon(self.survey(end).base, oname, ...
+      base = self.survey(self.IR.inp_idx).base;
+      period = baseline_add_etalon(base, oname, ...
         [], User.periods, maxf, self.opt.mnemonic, self.k);
       if nargout > 0
         period_out = period;
@@ -114,10 +114,9 @@ classdef baseline_optimizer < icosfit_optimizer
       %self.n_etalons = self.n_etalons+1;
       %self.etalon_periods(self.n_etalons) = period;
       value = length(self.survey)+1;
-      self.iterate(User.fullname, value, ...
+      self.iterate(User.fullname, value, User, ...
         'BaselineFile', ...
           [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input ]);
-      self.survey(end).User = User;
     end
     
     function rescale_baseline(self)
@@ -134,28 +133,11 @@ classdef baseline_optimizer < icosfit_optimizer
       User.recaled = User.rescaled+1;
       User = self.update_user_names(User);
 
-      %name = OptB.survey(end).text;
-      %t = regexp(name,'^(.*[^0-9r])([0-9]*)(r?)$','tokens');
-      %t = t{1};
-%       if strcmp(t{3},'r')
-%         if isempty(t{2})
-%           nr = 1;
-%         else
-%           nr = str2double(t{2});
-%         end
-%         newname = sprintf('%s%dr',t{1},nr+1);
-%       else
-%         if ~isempty(t{2})
-%           error('Run name "%s" ends in digits', name);
-%         end
-%         newname = [ name 'r' ];
-%       end
       baseline_rescale(User.base, User.fullname, [], self.opt.mnemonic);
       value = length(self.survey)+1;
-      self.iterate(User.fullname, value, ...
+      self.iterate(User.fullname, value, User, ...
         'BaselineFile', ...
           [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input]);
-      self.survey(end).User = User;
     end
 
     function User = update_user_names(self, User)
