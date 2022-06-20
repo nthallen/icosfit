@@ -91,7 +91,13 @@ classdef baseline_optimizer < icosfit_optimizer
         period_out = period;
       end
     end
-    
+ 
+    function period_out = analyze_etalons2(self, npeaks)
+      if nargin < 2; npeaks = []; end
+      BEA = baseline_etalon_analyzer(self);
+      BEA.analyze(npeaks);
+    end
+
     function add_etalon(self, maxf)
       % OptB.add_etalon([maxf])
       % Calls analyze_etalons and operates on the results.
@@ -184,6 +190,8 @@ classdef baseline_optimizer < icosfit_optimizer
         @(src,evt)self.analyze_scaling());
       uimenu(me,'Text','Etalons','Callback', ...
         @(src,evt)self.analyze_etalons());
+      uimenu(me,'Text','Etalons2','Callback', ...
+        @(src,evt)self.analyze_etalons2());
       me = uimenu(f,'Text','Operations');
       uimenu(me,'Text','Rescale','Callback', ...
         @(src,evt)self.rescale_baseline());

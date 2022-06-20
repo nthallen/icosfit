@@ -11,7 +11,7 @@ classdef baseline_etalon_analyzer < handle
     end
 
     function periods = analyze(self, npeaks)
-      if nargin < 2
+      if nargin < 2 || isempty(npeaks) || npeaks == 0
         npeaks = self.npeaks;
       end
       % baseline_add_etalon(base, oname[, scans[,periods]])
@@ -95,9 +95,9 @@ classdef baseline_etalon_analyzer < handle
       min_freq = 1/abs(D(1,2)-D(end,2));
       max_freq = min(1/mean(abs(diff(D(:,2))))/2, ...
         2/min(mean(S.Gv)));
-      if maxf > 0
-        max_freq = min(max_freq, maxf);
-      end
+%       if maxf > 0
+%         max_freq = min(max_freq, maxf);
+%       end
       freq = linspace(min_freq,max_freq,1024);
       % DFT = zeros(length(f),n_scans);
       DFT = zeros(length(freq),1);
@@ -118,19 +118,19 @@ classdef baseline_etalon_analyzer < handle
       for i = 1:N
         x = peakx(i);
         abshghts(i) = DFT(i);
-        ileft = find([-1,dmag(1:x-1)]<0,1,'last');
-        iright = find([dmag(x:end),1]>0,1)+x-1;
+        ileft = find([-1;dmag(1:x-1)]<0,1,'last');
+        iright = find([dmag(x:end);1]>0,1)+x-1;
         % hghts(i) = mag(x)-min(mag([ileft iright]));
-        bmag = min(mag([ileft iright]));
-        hghts(i) = (mag(x)-bmag)/bmag;
+        bmag = min(DFT([ileft iright]));
+        hghts(i) = (DFT(x)-bmag)/bmag;
       end
       %
       [H,I] = sort(-hghts);
       X = peakx(I);
 
-      figure;
       yrange = [0 max(max(DFT))*1.1];
-      plot(freq,DFT,X(1:npeaks),DFT(X(1:npeaks),'*'));
+      figure;
+      plot(freq,DFT,freq(X(1:npeaks)),DFT(X(1:npeaks)),'*');
       if ~isempty(periods)
         freqs = 1./periods;
         x = [freqs;freqs];
