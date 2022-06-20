@@ -26,7 +26,7 @@ S0 = PTE(1,4);
 S1 = wvs.NetSamples - wvs.TzSamples;
 S = S0:sample_stride:S1;
 scans_idx = 1:scan_stride:size(PTE,1);
-scans = PTE(scans_idx,1);
+% scans = PTE(scans_idx,1);
 % if length(scans)*length(S) > 5e6
 %   fprintf(1,'Requested scans*samples = %d*%d = %.2e.\nConsider increasing the scan_stride or sample_stride\n', ...
 %     length(scans),length(S),length(scans)*length(S));

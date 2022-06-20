@@ -17,9 +17,9 @@ classdef baseline_etalon_analyzer < handle
       % baseline_add_etalon(base, oname[, scans[,periods]])
       survey = self.BOpt.survey(self.BOpt.IR.inp_idx);
       base = survey.base;
-      S = ICOS_setup(base);
-      scans = S.scannum;
-      % periods = survey.User.periods;
+      % S = ICOS_setup(base);
+      % scans = S.scannum;
+      periods = survey.User.periods;
 
       % Analyzes the fit specified by base, performing a DFT on the fit residuals
       % and generating a plot to help identify key frequencies that should be
@@ -55,26 +55,17 @@ classdef baseline_etalon_analyzer < handle
       % k is the skew matrix scale factor.
       S = ICOS_setup(base);
       n_scans = length(S.scannum);
-      scani = 1:n_scans;
-      if nargin < 2, oname = ''; end
-      if nargin >= 3 && ~isempty(scans)
-        scani = interp1(S.scannum,scani,scans,'nearest');
-      end
-      if nargin < 4
-        periods = [];
-      elseif ~isempty(periods)
+      % scani = 1:n_scans;
+      if ~isempty(periods)
         if ~isvector(periods)
           error('periods input must be a vector or empty');
         elseif iscolumn(periods)
           periods = periods';
         end
       end
-      if nargin < 5, maxf = 0; end
-      if nargin < 6, outputdir = ''; end
-      if nargin < 7, k = 1; end
 
       % Load the existing baseline and perform sanity checks
-      [nu, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
+      [~, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
       if Ptype ~= 0
         error('Cannot currently rescale polynomials of nu');
       end
@@ -99,7 +90,7 @@ classdef baseline_etalon_analyzer < handle
       mfreq = mean(lfreq);
       dfreq = diff(lfreq)/2;
 
-      n_scans = length(scani);
+      % n_scans = length(scani);
       D = load(mlf_path(base,S.scannum(1)));
       min_freq = 1/abs(D(1,2)-D(end,2));
       max_freq = min(1/mean(abs(diff(D(:,2))))/2, ...
@@ -107,21 +98,55 @@ classdef baseline_etalon_analyzer < handle
       if maxf > 0
         max_freq = min(max_freq, maxf);
       end
-      f = linspace(min_freq,max_freq,1024);
+      freq = linspace(min_freq,max_freq,1024);
       % DFT = zeros(length(f),n_scans);
-      DFT = zeros(length(f),1);
+      DFT = zeros(length(freq),1);
       for i=1:n_scans
         D = load(mlf_path(base,S.scannum(i)));
-        % DFT(:,i) = abs(dft(D(:,2),(D(:,4)-D(:,3)),f));
-        DFT = DFT + abs(dft(D(:,2),(D(:,4)-D(:,3)),f));
+        DFT = DFT + abs(dft(D(:,2),(D(:,4)-D(:,3)),freq));
       end
-
-      % mDFT = mean(DFT,2);
       DFT = DFT/n_scans;
-      mDFT = DFT;
-      fmax = f(find(mDFT==max(mDFT),1));
-      pmax = 1/fmax;
 
+      % Look for local maxima. Then we could evaluate based on height
+      % relative to the local background or absolute height.
+      dmag = diff(DFT);
+      peakx = find(dmag(1:end-1)>0 & dmag(2:end)<0)+1;
+      % Now for each local maxima, measure the height relative to the background
+      N = length(peakx);
+      abshghts = zeros(1,N);
+      hghts = zeros(1,N);
+      for i = 1:N
+        x = peakx(i);
+        abshghts(i) = DFT(i);
+        ileft = find([-1,dmag(1:x-1)]<0,1,'last');
+        iright = find([dmag(x:end),1]>0,1)+x-1;
+        % hghts(i) = mag(x)-min(mag([ileft iright]));
+        bmag = min(mag([ileft iright]));
+        hghts(i) = (mag(x)-bmag)/bmag;
+      end
+      %
+      [H,I] = sort(-hghts);
+      X = peakx(I);
+
+      figure;
+      yrange = [0 max(max(DFT))*1.1];
+      plot(freq,DFT,X(1:npeaks),DFT(X(1:npeaks),'*'));
+      if ~isempty(periods)
+        freqs = 1./periods;
+        x = [freqs;freqs];
+        y = yrange'*ones(size(periods));
+        hold on;
+        plot(x,y,'g');
+      end
+      % Display line widths
+      Yvals = linspace(yrange(2),0,length(lfreq)+2);
+      hold on;
+      errorbar(mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
+      hold off;
+      grid on;
+
+      title(sprintf('%s', base));
+      xlabel('cm');
     end
   end
 end

@@ -112,7 +112,7 @@ if isempty(oname)
     plot(x,y,'g');
   end
   % Display line widths
-  Yvals = linspace(yrange(2),0,length(lfreq)+2);
+  Yvals = linspace(yrange(2),0,length(mfreq)+2);
   hold on;
   errorbar(mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
   hold off;

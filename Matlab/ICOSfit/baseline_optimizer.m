@@ -129,11 +129,12 @@ classdef baseline_optimizer < icosfit_optimizer
         fprintf(1,'No data to analyze\n');
         return;
       end
-      User = self.survey(self.IR.inp_idx).User;
-      User.recaled = User.rescaled+1;
+      survey = self.survey(self.IR.inp_idx);
+      User = survey.User;
+      User.rescaled = User.rescaled+1;
       User = self.update_user_names(User);
 
-      baseline_rescale(User.base, User.fullname, [], self.opt.mnemonic);
+      baseline_rescale(survey.base, User.fullname, [], self.opt.mnemonic);
       value = length(self.survey)+1;
       self.iterate(User.fullname, value, User, ...
         'BaselineFile', ...
