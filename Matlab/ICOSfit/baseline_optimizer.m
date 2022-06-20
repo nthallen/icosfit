@@ -124,6 +124,24 @@ classdef baseline_optimizer < icosfit_optimizer
         'BaselineFile', ...
           [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input ]);
     end
+
+    function add_etalon_periods(self, survey_idx, new_periods)
+      % OptB.add_etalon(new_periods)
+      if isempty(self.survey)
+        fprintf(1,'No data to analyze\n');
+        return;
+      end
+      User = self.survey(self.IR.inp_idx).User;
+      User.periods = [ User.periods new_periods ];
+      User.rescaled = 0;
+      User = self.update_user_names(User);
+
+      value = length(self.survey)+1;
+      error('Need to create the baseline file here');
+      self.iterate(User.fullname, value, User, ...
+        'BaselineFile', ...
+          [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input ]);
+    end
     
     function rescale_baseline(self)
       % OptB.rescale_baseline()

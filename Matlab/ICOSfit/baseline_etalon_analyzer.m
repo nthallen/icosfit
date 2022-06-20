@@ -1,13 +1,29 @@
 classdef baseline_etalon_analyzer < handle
   properties
     BOpt
+    survey_idx
     npeaks
+    fig
+    ax
+    uiT
+    btn
+    yrange
+    select_lines
+    enabled
   end
 
   methods
     function self = baseline_etalon_analyzer(BOpt)
       self.BOpt = BOpt;
+      self.survey_idx = self.BOpt.IR.inp_idx;
       self.npeaks = 10;
+      self.fig = [];
+      self.ax = [];
+      self.uiT = [];
+      self.btn = [];
+      self.yrange = [];
+      select_lines = [];
+      self.enabled = false;
     end
 
     function periods = analyze(self, npeaks)
@@ -15,7 +31,7 @@ classdef baseline_etalon_analyzer < handle
         npeaks = self.npeaks;
       end
       % baseline_add_etalon(base, oname[, scans[,periods]])
-      survey = self.BOpt.survey(self.BOpt.IR.inp_idx);
+      survey = self.BOpt.survey(self.survey_idx);
       base = survey.base;
       % S = ICOS_setup(base);
       % scans = S.scannum;
@@ -114,7 +130,7 @@ classdef baseline_etalon_analyzer < handle
       % Now for each local maxima, measure the height relative to the background
       N = length(peakx);
       abshghts = zeros(1,N);
-      hghts = zeros(1,N);
+      hghts = zeros(N,1);
       for i = 1:N
         x = peakx(i);
         abshghts(i) = DFT(i);
@@ -125,28 +141,104 @@ classdef baseline_etalon_analyzer < handle
         hghts(i) = (DFT(x)-bmag)/bmag;
       end
       %
-      [H,I] = sort(-hghts);
-      X = peakx(I);
+      [Rel,I] = sort(-hghts);
+      [~,J] = sort(I(1:npeaks));
+      Idx(J) = 1:npeaks;
+      if ~iscolumn(Idx); Idx = Idx'; end
+      X = peakx(I(1:npeaks));
+      Freq = freq(X)';
+      Abs = DFT(X);
+      Add = logical(zeros(size(X)));
+      Rel = Rel(1:npeaks);
 
       yrange = [0 max(max(DFT))*1.1];
-      figure;
-      plot(freq,DFT,freq(X(1:npeaks)),DFT(X(1:npeaks)),'*');
+      fig = uifigure;
+      fig.Position(3) = 800;
+      
+      g = uigridlayout(fig);
+      g.RowHeight = {'1x'};
+      g.ColumnWidth = {'1x','fit'};
+      ax = uiaxes(g);
+      semilogx(ax,freq,DFT,freq(X(1:npeaks)),DFT(X(1:npeaks)),'*');
       if ~isempty(periods)
         freqs = 1./periods;
         x = [freqs;freqs];
         y = yrange'*ones(size(periods));
-        hold on;
-        plot(x,y,'g');
+        hold(ax,'on');
+        plot(ax,x,y,'g');
       end
       % Display line widths
       Yvals = linspace(yrange(2),0,length(lfreq)+2);
-      hold on;
-      errorbar(mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
-      hold off;
-      grid on;
+      hold(ax,'on');
+      errorbar(ax,mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
+      hold(ax,'off');
+      grid(ax,'on');
 
-      title(sprintf('%s', base));
-      xlabel('cm');
+      title(ax,sprintf('%s', base));
+      xlabel(ax,'cm');
+
+      gg = uigridlayout(g);
+      gg.RowHeight = {'fit','1x','fit'};
+      gg.ColumnWidth = {'fit'};
+      T = table(Idx,Freq,Abs,Rel,Add);
+      uiT = uitable(gg,'Data',T);
+      uiT.ColumnSortable = true;
+      uiT.ColumnEditable = [false false false false true];
+      uiT.ColumnWidth = 'fit';
+      self.fig = fig;
+      self.ax = ax;
+      self.uiT = uiT;
+      self.yrange = yrange;
+      self.select_lines = cell(npeaks,1);
+      uiT.DisplayDataChangedFcn = @(src,evt)self.update_choices(src,evt);
+
+      btn = uibutton(gg,'Text','Add Selected Frequencies');
+      btn.Layout.Row = 3;
+      btn.ButtonPushedFcn = @(src,evt)self.add_selected();
+      btn.Enable = 'off';
+      self.btn = btn;
+      % pause;
     end
+
+    function update_choices(self, src, evt)
+      for i = 1:self.npeaks
+        if self.uiT.Data.Add(i)
+          idx = self.uiT.Data.Idx(i);
+          if isempty(self.select_lines{idx})
+            hold(self.ax,'on');
+            freq = self.uiT.Data.Freq(i);
+            self.select_lines{idx} = ...
+              plot(self.ax,[freq freq],self.yrange,'r');
+          end
+        else
+          idx = self.uiT.Data.Idx(i);
+          if ~isempty(self.select_lines{idx})
+            delete(self.select_lines{idx});
+            self.select_lines{idx} = [];
+          end
+        end
+      end
+      if self.enabled && ~any(self.uiT.Data.Add)
+        self.btn.Enable = 'off';
+        self.enabled = true;
+      elseif ~self.enabled && any(self.uiT.Data.Add)
+        self.btn.Enable = 'on';
+        self.enabled = false;
+      end
+    end
+
+    function add_selected(self)
+      fprintf(1,'Add Selected\n');
+      ix = find(self.uiT.Data.Add);
+      freqs = self.uiT.Data.Freq(ix);
+      fprintf(1,'Adding %d frequencies:', length(freqs));
+      fprintf(1, ' %f', freqs);
+      self.btn.Enable = 'off';
+      self.uiT.ColumnEditable = false;
+      self.enabled = false;
+      periods = 1./freqs;
+      self.BOpt.add_etalon_periods(self.survey_idx, periods);
+    end
+  
   end
 end
