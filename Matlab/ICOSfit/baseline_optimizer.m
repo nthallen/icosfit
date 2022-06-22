@@ -131,13 +131,52 @@ classdef baseline_optimizer < icosfit_optimizer
         fprintf(1,'No data to analyze\n');
         return;
       end
-      User = self.survey(self.IR.inp_idx).User;
+      if ~isempty(new_periods)
+        if ~isvector(new_periods)
+          error('new_periods input must be a vector or empty');
+        elseif iscolumn(new_periods)
+          new_periods = new_periods';
+        end
+      end
+      srvy = self.survey(survey_idx);
+      S = ICOS_setup(srvy.base);
+
+      User = srvy.User;
       User.periods = [ User.periods new_periods ];
       User.rescaled = 0;
       User = self.update_user_names(User);
 
+      % Load the existing baseline and perform sanity checks
+      [nu, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
+      if Ptype ~= 0
+        error('Cannot currently rescale polynomials of nu');
+      end
+      if p_coeffs ~= length(PV)
+        error('p_coeffs ~= length(PV)');
+      end
+      n_base_params = p_coeffs;
+      if ~isempty(vectors)
+        n_base_params = n_base_params + 1 + size(vectors,2);
+      end
+      if endsWith(S.output_cols{S.n_input_params+1},' Value: k_input')
+        n_base_params = n_base_params + 1;
+      end
+      if n_base_params ~= S.n_base_params
+        error('n_base_params do not agree');
+      end
+      if ~isempty(vectors)
+        % This is necessary because writeetlnbase divides by k, but
+        % readetlnbase does not multiply by k.
+        vectors = vectors*self.k;
+      end
+
+      fprintf(1,'Writing base %s, new_periods:', User.fullname);
+      fprintf(1,' %f', new_periods);
+      fprintf(1,'\n');
+      
+      writeetlnbase(User.fullname,PV,nu,vectors,new_periods,[],self.opt.mnemonic);
+
       value = length(self.survey)+1;
-      error('Need to create the baseline file here');
       self.iterate(User.fullname, value, User, ...
         'BaselineFile', ...
           [ self.opt.mnemonic '/sbase.' User.fullname '.ptb' self.input ]);

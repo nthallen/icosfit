@@ -22,21 +22,11 @@ classdef baseline_etalon_analyzer < handle
       self.uiT = [];
       self.btn = [];
       self.yrange = [];
-      select_lines = [];
+      % select_lines = [];
       self.enabled = false;
     end
 
     function periods = analyze(self, npeaks)
-      if nargin < 2 || isempty(npeaks) || npeaks == 0
-        npeaks = self.npeaks;
-      end
-      % baseline_add_etalon(base, oname[, scans[,periods]])
-      survey = self.BOpt.survey(self.survey_idx);
-      base = survey.base;
-      % S = ICOS_setup(base);
-      % scans = S.scannum;
-      periods = survey.User.periods;
-
       % Analyzes the fit specified by base, performing a DFT on the fit residuals
       % and generating a plot to help identify key frequencies that should be
       % fit. Optionally generates a new baseline file incorporating the largest
@@ -69,6 +59,17 @@ classdef baseline_etalon_analyzer < handle
       % directory, as is true in baseline_optimizer.
       %
       % k is the skew matrix scale factor.
+      if nargin < 2 || isempty(npeaks) || npeaks == 0
+        npeaks = self.npeaks;
+      end
+      survey = self.BOpt.survey(self.survey_idx);
+      base = survey.base;
+      periods = survey.User.periods;
+
+      fprintf(1,'analyze %s: existing periods:', base);
+      fprintf(1,' %f',periods);
+      fprintf(1,'\n');
+      
       S = ICOS_setup(base);
       n_scans = length(S.scannum);
       % scani = 1:n_scans;
@@ -78,25 +79,6 @@ classdef baseline_etalon_analyzer < handle
         elseif iscolumn(periods)
           periods = periods';
         end
-      end
-
-      % Load the existing baseline and perform sanity checks
-      [~, vectors,p_coeffs,Ptype,PV,~] = readetlnbase(S.BaselineFile);
-      if Ptype ~= 0
-        error('Cannot currently rescale polynomials of nu');
-      end
-      if p_coeffs ~= length(PV)
-        error('p_coeffs ~= length(PV)');
-      end
-      n_base_params = p_coeffs;
-      if ~isempty(vectors)
-        n_base_params = n_base_params + 1 + size(vectors,2);
-      end
-      if endsWith(S.output_cols{S.n_input_params+1},' Value: k_input')
-        n_base_params = n_base_params + 1;
-      end
-      if n_base_params ~= S.n_base_params
-        error('n_base_params do not agree');
       end
 
       % Identify line widths and consider limiting the maxf to an order of
@@ -148,59 +130,54 @@ classdef baseline_etalon_analyzer < handle
       X = peakx(I(1:npeaks));
       Freq = freq(X)';
       Abs = DFT(X);
-      Add = logical(zeros(size(X)));
+      Add = false(size(X));
       Rel = Rel(1:npeaks);
 
-      yrange = [0 max(max(DFT))*1.1];
-      fig = uifigure;
-      fig.Position(3) = 800;
+      self.yrange = [0 max(max(DFT))*1.1];
+      self.fig = uifigure;
+      self.fig.Position(3) = 800;
       
-      g = uigridlayout(fig);
+      g = uigridlayout(self.fig);
       g.RowHeight = {'1x'};
       g.ColumnWidth = {'1x','fit'};
-      ax = uiaxes(g);
-      semilogx(ax,freq,DFT,freq(X(1:npeaks)),DFT(X(1:npeaks)),'*');
+      self.ax = uiaxes(g);
+      semilogx(self.ax,freq,DFT,freq(X(1:npeaks)),DFT(X(1:npeaks)),'*');
       if ~isempty(periods)
         freqs = 1./periods;
         x = [freqs;freqs];
-        y = yrange'*ones(size(periods));
-        hold(ax,'on');
-        plot(ax,x,y,'g');
+        y = self.yrange'*ones(size(periods));
+        hold(self.ax,'on');
+        plot(self.ax,x,y,'g');
       end
       % Display line widths
-      Yvals = linspace(yrange(2),0,length(lfreq)+2);
-      hold(ax,'on');
-      errorbar(ax,mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
-      hold(ax,'off');
-      grid(ax,'on');
+      Yvals = linspace(self.yrange(2),0,length(mfreq)+2);
+      hold(self.ax,'on');
+      errorbar(self.ax,mfreq,Yvals(2:end-1),dfreq,'horizontal','og');
+      hold(self.ax,'off');
+      grid(self.ax,'on');
 
-      title(ax,sprintf('%s', base));
-      xlabel(ax,'cm');
+      title(self.ax,sprintf('%s', base));
+      xlabel(self.ax,'cm');
 
       gg = uigridlayout(g);
       gg.RowHeight = {'fit','1x','fit'};
       gg.ColumnWidth = {'fit'};
       T = table(Idx,Freq,Abs,Rel,Add);
-      uiT = uitable(gg,'Data',T);
-      uiT.ColumnSortable = true;
-      uiT.ColumnEditable = [false false false false true];
-      uiT.ColumnWidth = 'fit';
-      self.fig = fig;
-      self.ax = ax;
-      self.uiT = uiT;
-      self.yrange = yrange;
+      self.uiT = uitable(gg,'Data',T);
+      self.uiT.ColumnSortable = true;
+      self.uiT.ColumnEditable = [false false false false true];
+      self.uiT.ColumnWidth = 'fit';
       self.select_lines = cell(npeaks,1);
-      uiT.DisplayDataChangedFcn = @(src,evt)self.update_choices(src,evt);
+      self.uiT.DisplayDataChangedFcn = @(src,evt)self.update_choices();
 
-      btn = uibutton(gg,'Text','Add Selected Frequencies');
-      btn.Layout.Row = 3;
-      btn.ButtonPushedFcn = @(src,evt)self.add_selected();
-      btn.Enable = 'off';
-      self.btn = btn;
+      self.btn = uibutton(gg,'Text','Add Selected Frequencies');
+      self.btn.Layout.Row = 3;
+      self.btn.ButtonPushedFcn = @(src,evt)self.add_selected();
+      self.btn.Enable = 'off';
       % pause;
     end
 
-    function update_choices(self, src, evt)
+    function update_choices(self)
       for i = 1:self.npeaks
         if self.uiT.Data.Add(i)
           idx = self.uiT.Data.Idx(i);
@@ -231,12 +208,19 @@ classdef baseline_etalon_analyzer < handle
       fprintf(1,'Add Selected\n');
       ix = find(self.uiT.Data.Add);
       freqs = self.uiT.Data.Freq(ix);
-      fprintf(1,'Adding %d frequencies:', length(freqs));
-      fprintf(1, ' %f', freqs);
+      periods = 1./freqs;
+
       self.btn.Enable = 'off';
       self.uiT.ColumnEditable = false;
       self.enabled = false;
-      periods = 1./freqs;
+      drawnow;
+      
+      fprintf(1,'Adding %d frequencies:', length(freqs));
+      fprintf(1, ' %f', freqs);
+      fprintf(1, '\n Periods:');
+      fprintf(1, ' %f', periods);
+      fprintf(1, '\n');
+
       self.BOpt.add_etalon_periods(self.survey_idx, periods);
     end
   

@@ -224,6 +224,11 @@ classdef icosfit_runs < handle
       if isempty(self.f) || ~isgraphics(self.f)
         self.f = figure;
         self.ax = [];
+        if ~isempty(self.Opt)
+          self.f.Name = sprintf('%s: %s',self.Opt.opt.mnemonic, ...
+            self.Opt.opt.cfg_ref);
+          self.f.NumberTitle = 'off';
+        end
       else
         figure(self.f);
       end
