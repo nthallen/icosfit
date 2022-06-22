@@ -69,7 +69,7 @@ classdef baseline_etalon_analyzer < handle
       fprintf(1,'analyze %s: existing periods:', base);
       fprintf(1,' %f',periods);
       fprintf(1,'\n');
-      
+
       S = ICOS_setup(base);
       n_scans = length(S.scannum);
       % scani = 1:n_scans;
@@ -131,7 +131,7 @@ classdef baseline_etalon_analyzer < handle
       Freq = freq(X)';
       Abs = DFT(X);
       Add = false(size(X));
-      Rel = Rel(1:npeaks);
+      Rel = -Rel(1:npeaks);
 
       self.yrange = [0 max(max(DFT))*1.1];
       self.fig = uifigure;
