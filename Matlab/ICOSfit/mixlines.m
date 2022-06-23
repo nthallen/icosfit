@@ -14,7 +14,6 @@ function [ Chiout, xout, Pout, lines_out ] = mixlines( base, by_molecule )
 % base/ICOSsum.dat summary
 % base/00/00/00.dat details
 % The line definitions read from base/ICOSconfig.m
-plotlines = 0;
 if nargin < 2
   by_molecule = 1;
 end
@@ -22,17 +21,15 @@ by_time = by_molecule >= 2;
 by_molecule = by_molecule - by_time*2;
 
 run = getrun;
-lines=[];
-n_lines = 0;
-ICOSsetup;
+S = ICOS_setup(base);
 if nargout > 0
-  Chiout = Chi;
+  Chiout = S.Chi;
   if nargout > 1
-    xout = scannum;
+    xout = S.scannum;
     if nargout > 2
-      Pout = P(:,1);
+      Pout = S.P(:,1);
       if nargout > 3
-        lines_out = lines;
+        lines_out = S.lines;
       end
     end
   end
@@ -40,14 +37,14 @@ end
 if by_molecule >= 2
   return;
 end
-col = ones( size(fitdata,1), 1 );
 
 if by_time
-  x = time2d(scantime(scannum));
+  x = time2d(scantime(S.scannum));
 else
-  x = scannum;
+  x = S.scannum;
 end
 
+% col = ones( size(S.fitdata,1), 1 );
 % v_mn is transition energy in cm-1 
 % number 1.438 etc. comes from h*c/k, units are K*cm (should be)
 % vmn = col * nu;
@@ -64,9 +61,9 @@ end
 %  identifying elements of iso that correspond to the unique
 %  isotope at siso(i)
 if by_molecule > 0
-  grp_iso = floor(iso/10)*10;
+  grp_iso = floor(S.iso/10)*10;
 else
-  grp_iso = iso;
+  grp_iso = S.iso;
 end
 siso = sort(grp_iso');
 isos = siso([ 1; find(diff(siso))+1 ]);
@@ -76,12 +73,12 @@ visos = isos * ones(size(grp_iso)) == ones(size(isos))*grp_iso;
 for i = 1:length(isos)
   figure;
   a1 = nsubplot( 4, 1, [3 3], 1 );
-  plot(x, Chi(:,visos(i,:))*1e6*abund(i));
+  plot(x, S.Chi(:,visos(i,:))*1e6*abund(i));
   title([ '[' char(names(i)) ']/[M] ppm ' run '/' base ]);
   ylabel(sprintf('[%s]/[M] ppm', char(names(i))));
   set(gca, 'XTickLabel', [] );
   grid;
-  la = legend( nu_text(visos(i,:),:),'Location','EastOutside');
+  la = legend( S.nu_text(visos(i,:),:),'Location','EastOutside');
   lap = get(la, 'position');
   a1p = get(a1, 'position' );
   a1p(3) = lap(1) - a1p(1);
@@ -91,7 +88,7 @@ for i = 1:length(isos)
   a2p = get(a2,'position');
   a2p(3) = a1p(3);
   set(a2,'position', a2p);
-  plot( x, P );
+  plot( x, S.P );
   ylabel('P Torr');
   set(gca,'YAxisLocation','right');
   grid;
