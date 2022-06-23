@@ -1,80 +1,116 @@
-function hh = ringview( scannum, wavenum, basepath)
-% ringview( [ scannum [, wavenum[, basepath]]]] );
+function hh = ringview(varargin)
+% ringview( [name, value[, name, value]] )
+% 'wavenum' Waveform number
+% 'scannum' Scan number
+% 'base' Base directory for scans (usually not necessary)
+% 'Delay' Delay in seconds before start of fit sample
+% 'FitLength' Length of sample region in seconds
+%
 % Reviews ringdown data.
-if nargin < 3
-    basepath = '';
+scannum = [];
+wavenum = [];
+base = '';
+delay = [];
+fitlength = [];
+% handle options here
+for i=1:2:length(varargin)-1
+  if strcmpi(varargin{i},'scannum')
+    scannum = varargin{i+1};
+  elseif strcmpi(varargin{i},'wavenum')
+    wavenum = varargin{i+1};
+  elseif strcmpi(varargin{i},'base')
+    base = varargin{i+1};
+  elseif strcmpi(varargin{i},'delay')
+    delay = varargin{i+1};
+  elseif strcmpi(varargin{i},'fitlength')
+    fitlength = varargin{i+1};
+  end
 end
-PT = load('PT');
-[Waves,WaveRange] = waves_used;
-cell_cfg=load_cell_cfg;
-v = find(diff(PT.ScanNum))+1; % index of new ScanNum values
-if nargin < 1
-  scannum = [];
-end
-if isempty(scannum)
-  scannum = PT.ScanNum;
-  scannum = min(scannum(scannum > 0)):max(scannum);
+[Waves,WaveRange] = waves_used(scannum);
+waveidx = 0;
+if isempty(wavenum)
+  for i=1:length(Waves)
+    if ~Waves(i).ISICOS
+      wavenum = WaveRange(i).wvno;
+      waveidx = i;
+      break;
+    end
+  end
+elseif isscalar(wavenum)
+  for i=1:length(Waves)
+    if WaveRange(i).wvno == wavenum
+      waveidx = i;
+      break;
+    end
+  end
 else
-  % constrain to within the range of defined values
-  scannum = scannum(scannum > 0 & scannum >= min(PT.ScanNum) & ...
-    scannum <= max(PT.ScanNum));
+  error('Invalid non-scalar wavenum value');
 end
-% Now locate each specified scannum as an index into v, the
-% unique PT.ScanNum entry indexes
-idx = v(ceil(interp1( PT.ScanNum(v), 1:length(v), scannum )));
-% idx is now an array as long as scannum
-% PT.ScanNum(idx) should be equal to scannum except where skipping
-% occurs, and then it should be greater than scannum.
-wavenums = unique(PT.QCLI_Wave(idx));
-wavenumi = struct2cell(WaveRange);
-wavenumi = cell2mat(squeeze(wavenumi(1,:,:)));
+if isempty(wavenum)
+  wavenum = WaveRange(1).wvno;
+  waveidx = 1;
+end
+Waves = Waves(waveidx);
+WaveRange = WaveRange(waveidx);
+nrngs = size(WaveRange.ranges,1);
+rngs = cell(nrngs,1);
+for i=1:nrngs
+  rngs{i} = WaveRange.ranges(i,1):WaveRange.ranges(i,2);
+end
+WaveRange.All = horzcat(rngs{:});
+if isempty(scannum)
+  scannum = horzcat(rngs{:});
+end
+cell_cfg=load_cell_cfg;
 
-roris = ~[ Waves(wavenums==wavenumi).ISICOS ];
-if nargin < 2 || isempty(wavenum)
-  % now find(roris) has the ringdown entries
-  % scannum(find(roris)) are the ones we want
-  % PT.QCLI_Wave(idx(find(roris))) is the wavenum
-  wavenum = wavenums(roris);
-end
-if length(wavenum) > 1
-    error('More than one ringdown waveform (%d%s) implicated: choose one', ...
-        wavenum(1), sprintf(', %d', wavenum(2:end)));
-elseif isempty(wavenum)
-    error('No ringdown waveforms found');
-end
-
-AppData.WaveRange = WaveRange(wavenum==wavenumi).ranges;
-iring=find(PT.QCLI_Wave(idx)==wavenum);
-scannum=scannum(iring);
-idx=idx(iring);
-AppData.Waves = Waves(wavenum==wavenumi);
-AppData.base = find_scans_dir(basepath);
+% AppData.WaveRange = WaveRange(wavenum==wavenumi).ranges;
+%iring=find(PT.QCLI_Wave(idx)==wavenum);
+%scannum=scannum(iring);
+%idx=idx(iring);
+AppData.Waves = Waves;
+AppData.base = find_scans_dir(base);
 AppData.binary = 1;
 if size(scannum,1) > 1; scannum = scannum'; end
 AppData.scannum = scannum;
 AppData.CavityLength = cell_cfg.CavityLength;
-AppData.QCLI_Wave = PT.QCLI_Wave;
-path = mlf_path( AppData.base, AppData.WaveRange(1), '.dat');
-[~, hdr] = loadbin(path);
-AppData.StartSerNum = hdr.SerialNum;
-AppData.idx = idx;
-AppData.wavenum = wavenum;
+%AppData.QCLI_Wave = wavenum;
+%AppData.idx = idx;
+%AppData.wavenum = wavenum;
 %Setup x vector in microsec, correlation shift, and delay.
 %Need to get first scan in range in case x changed.
 path = mlf_path( AppData.base, AppData.scannum(1), '.dat');
-[fe, ~] = loadbin(path);
+[fe, hdr] = loadbin(path);
+AppData.StartSerNum = hdr.SerialNum;
 AppData.Tdata = (AppData.Waves.NAverage/AppData.Waves.RawRate) * ...
     (1:length(fe(:,1)));
 AppData.dt =  AppData.Tdata(1); % mean(diff(xdata));
 AppData.n = 2; % Correlation shift
-TzDelay = AppData.Waves.TzSamples * AppData.Waves.NAverage / ...
-    AppData.Waves.RawRate;
-AppData.delay = TzDelay + 4.5e-6 + 4e-6; %Delay in seconds of the VtoI/electronics
+if Waves.ISICOS
+  AppData.delay = (AppData.Waves.NetSamples - AppData.Waves.TzSamples) * ...
+    AppData.Waves.NAverage / AppData.Waves.RawRate + 4.5e-6 + 10e-6;
+  AppData.FitLength = 50e-6; % in seconds
+else
+  if scannum(1) ~= WaveRange.All(1)
+    path = mlf_path( AppData.base, WaveRange.All(1), '.dat');
+    try
+      [~, hdr] = loadbin(path);
+      AppData.StartSerNum = hdr.SerialNum;
+    catch
+      warning('Unable to load starting scan to initialize ringdown current');
+    end
+  end
+  TzDelay = AppData.Waves.TzSamples * AppData.Waves.NAverage / ...
+      AppData.Waves.RawRate;
+  AppData.delay = TzDelay + 4.5e-6 + 4e-6; %Delay in seconds of the VtoI/electronics
+  AppData.FitLength = 40e-6; % in seconds
+end
+if ~isempty(delay); AppData.delay = delay; end
+if ~isempty(fitlength); AppData.FitLength = fitlength; end
+
 AppData.FitDisplay = 2;
 AppData.TauDisplay = 1;
 AppData.DerivativeSkip = 10;
 AppData.ResidualDisplay = 0;
-AppData.FitLength = 40e-6; % in seconds
 AppData = ringview_init_taus(AppData);
 
 AppData.Axes = [
@@ -181,7 +217,7 @@ if ~isfield(AppData,'menus')
 end
 scan = handles.data.Scans(handles.data.Index); %scan number
 iscan = find(AppData.scannum == scan,1); %index for scan into scannum and idx
-if AppData.QCLI_Wave(AppData.idx(iscan)) == AppData.wavenum
+if true % AppData.QCLI_Wave(AppData.idx(iscan)) == AppData.wavenum
     path = mlf_path( AppData.base, scan, '.dat');
     data_ok = 0;
     if AppData.binary
@@ -469,7 +505,7 @@ switch Tag(1)
     case 'S'
         if ~waitforbuttonpress
             point1 = get(gca,'CurrentPoint');    % button down detected
-            finalRect = rbbox;                   % return figure units
+            %finalRect = rbbox;                   % return figure units
             point2 = get(gca,'CurrentPoint');    % button up detected
             point1 = point1(1,1:2);              % extract x and y
             point2 = point2(1,1:2);

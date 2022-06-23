@@ -11,7 +11,7 @@ function [ wvsused, ranges ] = waves_used(ScanNum)
 WaveSpecs = load_waves;
 PT = load_mat_files('PT');
 dcpi = find(diff(PT.ScanNum)>0)+1; % index of new scan numbers
-if nargin > 0
+if nargin > 0 && ~isempty(ScanNum)
   dcpi = dcpi(max(1,ceil(interp1(PT.ScanNum(dcpi),1:length(dcpi),ScanNum,'linear','extrap'))));
   dcpi = dcpi(~isnan(dcpi));
 end
