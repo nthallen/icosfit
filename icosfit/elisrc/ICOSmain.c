@@ -192,7 +192,7 @@ fitdata *build_func() {
     assert( abs != 0 && abs->args.size() != 0 && abs->args[0].arg->params.size() != 0 );
     fprintf( fp,
       "%% ICOS configuration data\n"
-      "ICOSfit_format_ver = 5;\n"
+      "ICOSfit_format_ver = 6;\n"
       "n_input_params = %d;\n"
       "n_base_params = %ld;\n"
       "binary = %d;\n"
@@ -203,8 +203,12 @@ fitdata *build_func() {
       GlobalData.binary,
       func_line::nu0,
       GlobalData.Verbosity);
-    fprintf(fp, "BaselineFile = '%s';\n",
-      GlobalData.BaselineFile ? GlobalData.BaselineFile : "" );
+    fprintf(fp,
+      "BaselineFile = '%s';\n"
+      "ICOSdir = '%s';\n"
+      "FineTuned = %d;\n",
+      GlobalData.BaselineFile ? GlobalData.BaselineFile : "",
+      GlobalData.ICOSdir, GlobalData.ICOSdirFineTuned);
     fprintf(fp, "PTEfile = '%s';\n",
       (GlobalData.PTformat == 2 && GlobalData.PTFile) ?
         GlobalData.PTFile : "" );
@@ -219,6 +223,35 @@ fitdata *build_func() {
     fprintf(fp, "BackgroundRegion = [ %d %d ];\n",
       GlobalData.BackgroundRegion[0], GlobalData.BackgroundRegion[1]);
     abs->print_config( fp );
+    
+    int cooff = 0;
+    if (GlobalData.PTE_coadd) {
+      cooff = 1;
+    }
+    fprintf(fp,
+      "\n"
+      "PTE_cols = struct( ...\n"
+      "  'Scan0', 1, ...\n"
+      "  'Scan1', %d, ...\n"
+      "  'P', %d, ...\n"
+      "  'T', %d, ...\n"
+      "  'Core', [%d:%d], ...\n"
+      "  'nu_F0', %d, ...\n"
+      "  'MirrorLoss', %d, ...\n"
+      "  'Feedback', %d, ...\n",
+      cooff ? 2 : 0, 2+cooff, 3+cooff, 4+cooff, 11+cooff,
+      GlobalData.PTE_nu_F0_col, GlobalData.PTE_MirrorLoss_col,
+      GlobalData.PTE_Feedback_col);
+    
+    if (GlobalData.PTE_PowerParams_col) {
+      fprintf(fp,
+        "  'PowerParams', [%d:%d]);\n",
+        GlobalData.PTE_PowerParams_col,
+        GlobalData.PTE_PowerParams_col+6);
+    } else {
+      fprintf(fp,
+        "  'PowerParams', []);\n");
+    }
     
     fprintf(fp,
       "\n"

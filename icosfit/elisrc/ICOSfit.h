@@ -8,7 +8,7 @@
 #include "ptread.h"
 
 #define ICOSFIT_VERSION "4.3.2" FLOAT_STYLE
-#define ICOSFIT_VERSION_DATE "5/8/2022"
+#define ICOSFIT_VERSION_DATE "6/24/2022"
 
 class fitdata {
   public:

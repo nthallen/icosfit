@@ -166,6 +166,11 @@ else % S.ICOSfit_format_ver > 1 (2 for now)
     S.float_cols = float_cols;
     S.scale_cols = scale_cols;
   end
+  if S.ICOSfit_format_ver >= 6
+    S.ICOSdir = ICOSdir;
+    S.FineTuned = FineTuned;
+    S.PTE_cols = PTE_cols;
+  end
 end
 
 % S.P_vec, S.T_vec
