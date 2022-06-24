@@ -41,7 +41,7 @@ int func_abs::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
     ICOS_Float nu_F0 = 0.;
     if (GlobalData.RestartAt > 0) {
       nu_F0 = get_arg(nu_F0_idx);
-    } else if (GlobalData.input.nu_F0 != 0) {
+    } else if (GlobalData.PTE_nu_F0_col) {
       nu_F0 = GlobalData.input.nu_F0;
     } else {
       std::vector<argref>::iterator child;
@@ -71,7 +71,7 @@ int func_abs::adjust_params(adjust_event when, ICOS_Float P, ICOS_Float T) {
   }
   if (when == scan_init) {
     ICOS_Float nu_F0 = get_arg(nu_F0_idx);
-    if (GlobalData.input.nu_F0 != 0) {
+    if (GlobalData.PTE_nu_F0_col) {
       nu_F0 = GlobalData.input.nu_F0;
       set_param(nu_F0_idx, nu_F0);
     }

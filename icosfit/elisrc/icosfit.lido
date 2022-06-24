@@ -158,19 +158,25 @@ RULE: ConfigCmd ::= 'PTFile' '=' Path COMPUTE
   message(ERROR, "PTFile format is obsolete",0,COORDREF);
   SetGlobal(PTformat, 1);
 END;
-RULE: ConfigCmd ::= 'PTEFile' '=' Path opt_coadd PTE_options COMPUTE
+RULE: ConfigCmd ::= 'PTEFile' '=' Path PTE_spec COMPUTE
   SetGlobal(PTFile, StringTable(Path.String));
   SetGlobal(PTformat, 2);
 END;
-RULE: opt_coadd ::= 'coadd' COMPUTE
-  SetGlobal( PTE_coadd, 1 );
-END;
-RULE: PTE_options ::= PTE_opts END;
 
 CHAIN PTE_column : int;
 ATTR PTE_ncols : int;
-SYMBOL PTE_options COMPUTE
+SYMBOL PTE_spec COMPUTE
   CHAINSTART HEAD.PTE_column = 11;
+END;
+RULE: opt_coadd ::= 'coadd' COMPUTE
+  opt_coadd.PTE_ncols = 1;
+  SetGlobal( PTE_coadd, 1 );
+END;
+RULE: opt_coadd ::= COMPUTE
+  opt_coadd.PTE_ncols = 0;
+END;
+SYMBOL opt_coadd COMPUTE
+  THIS.PTE_column = ADD(THIS.PTE_column,THIS.PTE_ncols);
 END;
 SYMBOL PTE_opt COMPUTE
   THIS.PTE_column = ADD(THIS.PTE_column,THIS.PTE_ncols);

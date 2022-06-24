@@ -122,19 +122,20 @@ int PTfile::readline() {
       P = data[1+cooff];
       T = data[2+cooff];
       for ( i = 0; i < 8; i++ ) Etln_params[i] = data[i+3+cooff];
+      // Subsequent options already resolve cooff during parsing
       if (GlobalData.PTE_nu_F0_col) {
-        GlobalData.input.nu_F0 = data[GlobalData.PTE_nu_F0_col+cooff];
+        GlobalData.input.nu_F0 = data[GlobalData.PTE_nu_F0_col];
       }
       if (GlobalData.PTE_MirrorLoss_col) {
-        GlobalData.input.MirrorLoss = data[GlobalData.PTE_MirrorLoss_col+cooff];
+        GlobalData.input.MirrorLoss = data[GlobalData.PTE_MirrorLoss_col];
       }
       if (GlobalData.PTE_Feedback_col) {
-        Etln_params[GlobalData.PTE_Feedback_col-3] = data[GlobalData.PTE_Feedback_col+cooff];
+        Etln_params[GlobalData.PTE_Feedback_col-3] = data[GlobalData.PTE_Feedback_col];
       }
       if (GlobalData.PTE_PowerParams_col) {
         for (i = 0; i < 4; ++i) {
           Etln_params[GlobalData.PTE_PowerParams_col + i - 3] =
-            data[GlobalData.PTE_PowerParams_col + i + cooff];
+            data[GlobalData.PTE_PowerParams_col + i];
         }
       }
       return 1;

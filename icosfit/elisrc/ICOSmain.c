@@ -224,6 +224,7 @@ fitdata *build_func() {
       GlobalData.BackgroundRegion[0], GlobalData.BackgroundRegion[1]);
     abs->print_config( fp );
     
+    // Translate to one-based indexing here for MATLAB
     int cooff = 0;
     if (GlobalData.PTE_coadd) {
       cooff = 1;
@@ -240,14 +241,18 @@ fitdata *build_func() {
       "  'MirrorLoss', %d, ...\n"
       "  'Feedback', %d, ...\n",
       cooff ? 2 : 0, 2+cooff, 3+cooff, 4+cooff, 11+cooff,
-      GlobalData.PTE_nu_F0_col, GlobalData.PTE_MirrorLoss_col,
-      GlobalData.PTE_Feedback_col);
+      GlobalData.PTE_nu_F0_col ?
+        GlobalData.PTE_nu_F0_col+1 : 0,
+      GlobalData.PTE_MirrorLoss_col ?
+        GlobalData.PTE_MirrorLoss_col+1 : 0,
+      GlobalData.PTE_Feedback_col ?
+        GlobalData.PTE_Feedback_col+1 : 0);
     
     if (GlobalData.PTE_PowerParams_col) {
       fprintf(fp,
         "  'PowerParams', [%d:%d]);\n",
-        GlobalData.PTE_PowerParams_col,
-        GlobalData.PTE_PowerParams_col+6);
+        GlobalData.PTE_PowerParams_col+1,
+        GlobalData.PTE_PowerParams_col+1+6);
     } else {
       fprintf(fp,
         "  'PowerParams', []);\n");

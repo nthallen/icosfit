@@ -41,7 +41,7 @@ ConfigCmd :
   'FineTuned' /
   'PandTFile' '=' Path /
   'PTFile' '=' Path /
-  'PTEFile' '=' Path opt_coadd PTE_opts /
+  'PTEFile' '=' Path PTE_spec /
   'BaselineFile' '=' Path opt_BaselineInput /
   'OutputDir' '=' Path /
   'OutputFile' '=' Path /
@@ -75,6 +75,7 @@ LineParam : 'Lorentz' / 'Doppler' / 'FinePosition' .
 FloatVal : Float / Integer / '-' FloatVal .
 GroupSpec : 'Group' Ident .
 opt_coadd : / 'coadd' .
+PTE_spec : opt_coadd PTE_opts .
 PTE_opts : / PTE_opts PTE_opt .
 PTE_opt : '+' 'nu_F0' / '+' 'MirrorLoss' / '+' 'PowerParams' /
   '+' 'Feedback' / '+' 'Placeholder' .

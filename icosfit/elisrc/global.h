@@ -36,10 +36,10 @@ class GlobalData_t {
     const char *PTFile;
     int PTformat;
     int PTE_coadd; // true if coadding
-    int PTE_nu_F0_col;
-    int PTE_MirrorLoss_col;
-    int PTE_PowerParams_col;
-    int PTE_Feedback_col;
+    int PTE_nu_F0_col; // zero-based internally
+    int PTE_MirrorLoss_col; // zero-based internally
+    int PTE_PowerParams_col;  // zero-based internally
+    int PTE_Feedback_col; // zero-based internally
     const char *BaselineFile;
     const char *OutputDir;
     const char *OutputFile;
