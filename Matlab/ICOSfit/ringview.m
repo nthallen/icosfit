@@ -306,16 +306,25 @@ if true % AppData.QCLI_Wave(AppData.idx(iscan)) == AppData.wavenum
             ylabel(sv_axes(1),'Tau (\musec)')
             title(sv_axes(1),getrun(0,handles.scan_viewer))
             if AppData.FitDisplay == 1 || AppData.FitDisplay == 2
-                line(xtau,AppData.taus(1).Tau*1e6,'Parent',sv_axes(1),'Color','b','LineStyle','none','Marker','.')
+                line(xtau,AppData.taus(1).Tau*1e6,'Parent',sv_axes(1), ...
+                  'Color','b','LineStyle','none','Marker','.')
+                mtau = nanmedian(AppData.taus(1).Tau);
                 text(0.02,0.98, ...
-                    sprintf('Tau_{auto} = %.2f \\musec (R = %.1f ppm)',nanmedian(AppData.taus(1).Tau)*1e6,AppData.CavityLength/nanmedian(AppData.taus(1).Tau)/2.998e10*1e6), ...
-                    'Parent',sv_axes(1),'Color','b','Units','Normalized','VerticalAlignment','top');
+                    sprintf('Tau_{auto} = %.2f \\musec (R = %.1f ppm)', ...
+                    mtau*1e6, ...
+                    AppData.CavityLength/(mtau*2.99792458e10)*1e6), ...
+                    'Parent',sv_axes(1),'Color','b','Units','Normalized', ...
+                    'VerticalAlignment','top');
             end
             if AppData.FitDisplay == 0 || AppData.FitDisplay == 2
-                line(xtau,AppData.taus(2).Tau*1e6,'Parent',sv_axes(1),'Color','g','LineStyle','none','Marker','.')
+                line(xtau,AppData.taus(2).Tau*1e6,'Parent',sv_axes(1), ...
+                  'Color','g','LineStyle','none','Marker','.');
+                mtau = nanmedian(AppData.taus(2).Tau);
                 text(0.98,0.98, ...
-                    sprintf('Tau_{nonlin} = %.2f \\musec (R = %.1f ppm)',nanmedian(AppData.taus(2).Tau)*1e6,AppData.CavityLength/nanmedian(AppData.taus(2).Tau)/2.998e10*1e6), ...
-                    'Parent',sv_axes(1),'Color','g','Units','Normalized','VerticalAlignment','top','HorizontalAlignment','right');
+                    sprintf('Tau_{nonlin} = %.2f \\musec (R = %.1f ppm)', ...
+                    mtau*1e6, AppData.CavityLength/(mtau*2.99792458e10)*1e6), ...
+                    'Parent',sv_axes(1),'Color','g','Units','Normalized', ...
+                    'VerticalAlignment','top','HorizontalAlignment','right');
             end
             if isempty(handles.data.xlim{1})
                 xlim(sv_axes(1),'auto')
@@ -345,21 +354,24 @@ if true % AppData.QCLI_Wave(AppData.idx(iscan)) == AppData.wavenum
             end
             %Display mean tau
             if ~isempty(AppData.taus(1).MeanTau)
-                if AppData.FitDisplay == 1 || AppData.FitDisplay == 2
-                    text(0.02,0.85, ...
-                        sprintf('Tau_{auto} = %.2f \\musec (R = %.1f ppm)', ...
-                        AppData.taus(1).MeanTau*1e6, ...
-                        AppData.CavityLength/AppData.taus(1).MeanTau/2.998e10*1e6), ...
-                        'Parent',sv_axes(1),'Units','Normalized','VerticalAlignment','top');
-                end
-                if AppData.FitDisplay == 0 || AppData.FitDisplay == 2
-                    text(0.98,0.85, ...
-                        sprintf('Tau_{nonlin} = %.2f \\musec (R = %.1f ppm)', ...
-                            AppData.taus(2).MeanTau*1e6, ...
-                            AppData.CavityLength/AppData.taus(2).MeanTau/2.998e10*1e6), ...
-                        'Parent',sv_axes(1),'Units','Normalized', ...
-                        'VerticalAlignment','top','HorizontalAlignment','right');
-                end 
+              if AppData.FitDisplay == 1 || AppData.FitDisplay == 2
+                mtau = AppData.taus(1).MeanTau;
+                text(0.02,0.85, ...
+                  sprintf('Tau_{auto} = %.2f \\musec (R = %.1f ppm)', ...
+                  AppData.taus(1).MeanTau*1e6, ...
+                  1e6*AppData.CavityLength/(mtau*2.99792458e10)), ...
+                  'Parent',sv_axes(1),'Units','Normalized', ...
+                  'VerticalAlignment','top');
+              end
+              if AppData.FitDisplay == 0 || AppData.FitDisplay == 2
+                mtau = AppData.taus(2).MeanTau;
+                text(0.98,0.85, ...
+                  sprintf('Tau_{nonlin} = %.2f \\musec (R = %.1f ppm)', ...
+                  AppData.taus(2).MeanTau*1e6, ...
+                  1e6*AppData.CavityLength/(mtau*2.99792458e10)), ...
+                  'Parent',sv_axes(1),'Units','Normalized', ...
+                  'VerticalAlignment','top','HorizontalAlignment','right');
+              end
             end
         end
         
@@ -506,21 +518,22 @@ switch Tag(1)
         guidata(hObject,handles);
         scan_viewer('scan_display',handles);
     case 'S'
-        if ~waitforbuttonpress
-            point1 = get(gca,'CurrentPoint');    % button down detected
-            %finalRect = rbbox;                   % return figure units
-            point2 = get(gca,'CurrentPoint');    % button up detected
-            point1 = point1(1,1:2);              % extract x and y
-            point2 = point2(1,1:2);
-            p1 = min(point1,point2);             % calculate locations
-            offset = abs(point1-point2);         % and dimensions
-            AppData.tauwindow.x = [p1(1) p1(1)+offset(1) p1(1)+offset(1) p1(1) p1(1)];
-            AppData.tauwindow.y = [p1(2) p1(2) p1(2)+offset(2) p1(2)+offset(2) p1(2)];
-            handles.data.AppData = AppData;
-            guidata(hObject,handles);
-            handles = guidata(hObject);
-            scan_viewer('scan_display',handles);
-        end
+      zoom off;
+      if ~waitforbuttonpress
+        point1 = get(gca,'CurrentPoint');    % button down detected
+        finalRect = rbbox;                   % return figure units
+        point2 = get(gca,'CurrentPoint');    % button up detected
+        point1 = point1(1,1:2);              % extract x and y
+        point2 = point2(1,1:2);
+        p1 = min(point1,point2);             % calculate locations
+        offset = abs(point1-point2);         % and dimensions
+        AppData.tauwindow.x = [p1(1) p1(1)+offset(1) p1(1)+offset(1) p1(1) p1(1)];
+        AppData.tauwindow.y = [p1(2) p1(2) p1(2)+offset(2) p1(2)+offset(2) p1(2)];
+        handles.data.AppData = AppData;
+        guidata(hObject,handles);
+        handles = guidata(hObject);
+        scan_viewer('scan_display',handles);
+      end
     case 'E'
         assignin('base','tau',AppData.taus);
     case 'W'
@@ -536,13 +549,15 @@ switch Tag(1)
             if isempty(AppData.taus(2).MeanTau)
                 errordlg('Must select base tau region.', 'ringview error', 'modal');
             else
-                fprintf(fd, 'cell_cfg.MirrorLoss = %.2f;\n', AppData.CavityLength/AppData.taus(2).MeanTau/2.998e10*1e6 );
+                fprintf(fd, 'cell_cfg.MirrorLoss = %.2f;\n', ...
+                  AppData.CavityLength/(AppData.taus(2).MeanTau*2.99792458e10*1e6));
             end
         elseif AppData.FitDisplay == 1 || AppData.FitDisplay == 2
             if isempty(AppData.taus(1).MeanTau)
                 errordlg('Must select base tau region.', 'ringview error', 'modal');
             else
-               fprintf(fd, 'cell_cfg.MirrorLoss = %.2f;\n', AppData.CavityLength/AppData.taus(1).MeanTau/2.998e10*1e6 );
+               fprintf(fd, 'cell_cfg.MirrorLoss = %.2f;\n', ...
+                 AppData.CavityLength/(AppData.taus(1).MeanTau*2.99792458e10)*1e6 );
             end
         end 
         fprintf(fd, 'cell_cfg.N_Passes = %i;\n', cell_cfg.N_Passes );
