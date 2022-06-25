@@ -487,6 +487,12 @@ int ICOSfile::wn_sample( ICOS_Float wn ) {
   int high = GlobalData.SignalRegion[0]-MLBASE;
   ICOS_Float wnlow = wndata->data[low];
   ICOS_Float wnhigh = wndata->data[high];
+  if (isnan(wnlow) || isnan(wnhigh)) {
+    if (GlobalData.ICOSdirFineTuned)
+      nl_error(3, "SignalRegion has apparently changed since FineTuned scans were generated");
+    else
+      nl_error(3, "Non-number from wndata in wn_sample");
+  }
   if ( wn <= wnlow ) return low;
   if ( wn >= wnhigh ) return high;
   while ( low > high ) {
