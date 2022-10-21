@@ -141,14 +141,14 @@ classdef etln_fine_tune < handle
       sig = [etln etln];
       sig(eft.x,2) = etln_evalJ(Y,eft.xx)';
       efit = etln_evalJ(Y,eft.xx)'; %
-      efitx = zeros(size(etln)); %
-      efitx(eft.x) = efit; %
+      %efitx = zeros(size(etln)); %
+      %efitx(eft.x) = efit; %
       Wn = 1/10;
-      xr = (1:length(etln))';
+      % xr = (1:length(etln))';
       [b,a] = singlepole(Wn,'highpass');
       sigf = filter(b,a,sig);
-      etlnfilt = sign(filter(b,a,etln)); %
-      efitfilt = sign(filter(b,a,efitx)); %
+      %etlnfilt = sign(filter(b,a,etln)); %
+      %efitfilt = sign(filter(b,a,efitx)); %
       signf = sign(sigf);
       % prod = etlnfilt(eft.x).*efitfilt(eft.x);
       % Start with a range of values starting and ending where the
@@ -240,7 +240,7 @@ classdef etln_fine_tune < handle
       fe = loadbin( path );
       data_ok = (~isempty(fe)) && size(fe,2) >= 2;
       if data_ok
-        nsamples = size(fe,1);
+        %nsamples = size(fe,1);
         Y = eft.Y(handles.data.Index);
         nu_rel_0 = -etln_evalJ(Y(1:5),eft.xx)*eft.fsr;
         nu_rel_tune = fe(eft.x,2);
@@ -264,7 +264,7 @@ classdef etln_fine_tune < handle
       if nargout > 1; nu = zeros(length(eft.x),length(eft.scans)); end
       for i=1:length(eft.scans)
         scan = eft.scans(i);
-        Y = eft.Y(i);
+        % Y = eft.Y(i);
         pi = mlf_path(eft.obase,scan);
         fi = loadbin(pi);
         if isempty(fi)
