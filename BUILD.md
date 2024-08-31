@@ -19,11 +19,11 @@ All of the following options start in the root directory of the source tree.
   * cd icosfit
   * \# Clone the source code into a subdirectory called 'git'
   * git clone git@github.com:nthallen/icosfit.git git
-  * mkdir ../build-icosfit
-  * cd ../build-icosfit
+  * mkdir build-icosfit
+  * cd build-icosfit
   * cmake ../git  [ -DQTDIR_DEFAULT= \<path\> ] [ -DCMAKE_INSTALL_PREFIX=/usr/local ] &&
   * make
-  * make install [ DESTDIR=tmp ]
+  * [sudo] make install [ DESTDIR=tmp ]
 
 ## Build using make in cppsrc:
 First need to build the levmar library in ../build-levmar. If levmar is built elsewhere
