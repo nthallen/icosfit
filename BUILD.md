@@ -15,6 +15,10 @@ All of the following options start in the root directory of the source tree.
 
 ## Preferred build method:
 ### Use cmake to build entire project using icosfit/cppsrc directory
+  * mkdir icosfit
+  * cd icosfit
+  * \# Clone the source code into a subdirectory called 'git'
+  * git clone git@github.com:nthallen/icosfit.git git
   * mkdir ../build-icosfit
   * cd ../build-icosfit
   * cmake ../git  [ -DQTDIR_DEFAULT= \<path\> ] [ -DCMAKE_INSTALL_PREFIX=/usr/local ] &&
